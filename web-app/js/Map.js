@@ -40,8 +40,9 @@ ALA.MapConstants = {
  *          <li><pre>position</pre> - position of the button on the map. Default: topleft</li>
  *      </ul>
  *  <li><pre>drawControl</pre> - whether to include drawing controls or not. Default: true</li>
- *  <li><pre>singleDraw</pre> - whether to allow more than 1 item to be drawn at a time. This does NOT apply to markers - only layers and other shapes.. Default: true</li>
+ *  <li><pre>singleDraw</pre> - whether to allow more than 1 shape or region to be drawn at a time. This does NOT apply to markers - only layers and other shapes. See also singleMarker and markerOrShapeNotBoth. Default: true</li>
  *  <li><pre>singleMarker</pre> - whether to allow more than 1 marker to be drawn at a time.. Default: true</li>
+ *  <li><pre>markerOrShapeNotBoth</pre> - whether to allow users to draw both markers and regions/shapes at the same time. Default: true</li>
  *  <li><pre>useMyLocation</pre> - whether to include a "Use My Location" button to place a marker on the map at the user's location. Default: true</li>
  *  <li><pre>allowSearchByAddress</pre> - whether to allow the user to search by address to place a marker on the map. Default: true</li>
  *  <li><pre>zoomToObject</pre> - whether to automatically fit the map to the bounds of a new object when added. Default: true</li>
@@ -96,6 +97,7 @@ ALA.Map = function (id, options) {
         drawControl: true,
         singleDraw: true,
         singleMarker: true,
+        markerOrShapeNotBoth: true,
         useMyLocation: true,
         allowSearchByAddress: true,
         zoomToObject: true,
@@ -273,8 +275,8 @@ ALA.Map = function (id, options) {
      * @function resetMap
      */
     self.resetMap = function () {
-        drawnItems.clearLayers();
-        markers = [];
+        self.clearLayers();
+        self.clearMarkers();
         mapImpl.setZoom(DEFAULT_ZOOM);
         mapImpl.panTo(DEFAULT_CENTER);
 
@@ -282,7 +284,7 @@ ALA.Map = function (id, options) {
     };
 
     /**
-     * Remove all drawn layers from the map.
+     * Remove all drawn layers from the map. This does not remove markers: see {@link self#clearMarkers}.
      *
      * Will notify all subscribers.
      *
@@ -291,6 +293,22 @@ ALA.Map = function (id, options) {
      */
     self.clearLayers = function () {
         drawnItems.clearLayers();
+
+        self.notifyAll();
+    };
+
+    /**
+     * Remove all markers from the map. This does not remove other layers or shapes: see {@link self#clearLayers}.
+     *
+     * Will notify all subscribers.
+     *
+     * @memberOf ALA.Map
+     * @function clearMarkers
+     */
+    self.clearMarkers = function () {
+        markers.forEach(function (marker) {
+            drawnItems.removeLayer(marker);
+        });
         markers = [];
 
         self.notifyAll();
@@ -569,8 +587,6 @@ ALA.Map = function (id, options) {
 
         mapImpl.on("draw:drawstart", function (event) {
             drawingStarted(event.layerType);
-
-            self.notifyAll();
         });
 
         updateCircleFeaturesToIncludeTypeAndRadius();
@@ -584,12 +600,18 @@ ALA.Map = function (id, options) {
                     drawnItems.removeLayer(marker);
                 });
                 markers = [];
-                if (drawnItems.singleDraw) {
+                if (options.markerOrShapeNotBoth) {
                     drawnItems.clearLayers();
                 }
             }
         } else if (options.singleDraw) {
             drawnItems.clearLayers();
+            if (options.markerOrShapeNotBoth) {
+                markers.forEach(function (marker) {
+                    drawnItems.removeLayer(marker);
+                });
+                markers = [];
+            }
         }
     }
 
@@ -655,7 +677,7 @@ ALA.Map = function (id, options) {
     // to notify all subscribers that the map has changed.
     function addLayer(layer, notify) {
         if (options.singleDraw) {
-            drawnItems.clearLayers();
+            self.clearLayers();
         }
 
         layer.addTo(drawnItems);
