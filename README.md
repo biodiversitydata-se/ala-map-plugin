@@ -37,7 +37,7 @@ var myMap = new ALA.Map(id, {})
 
 ## API
 
-See the full API documentation (Link TBD).
+[See the full API documentation](http://atlasoflivingaustralia.github.io/ala-map-plugin/ALA.Map.html).
 
 ## Custom Leaflet controls and layers
 
