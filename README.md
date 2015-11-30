@@ -37,7 +37,25 @@ var myMap = new ALA.Map(id, {})
 
 ## API
 
-[See the full API documentation](http://atlasoflivingaustralia.github.io/ala-map-plugin/ALA.Map.html).
+### [Click here for the full API documentation](http://atlasoflivingaustralia.github.io/ala-map-plugin/ALA.Map.html)
+
+### Updating the doco
+This doco is built using [JSDoc3](http://usejsdoc.org/) and stored on the gh-pages branch of this repository. The syntax for JSDoc is a bit quirky: basically, make sure you include ```@memberOf [parent]``` in the comments for nested objects/functions, and ```@function``` for functions or ```@var``` for variables.
+
+### To generate the doco
+* Check out the gh-pages branch into a different directory
+```
+git clone https://github.com/AtlasOfLivingAustralia/ala-map-plugin ala-map-plugin-gh-pages
+
+cd ala-map-plugin-gh-pages
+
+git checkout gh-pages
+```
+* In the root of the main directory (not the gh-pages branch):
+  * Install npm if you don't already have it
+  * Install jsdoc3 if you don't already have it (```npm install jsdoc```)
+  * Run jsdoc: ```./node_modules/.bin/jsdoc web-app/js/* -d [gh_pages_loc]```, where ```[gh_pages_loc]``` is the path to the directory you cloned the gh-pages branch to.
+  * Commit the changes to the gh-branch
 
 ## Custom Leaflet controls and layers
 
