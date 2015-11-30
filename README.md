@@ -1,4 +1,7 @@
-# Grails Map Plugin
+# ALA Map Plugin
+
+## Status
+[![Build Status](https://travis-ci.org/AtlasOfLivingAustralia/ala-map-plugin.svg?branch=master)](https://travis-ci.org/AtlasOfLivingAustralia/ala-map-plugin)
 
 ## Why?
 
@@ -34,7 +37,7 @@ var myMap = new ALA.Map(id, {})
 
 ## API
 
-[See the full API documentation here](doco/ALA.html).
+See the full API documentation (Link TBD).
 
 ## Custom Leaflet controls and layers
 
@@ -49,26 +52,6 @@ This layer lets us call ```ALA.Map.getGeoJSON``` and retrieve a valid GeoJSON ob
 #### TwoStepSelector Control
 
 A map control with 2 combo boxes, for two-step selection of a map feature.
-
-Options (default values are in square brackets):
-
-* _id_ [replaceMe]: unique id for the control
-* _position_ [topleft]: Position on the Leaflet map
-* _title_ [Select...]: Tooltip for the button
-* _firstStepItems_ [[]]: array of items (key/value) to be displayed in the first selector (alternatively, use firstStepItemLookup)
-* _firstStepItemLookup_ [null]: Function callback to retrieve the list of items to be displayed in the first selector
-* _firstStepTitle_ [null]: Tooltip for the first select box
-* _firstStepPlaceholder_ ["Select one..."]: Null-value initial item in the first drop-down
-* _secondStepItemLookup_ [null]: Function callback to populate the second selector when the first selector is set. The function will be provided with two parameters:
-  * _stepOneSelection_: the key of the selected item from the first drown-down
-  * _populateStep2Callback_: the function on the control to call in order to populate the second drop-down. This function requires an array of key/value pairs as the only parameter.
-* _secondStepPlaceholder_ [Select one...]:  Null-value initial item in the second drop-down
-* _secondStepTitle_ [null]: Tooltip for the second select box
-* _selectionAction_ [null]: Function callback to invoke when the second selector is set. This callback will be provided with two parameters:
-  * _stepTwoSelection_: the key of the selected item from the second drop-down
-  * _map_: The underlying Leaflet Map instance. In most cases, you should normally use the ALA.Map class to interact with the map as it provides a cleaner interface.
-* _firstStepValue_ [null]: The initial value for the first selector
-* _iconClass_ [fa fa-map-marker]: The CSS class(es) for the button
 
 Example:
 
