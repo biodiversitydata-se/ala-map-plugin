@@ -371,6 +371,10 @@ ALA.Map = function (id, options) {
      * @param {ILayer} layer The Leaflet Layer to add
      */
     self.addLayer = function (layer) {
+        if (options.singleDraw) {
+            drawnItems.clearLayers();
+        }
+
         addLayer(layer, true);
     };
 
@@ -407,7 +411,11 @@ ALA.Map = function (id, options) {
         }
         var layer = L.tileLayer.smartWms(options.wmsLayerUrl, wmsOptions);
 
-        addLayer(layer, true);
+        if (options.singleDraw) {
+            drawnItems.clearLayers();
+        }
+
+        addLayer(layer, false);
         layer.bringToFront(); // make sure the new layer sits on top of the other tile layers (like the base layer)
 
         return layer;
@@ -570,7 +578,7 @@ ALA.Map = function (id, options) {
         // If the map container is not visible, add a listener to trigger a redraw once it becomes visible.
         // This avoids problems with the map viewport being initialised to an incorrect size because Leaflet could not
         // determine the size of the container.
-        var container = $("#" + id)
+        var container = $("#" + id);
         if (!container.is(":visible")) {
             container.onImpression({
                 callback: self.redraw
@@ -725,10 +733,6 @@ ALA.Map = function (id, options) {
     // Internal method to add a non-Marker layer to the map, to fit the map bounds if configured to do so, and optionally
     // to notify all subscribers that the map has changed.
     function addLayer(layer, notify) {
-        if (options.singleDraw) {
-            self.clearLayers();
-        }
-
         layer.addTo(drawnItems);
 
         if (options.zoomToObject && layer.getBounds) {
