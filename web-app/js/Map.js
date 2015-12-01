@@ -58,7 +58,7 @@ ALA.MapConstants = {
 ALA.Map = function (id, options) {
     var self = this;
 
-    var DEFAULT_CENTER = {
+    var DEFAULT_CENTRE = {
         lat: -28,
         lng: 134
     };
@@ -86,7 +86,7 @@ ALA.Map = function (id, options) {
      * @var
      */
     var DEFAULT_OPTIONS = {
-        center: [DEFAULT_CENTER.lat, DEFAULT_CENTER.lng],
+        center: [DEFAULT_CENTRE.lat, DEFAULT_CENTRE.lng],
         zoom: DEFAULT_ZOOM,
         maxZoom: DEFAULT_MAX_ZOOM,
         scrollWheelZoom: false,
@@ -275,10 +275,10 @@ ALA.Map = function (id, options) {
      * @function resetMap
      */
     self.resetMap = function () {
-        self.clearLayers();
-        self.clearMarkers();
+        drawnItems.clearLayers();
+        markers = [];
         mapImpl.setZoom(DEFAULT_ZOOM);
-        mapImpl.panTo(DEFAULT_CENTER);
+        mapImpl.panTo(DEFAULT_CENTRE);
 
         self.notifyAll();
     };
@@ -441,11 +441,11 @@ ALA.Map = function (id, options) {
             } else {
                 // cannot determine the bounds from the layers, set the map centre and zoom level to the defaults
                 mapImpl.setZoom(DEFAULT_ZOOM);
-                mapImpl.panTo(DEFAULT_CENTER);
+                mapImpl.panTo(DEFAULT_CENTRE);
             }
         } else {
             mapImpl.setZoom(DEFAULT_ZOOM);
-            mapImpl.panTo(DEFAULT_CENTER);
+            mapImpl.panTo(DEFAULT_CENTRE);
         }
     };
 
@@ -530,8 +530,7 @@ ALA.Map = function (id, options) {
      * @return {Integer} count of all features (shapes, layers, markers, etc) on the map
      */
     self.countFeatures = function() {
-        var count = markers.length;
-
+        var count = 0;
         drawnItems.eachLayer(function () {
             count++;
         });
@@ -549,6 +548,7 @@ ALA.Map = function (id, options) {
 
         options.drawControl = false;
         mapImpl = L.map(id, options);
+
         mapImpl.addLayer(drawnItems);
 
         addCoordinates();
@@ -560,7 +560,7 @@ ALA.Map = function (id, options) {
 
         if (options.useMyLocation) {
             var title = options.myLocationControlTitle || "Use my location";
-            self.addButton("<span class='fa fa-location-arrow' title='" + title + "'></span>", self.markMyLocation, "topleft");
+            self.addButton("<span class='ala-map-my-location fa fa-location-arrow' title='" + title + "'></span>", self.markMyLocation, "topleft");
         }
 
         if (options.allowSearchByAddress) {
@@ -568,11 +568,11 @@ ALA.Map = function (id, options) {
         }
 
         if (enableDrawing) {
-            initDrawingControls(options)
+            initDrawingControls(options);
         }
 
         if (options.showReset) {
-            self.addButton("<span class='fa fa-refresh reset-map' title='Reset map'></span>", self.resetMap, "bottomleft");
+            self.addButton("<span class='ala-map-reset fa fa-refresh reset-map' title='Reset map'></span>", self.resetMap, "bottomleft");
         }
 
         // If the map container is not visible, add a listener to trigger a redraw once it becomes visible.

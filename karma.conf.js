@@ -9,22 +9,18 @@ module.exports = function (config) {
 
         plugins: [
             'karma-chrome-launcher',
-            //'karma-jquery',
-            //'jasmine-jquery',
-            //'karma-jasmine-jquery',
+            'karma-jquery',
             'karma-jasmine',
+            'karma-jasmine-jquery',
             'karma-coverage',
             'karma-firefox-launcher',
-            'karma-phantomjs-launcher'
+            'karma-phantomjs2-launcher'
         ],
 
 
         // frameworks to use
         // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-        frameworks: [
-            'jasmine'
-            //,'jasmine-jquery'
-            ],
+        frameworks: ['jasmine-jquery','jasmine'],
 
         // preprocess matching files before serving them to the browser
         // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
@@ -37,7 +33,6 @@ module.exports = function (config) {
             'web-app/vendor/leaflet-0.7.7/*.js',
             'web-app/vendor/**/*.js',
             'web-app/js/**/*.js',
-            'test/js/vendor/**/*.js',
             'test/js/specs/**/*.js'
         ],
 
@@ -49,7 +44,9 @@ module.exports = function (config) {
         // test results reporter to use
         // possible values: 'dots', 'progress'
         // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-        reporters: ['progress', 'coverage'],
+        reporters: ['progress'
+            //, 'coverage'
+        ],
 
 
         // web server port
@@ -71,7 +68,7 @@ module.exports = function (config) {
 
         // start these browsers
         // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-        browsers: ['Chrome','Firefox','PhantomJS'],
+        browsers: ['Chrome','Firefox','PhantomJS2'],
 
 
         // Continuous Integration mode

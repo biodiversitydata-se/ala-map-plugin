@@ -34,6 +34,31 @@ thing to do at some point.
 var myMap = new ALA.Map(id, {})
 ```
 * See the API Doco for details of the options.
+* To listen to major events for the map (layers/features added/removed etc), simply call
+```
+myMap.subscribe(function() {...})
+```
+
+## Features
+
+### Version 0.1
+* Built in options to:
+  * display a 'Use My Location' button on the map
+  * perform a geocoding address search (default implementation uses http://nominatim.openstreetmap.org/)
+  * display standard drawing controls for polylines, polygons, circles, points, rectangles, with edit capabilities
+  * reset the map
+  * display the lat/lng of the mouse position
+* Simplified events - you can 'subscribe' to the map to receive notifications of major events such as new layers/features, removed layers/features, etc.
+  * There is also support for registering listeners for more fine-grained Leaflet events
+* The map is only initialised when the container is visible - this avoids common issues such as map sizing when the container is on a separate tab that is not visible when the page loads. It can also improve page load performance if the map is not on the view port.
+* Minimal base layer from [CartoDB](https://cartodb.com/basemaps/), plus ESRI World Image layer as defaults
+* Custom controls:
+  * Two-step selection control (two side-be-side select boxes to allow selection of, for example, known regions by category)
+  * Checkbox control
+  * Slider control
+* Support for limiting the number of layers/shapes/markers that can added at a time (see the ```singleDraw```, ```singleMarker``` and ```markerOrShapeNotBoth``` options in the API doco)
+* Simple zoom and fit-bounds functions
+* Improved WMS layer support, with built-in functionality to retrieve features for layers
 
 ## API
 
