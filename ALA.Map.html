@@ -62,8 +62,9 @@
          <li><pre>position</pre> - position of the button on the map. Default: topleft</li>
      </ul>
  <li><pre>drawControl</pre> - whether to include drawing controls or not. Default: true</li>
- <li><pre>singleDraw</pre> - whether to allow more than 1 item to be drawn at a time. This does NOT apply to markers - only layers and other shapes.. Default: true</li>
+ <li><pre>singleDraw</pre> - whether to allow more than 1 shape or region to be drawn at a time. This does NOT apply to markers - only layers and other shapes. See also singleMarker and markerOrShapeNotBoth. Default: true</li>
  <li><pre>singleMarker</pre> - whether to allow more than 1 marker to be drawn at a time.. Default: true</li>
+ <li><pre>markerOrShapeNotBoth</pre> - whether to allow users to draw both markers and regions/shapes at the same time. Default: true</li>
  <li><pre>useMyLocation</pre> - whether to include a "Use My Location" button to place a marker on the map at the user's location. Default: true</li>
  <li><pre>allowSearchByAddress</pre> - whether to allow the user to search by address to place a marker on the map. Default: true</li>
  <li><pre>zoomToObject</pre> - whether to automatically fit the map to the bounds of a new object when added. Default: true</li>
@@ -186,7 +187,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line57">line 57</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line58">line 58</a>
     </li></ul></dd>
     
 
@@ -274,7 +275,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line87">line 87</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line88">line 88</a>
     </li></ul></dd>
     
 
@@ -453,7 +454,7 @@ leaflet button. The second parameter will be the leaflet map. I.e.</td>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line427">line 427</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line475">line 475</a>
     </li></ul></dd>
     
 
@@ -584,7 +585,7 @@ leaflet button. The second parameter will be the leaflet map. I.e.</td>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line416">line 416</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line464">line 464</a>
     </li></ul></dd>
     
 
@@ -717,7 +718,7 @@ Will notify all subscribers.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line346">line 346</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line364">line 364</a>
     </li></ul></dd>
     
 
@@ -873,7 +874,7 @@ Will notify all subscribers.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line311">line 311</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line329">line 329</a>
     </li></ul></dd>
     
 
@@ -1028,7 +1029,7 @@ Triggers events draw:drawstart and draw:created, and will notify all subscribers
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line359">line 359</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line381">line 381</a>
     </li></ul></dd>
     
 
@@ -1088,7 +1089,7 @@ Triggers events draw:drawstart and draw:created, and will notify all subscribers
 
 
 <div class="description">
-    Remove all drawn layers from the map.
+    Remove all drawn layers from the map. This does not remove markers: see self#clearMarkers.
 
 Will notify all subscribers.
 </div>
@@ -1134,7 +1135,7 @@ Will notify all subscribers.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line284">line 284</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line286">line 286</a>
     </li></ul></dd>
     
 
@@ -1165,14 +1166,16 @@ Will notify all subscribers.
 
     
 
-    <h4 class="name" id=".fitBounds"><span class="type-signature">(static) </span>fitBounds<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id=".clearMarkers"><span class="type-signature">(static) </span>clearMarkers<span class="signature">()</span><span class="type-signature"></span></h4>
 
     
 
 
 
 <div class="description">
-    Zoom and centre the map to fit the bounds of the current layer(s)
+    Remove all markers from the map. This does not remove other layers or shapes: see self#clearLayers.
+
+Will notify all subscribers.
 </div>
 
 
@@ -1216,7 +1219,194 @@ Will notify all subscribers.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line398">line 398</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line300">line 300</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".countFeatures"><span class="type-signature">(static) </span>countFeatures<span class="signature">()</span><span class="type-signature"> &rarr; {Integer}</span></h4>
+
+    
+
+
+
+<div class="description">
+    Retrieve a count of all features (shapes, layers, markers, etc) on the map
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line525">line 525</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    count of all features (shapes, layers, markers, etc) on the map
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Integer</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".fitBounds"><span class="type-signature">(static) </span>fitBounds<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    Zoom and centre the map to fit the bounds of the current feature(s). If there are no features, then the map will
+be set to the default zoom and centre.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line424">line 424</a>
     </li></ul></dd>
     
 
@@ -1298,7 +1488,7 @@ Will notify all subscribers.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line449">line 449</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line497">line 497</a>
     </li></ul></dd>
     
 
@@ -1402,7 +1592,7 @@ Will notify all subscribers.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line299">line 299</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line317">line 317</a>
     </li></ul></dd>
     
 
@@ -1510,7 +1700,7 @@ property object (this is still valid GeoJSON).
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line191">line 191</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line193">line 193</a>
     </li></ul></dd>
     
 
@@ -1614,7 +1804,7 @@ property object (this is still valid GeoJSON).
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line244">line 244</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line246">line 246</a>
     </li></ul></dd>
     
 
@@ -1718,7 +1908,7 @@ property object (this is still valid GeoJSON).
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line255">line 255</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line257">line 257</a>
     </li></ul></dd>
     
 
@@ -1822,7 +2012,7 @@ property object (this is still valid GeoJSON).
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line460">line 460</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line508">line 508</a>
     </li></ul></dd>
     
 
@@ -1928,7 +2118,7 @@ Will notify all subscribers.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line330">line 330</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line348">line 348</a>
     </li></ul></dd>
     
 
@@ -2010,7 +2200,89 @@ Will notify all subscribers.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line150">line 150</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line152">line 152</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".redraw"><span class="type-signature">(static) </span>redraw<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    Invalidates the size of the map to trigger a re-draw, then fits the viewport to the current bounds.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line452">line 452</a>
     </li></ul></dd>
     
 
@@ -2164,7 +2436,7 @@ Will notify all subscribers.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line162">line 162</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line164">line 164</a>
     </li></ul></dd>
     
 
@@ -2319,7 +2591,7 @@ callback needs to be provided in order to find the listener to remove.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line178">line 178</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line180">line 180</a>
     </li></ul></dd>
     
 
@@ -2404,7 +2676,7 @@ Will notify all subscribers.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line266">line 266</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line268">line 268</a>
     </li></ul></dd>
     
 
@@ -2543,7 +2815,7 @@ Will notify all subscribers.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line206">line 206</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line208">line 208</a>
     </li></ul></dd>
     
 
@@ -2676,7 +2948,7 @@ To listen for specific events, use #registerListener instead.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line126">line 126</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line128">line 128</a>
     </li></ul></dd>
     
 
@@ -2807,7 +3079,7 @@ To listen for specific events, use #registerListener instead.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line139">line 139</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line141">line 141</a>
     </li></ul></dd>
     
 
@@ -2855,7 +3127,7 @@ To listen for specific events, use #registerListener instead.
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Mon Nov 30 2015 16:54:41 GMT+1100 (AEDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Tue Dec 01 2015 17:09:45 GMT+1100 (AEDT)
 </footer>
 
 <script> prettyPrint(); </script>

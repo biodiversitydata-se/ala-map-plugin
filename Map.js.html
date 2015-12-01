@@ -68,8 +68,9 @@ ALA.MapConstants = {
  *          &lt;li>&lt;pre>position&lt;/pre> - position of the button on the map. Default: topleft&lt;/li>
  *      &lt;/ul>
  *  &lt;li>&lt;pre>drawControl&lt;/pre> - whether to include drawing controls or not. Default: true&lt;/li>
- *  &lt;li>&lt;pre>singleDraw&lt;/pre> - whether to allow more than 1 item to be drawn at a time. This does NOT apply to markers - only layers and other shapes.. Default: true&lt;/li>
+ *  &lt;li>&lt;pre>singleDraw&lt;/pre> - whether to allow more than 1 shape or region to be drawn at a time. This does NOT apply to markers - only layers and other shapes. See also singleMarker and markerOrShapeNotBoth. Default: true&lt;/li>
  *  &lt;li>&lt;pre>singleMarker&lt;/pre> - whether to allow more than 1 marker to be drawn at a time.. Default: true&lt;/li>
+ *  &lt;li>&lt;pre>markerOrShapeNotBoth&lt;/pre> - whether to allow users to draw both markers and regions/shapes at the same time. Default: true&lt;/li>
  *  &lt;li>&lt;pre>useMyLocation&lt;/pre> - whether to include a "Use My Location" button to place a marker on the map at the user's location. Default: true&lt;/li>
  *  &lt;li>&lt;pre>allowSearchByAddress&lt;/pre> - whether to allow the user to search by address to place a marker on the map. Default: true&lt;/li>
  *  &lt;li>&lt;pre>zoomToObject&lt;/pre> - whether to automatically fit the map to the bounds of a new object when added. Default: true&lt;/li>
@@ -85,7 +86,7 @@ ALA.MapConstants = {
 ALA.Map = function (id, options) {
     var self = this;
 
-    var DEFAULT_CENTER = {
+    var DEFAULT_CENTRE = {
         lat: -28,
         lng: 134
     };
@@ -113,7 +114,7 @@ ALA.Map = function (id, options) {
      * @var
      */
     var DEFAULT_OPTIONS = {
-        center: [DEFAULT_CENTER.lat, DEFAULT_CENTER.lng],
+        center: [DEFAULT_CENTRE.lat, DEFAULT_CENTRE.lng],
         zoom: DEFAULT_ZOOM,
         maxZoom: DEFAULT_MAX_ZOOM,
         scrollWheelZoom: false,
@@ -124,6 +125,7 @@ ALA.Map = function (id, options) {
         drawControl: true,
         singleDraw: true,
         singleMarker: true,
+        markerOrShapeNotBoth: true,
         useMyLocation: true,
         allowSearchByAddress: true,
         zoomToObject: true,
@@ -304,13 +306,13 @@ ALA.Map = function (id, options) {
         drawnItems.clearLayers();
         markers = [];
         mapImpl.setZoom(DEFAULT_ZOOM);
-        mapImpl.panTo(DEFAULT_CENTER);
+        mapImpl.panTo(DEFAULT_CENTRE);
 
         self.notifyAll();
     };
 
     /**
-     * Remove all drawn layers from the map.
+     * Remove all drawn layers from the map. This does not remove markers: see {@link self#clearMarkers}.
      *
      * Will notify all subscribers.
      *
@@ -319,6 +321,22 @@ ALA.Map = function (id, options) {
      */
     self.clearLayers = function () {
         drawnItems.clearLayers();
+
+        self.notifyAll();
+    };
+
+    /**
+     * Remove all markers from the map. This does not remove other layers or shapes: see {@link self#clearLayers}.
+     *
+     * Will notify all subscribers.
+     *
+     * @memberOf ALA.Map
+     * @function clearMarkers
+     */
+    self.clearMarkers = function () {
+        markers.forEach(function (marker) {
+            drawnItems.removeLayer(marker);
+        });
         markers = [];
 
         self.notifyAll();
@@ -381,6 +399,10 @@ ALA.Map = function (id, options) {
      * @param {ILayer} layer The Leaflet Layer to add
      */
     self.addLayer = function (layer) {
+        if (options.singleDraw) {
+            drawnItems.clearLayers();
+        }
+
         addLayer(layer, true);
     };
 
@@ -417,28 +439,54 @@ ALA.Map = function (id, options) {
         }
         var layer = L.tileLayer.smartWms(options.wmsLayerUrl, wmsOptions);
 
-        addLayer(layer, true);
+        if (options.singleDraw) {
+            drawnItems.clearLayers();
+        }
+
+        addLayer(layer, false);
         layer.bringToFront(); // make sure the new layer sits on top of the other tile layers (like the base layer)
 
         return layer;
     };
 
     /**
-     * Zoom and centre the map to fit the bounds of the current layer(s)
+     * Zoom and centre the map to fit the bounds of the current feature(s). If there are no features, then the map will
+     * be set to the default zoom and centre.
      *
      * @memberOf ALA.Map
      * @function fitBounds
      */
     self.fitBounds = function () {
-        var hasGetBounds = true;
+        if (self.countFeatures() > 0) {
+            var hasGetBounds = true;
 
-        mapImpl.eachLayer(function (layer) {
-            hasGetBounds |= _.isUndefined(layer.getBounds);
-        });
+            mapImpl.eachLayer(function (layer) {
+                hasGetBounds |= _.isUndefined(layer.getBounds);
+            });
 
-        if (hasGetBounds) {
-            mapImpl.fitBounds(drawnItems.getBounds(), {maxZoom: MAX_AUTO_ZOOM});
+            if (hasGetBounds) {
+                mapImpl.fitBounds(drawnItems.getBounds(), {maxZoom: MAX_AUTO_ZOOM});
+            } else {
+                // cannot determine the bounds from the layers, set the map centre and zoom level to the defaults
+                mapImpl.setZoom(DEFAULT_ZOOM);
+                mapImpl.panTo(DEFAULT_CENTRE);
+            }
+        } else {
+            mapImpl.setZoom(DEFAULT_ZOOM);
+            mapImpl.panTo(DEFAULT_CENTRE);
         }
+    };
+
+    /**
+     * Invalidates the size of the map to trigger a re-draw, then fits the viewport to the current bounds.
+     *
+     * @memberOf ALA.Map
+     * @function redraw
+     */
+    self.redraw = function() {
+        mapImpl.invalidateSize();
+
+        self.fitBounds();
     };
 
     /**
@@ -502,6 +550,22 @@ ALA.Map = function (id, options) {
         return locations;
     };
 
+    /**
+     * Retrieve a count of all features (shapes, layers, markers, etc) on the map
+     *
+     * @memberOf ALA.Map
+     * @function countFeatures
+     * @return {Integer} count of all features (shapes, layers, markers, etc) on the map
+     */
+    self.countFeatures = function() {
+        var count = 0;
+        drawnItems.eachLayer(function () {
+            count++;
+        });
+
+        return count;
+    };
+
     // ----------------------
     // Private functions
     // ----------------------
@@ -512,6 +576,7 @@ ALA.Map = function (id, options) {
 
         options.drawControl = false;
         mapImpl = L.map(id, options);
+
         mapImpl.addLayer(drawnItems);
 
         addCoordinates();
@@ -523,7 +588,7 @@ ALA.Map = function (id, options) {
 
         if (options.useMyLocation) {
             var title = options.myLocationControlTitle || "Use my location";
-            self.addButton("&lt;span class='fa fa-location-arrow' title='" + title + "'>&lt;/span>", self.markMyLocation, "topleft");
+            self.addButton("&lt;span class='ala-map-my-location fa fa-location-arrow' title='" + title + "'>&lt;/span>", self.markMyLocation, "topleft");
         }
 
         if (options.allowSearchByAddress) {
@@ -531,11 +596,21 @@ ALA.Map = function (id, options) {
         }
 
         if (enableDrawing) {
-            initDrawingControls(options)
+            initDrawingControls(options);
         }
 
         if (options.showReset) {
-            self.addButton("&lt;span class='fa fa-refresh reset-map' title='Reset map'>&lt;/span>", self.resetMap, "bottomleft");
+            self.addButton("&lt;span class='ala-map-reset fa fa-refresh reset-map' title='Reset map'>&lt;/span>", self.resetMap, "bottomleft");
+        }
+
+        // If the map container is not visible, add a listener to trigger a redraw once it becomes visible.
+        // This avoids problems with the map viewport being initialised to an incorrect size because Leaflet could not
+        // determine the size of the container.
+        var container = $("#" + id);
+        if (!container.is(":visible")) {
+            container.onImpression({
+                callback: self.redraw
+            });
         }
     }
 
@@ -597,8 +672,6 @@ ALA.Map = function (id, options) {
 
         mapImpl.on("draw:drawstart", function (event) {
             drawingStarted(event.layerType);
-
-            self.notifyAll();
         });
 
         updateCircleFeaturesToIncludeTypeAndRadius();
@@ -612,12 +685,18 @@ ALA.Map = function (id, options) {
                     drawnItems.removeLayer(marker);
                 });
                 markers = [];
-                if (drawnItems.singleDraw) {
+                if (options.markerOrShapeNotBoth) {
                     drawnItems.clearLayers();
                 }
             }
         } else if (options.singleDraw) {
             drawnItems.clearLayers();
+            if (options.markerOrShapeNotBoth) {
+                markers.forEach(function (marker) {
+                    drawnItems.removeLayer(marker);
+                });
+                markers = [];
+            }
         }
     }
 
@@ -682,10 +761,6 @@ ALA.Map = function (id, options) {
     // Internal method to add a non-Marker layer to the map, to fit the map bounds if configured to do so, and optionally
     // to notify all subscribers that the map has changed.
     function addLayer(layer, notify) {
-        if (options.singleDraw) {
-            drawnItems.clearLayers();
-        }
-
         layer.addTo(drawnItems);
 
         if (options.zoomToObject &amp;&amp; layer.getBounds) {
@@ -873,7 +948,7 @@ ALA.MapUtils = {
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Mon Nov 30 2015 16:54:41 GMT+1100 (AEDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Tue Dec 01 2015 17:09:45 GMT+1100 (AEDT)
 </footer>
 
 <script> prettyPrint(); </script>
