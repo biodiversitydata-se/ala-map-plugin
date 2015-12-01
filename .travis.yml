@@ -24,6 +24,7 @@ before_script:
 - npm install karma
 - npm install karma-jquery
 - npm install karma-jasmine
+- npm install karma-jasmine-jquery
 - npm install karma-coverage
 - npm install karma-phantomjs2-launcher --save-dev
 - npm install karma-chrome-launcher --save-dev
