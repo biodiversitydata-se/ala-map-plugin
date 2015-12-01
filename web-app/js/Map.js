@@ -414,21 +414,43 @@ ALA.Map = function (id, options) {
     };
 
     /**
-     * Zoom and centre the map to fit the bounds of the current layer(s)
+     * Zoom and centre the map to fit the bounds of the current feature(s). If there are no features, then the map will
+     * be set to the default zoom and centre.
      *
      * @memberOf ALA.Map
      * @function fitBounds
      */
     self.fitBounds = function () {
-        var hasGetBounds = true;
+        if (self.countFeatures() > 0) {
+            var hasGetBounds = true;
 
-        mapImpl.eachLayer(function (layer) {
-            hasGetBounds |= _.isUndefined(layer.getBounds);
-        });
+            mapImpl.eachLayer(function (layer) {
+                hasGetBounds |= _.isUndefined(layer.getBounds);
+            });
 
-        if (hasGetBounds) {
-            mapImpl.fitBounds(drawnItems.getBounds(), {maxZoom: MAX_AUTO_ZOOM});
+            if (hasGetBounds) {
+                mapImpl.fitBounds(drawnItems.getBounds(), {maxZoom: MAX_AUTO_ZOOM});
+            } else {
+                // cannot determine the bounds from the layers, set the map centre and zoom level to the defaults
+                mapImpl.setZoom(DEFAULT_ZOOM);
+                mapImpl.panTo(DEFAULT_CENTER);
+            }
+        } else {
+            mapImpl.setZoom(DEFAULT_ZOOM);
+            mapImpl.panTo(DEFAULT_CENTER);
         }
+    };
+
+    /**
+     * Invalidates the size of the map to trigger a re-draw, then fits the viewport to the current bounds.
+     *
+     * @memberOf ALA.Map
+     * @function redraw
+     */
+    self.redraw = function() {
+        mapImpl.invalidateSize();
+
+        self.fitBounds();
     };
 
     /**
@@ -492,6 +514,23 @@ ALA.Map = function (id, options) {
         return locations;
     };
 
+    /**
+     * Retrieve a count of all features (shapes, layers, markers, etc) on the map
+     *
+     * @memberOf ALA.Map
+     * @function countFeatures
+     * @return {Integer} count of all features (shapes, layers, markers, etc) on the map
+     */
+    self.countFeatures = function() {
+        var count = markers.length;
+
+        drawnItems.eachLayer(function () {
+            count++;
+        });
+
+        return count;
+    };
+
     // ----------------------
     // Private functions
     // ----------------------
@@ -526,6 +565,16 @@ ALA.Map = function (id, options) {
 
         if (options.showReset) {
             self.addButton("<span class='fa fa-refresh reset-map' title='Reset map'></span>", self.resetMap, "bottomleft");
+        }
+
+        // If the map container is not visible, add a listener to trigger a redraw once it becomes visible.
+        // This avoids problems with the map viewport being initialised to an incorrect size because Leaflet could not
+        // determine the size of the container.
+        var container = $("#" + id)
+        if (!container.is(":visible")) {
+            container.onImpression({
+                callback: self.redraw
+            });
         }
     }
 
