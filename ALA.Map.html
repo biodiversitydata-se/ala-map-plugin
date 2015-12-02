@@ -292,6 +292,71 @@
 
 
         
+            
+<h4 class="name" id=".DEFAULT_POINT_MARKER_OPTIONS"><span class="type-signature">(static) </span>DEFAULT_POINT_MARKER_OPTIONS<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    Default options for clustered point markers.
+
+See http://leafletjs.com/reference.html#path-options for the options: this object overrides the standard Leaflet
+options with our default values, where they are different.
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line122">line 122</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
     
 
     
@@ -454,7 +519,174 @@ leaflet button. The second parameter will be the leaflet map. I.e.</td>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line475">line 475</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line537">line 537</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".addClusteredPoints"><span class="type-signature">(static) </span>addClusteredPoints<span class="signature">(points, pointOptions)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    Adds a layer of clustered L.circleMarker to the map. Clustered points are treated the same as other layers/shapes:
+i.e. they are NOT considered to be 'markers' like those added with the #addMarker function.
+
+See http://leafletjs.com/reference.html#path-options for the possible options.
+
+Each point object in the points array must have the following structure:
+<ul>
+    <li><pre>lat</pre> - the latitude for the point. Mandatory.</li>
+    <li><pre>lng</pre> - the longitude for the point. Mandatory.</li>
+    <li><pre>popup</pre> - Text or HTML to be used as the popup when the marker is clicked. Optional.</li>
+    <li><pre>options</pre> - options object to override specified options for the individual point. Optional.</li>
+</ul>
+
+Will notify all subscribers.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>points</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Mandatory array of objects with mandatory properties 'lat' and 'lng', and optionally an 'options' object.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>pointOptions</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Optional object containing configuration options to be applied to ALL points.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line361">line 361</a>
     </li></ul></dd>
     
 
@@ -585,7 +817,7 @@ leaflet button. The second parameter will be the leaflet map. I.e.</td>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line464">line 464</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line526">line 526</a>
     </li></ul></dd>
     
 
@@ -718,7 +950,7 @@ Will notify all subscribers.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line364">line 364</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line426">line 426</a>
     </li></ul></dd>
     
 
@@ -800,7 +1032,7 @@ Will notify all subscribers.
             <td class="type">
             
                 
-<span class="param-type">double</span>
+<span class="param-type">Number</span>
 
 
             
@@ -823,7 +1055,7 @@ Will notify all subscribers.
             <td class="type">
             
                 
-<span class="param-type">double</span>
+<span class="param-type">Number</span>
 
 
             
@@ -874,7 +1106,7 @@ Will notify all subscribers.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line329">line 329</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line342">line 342</a>
     </li></ul></dd>
     
 
@@ -1029,7 +1261,7 @@ Triggers events draw:drawstart and draw:created, and will notify all subscribers
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line381">line 381</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line443">line 443</a>
     </li></ul></dd>
     
 
@@ -1135,7 +1367,7 @@ Will notify all subscribers.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line286">line 286</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line298">line 298</a>
     </li></ul></dd>
     
 
@@ -1219,7 +1451,7 @@ Will notify all subscribers.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line300">line 300</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line313">line 313</a>
     </li></ul></dd>
     
 
@@ -1301,7 +1533,7 @@ Will notify all subscribers.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line525">line 525</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line587">line 587</a>
     </li></ul></dd>
     
 
@@ -1406,7 +1638,7 @@ be set to the default zoom and centre.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line424">line 424</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line486">line 486</a>
     </li></ul></dd>
     
 
@@ -1488,7 +1720,7 @@ be set to the default zoom and centre.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line497">line 497</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line559">line 559</a>
     </li></ul></dd>
     
 
@@ -1592,7 +1824,7 @@ be set to the default zoom and centre.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line317">line 317</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line330">line 330</a>
     </li></ul></dd>
     
 
@@ -1700,7 +1932,7 @@ property object (this is still valid GeoJSON).
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line193">line 193</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line205">line 205</a>
     </li></ul></dd>
     
 
@@ -1804,7 +2036,7 @@ property object (this is still valid GeoJSON).
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line246">line 246</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line258">line 258</a>
     </li></ul></dd>
     
 
@@ -1908,7 +2140,7 @@ property object (this is still valid GeoJSON).
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line257">line 257</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line269">line 269</a>
     </li></ul></dd>
     
 
@@ -2012,7 +2244,7 @@ property object (this is still valid GeoJSON).
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line508">line 508</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line570">line 570</a>
     </li></ul></dd>
     
 
@@ -2118,7 +2350,7 @@ Will notify all subscribers.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line348">line 348</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line410">line 410</a>
     </li></ul></dd>
     
 
@@ -2200,7 +2432,7 @@ Will notify all subscribers.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line152">line 152</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line164">line 164</a>
     </li></ul></dd>
     
 
@@ -2282,7 +2514,7 @@ Will notify all subscribers.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line452">line 452</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line514">line 514</a>
     </li></ul></dd>
     
 
@@ -2436,7 +2668,7 @@ Will notify all subscribers.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line164">line 164</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line176">line 176</a>
     </li></ul></dd>
     
 
@@ -2591,7 +2823,7 @@ callback needs to be provided in order to find the listener to remove.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line180">line 180</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line192">line 192</a>
     </li></ul></dd>
     
 
@@ -2676,7 +2908,7 @@ Will notify all subscribers.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line268">line 268</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line280">line 280</a>
     </li></ul></dd>
     
 
@@ -2815,7 +3047,7 @@ Will notify all subscribers.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line208">line 208</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line220">line 220</a>
     </li></ul></dd>
     
 
@@ -2948,7 +3180,7 @@ To listen for specific events, use #registerListener instead.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line128">line 128</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line140">line 140</a>
     </li></ul></dd>
     
 
@@ -3079,7 +3311,7 @@ To listen for specific events, use #registerListener instead.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line141">line 141</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line153">line 153</a>
     </li></ul></dd>
     
 
@@ -3127,7 +3359,7 @@ To listen for specific events, use #registerListener instead.
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Tue Dec 01 2015 17:09:45 GMT+1100 (AEDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Wed Dec 02 2015 11:23:20 GMT+1100 (AEDT)
 </footer>
 
 <script> prettyPrint(); </script>
