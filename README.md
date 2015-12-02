@@ -59,6 +59,7 @@ myMap.subscribe(function() {...})
 * Support for limiting the number of layers/shapes/markers that can added at a time (see the ```singleDraw```, ```singleMarker``` and ```markerOrShapeNotBoth``` options in the API doco)
 * Simple zoom and fit-bounds functions
 * Improved WMS layer support, with built-in functionality to retrieve features for layers
+* Support for clustered markers via https://github.com/Leaflet/Leaflet.markercluster ([demo](http://leaflet.github.io/Leaflet.markercluster/example/marker-clustering-realworld.388.html))
 
 ## API
 

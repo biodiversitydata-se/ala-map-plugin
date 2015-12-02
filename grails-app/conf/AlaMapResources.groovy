@@ -8,6 +8,7 @@ modules = {
         dependsOn "leaflet_coords"
         dependsOn "leaflet_easyButton"
         dependsOn "leaflet_geocoder"
+        dependsOn "leaflet_cluster"
         dependsOn "custom_controls"
         dependsOn "font-awesome"
         resource url: [dir: "js", file: "Map.js", plugin: "grails-map"]
@@ -50,6 +51,13 @@ modules = {
         dependsOn "leaflet"
         resource url: [dir: "vendor/leaflet-control-geocoder-1.3.2", file: "Control.Geocoder.js", plugin: "grails-map"]
         resource url: [dir: "vendor/leaflet-control-geocoder-1.3.2", file: "Control.Geocoder.css", plugin: "grails-map"]
+    }
+
+    leaflet_cluster {
+        dependsOn "leaflet"
+        resource url: [dir: "vendor/Leaflet.markercluster-0.4.0-hotfix.1", file: "leaflet.markercluster.js", plugin: "grails-map"]
+        resource url: [dir: "vendor/Leaflet.markercluster-0.4.0-hotfix.1", file: "MarkerCluster.css", plugin: "grails-map"]
+        resource url: [dir: "vendor/Leaflet.markercluster-0.4.0-hotfix.1", file: "MarkerCluster.Default.css", plugin: "grails-map"]
     }
 
     underscore {

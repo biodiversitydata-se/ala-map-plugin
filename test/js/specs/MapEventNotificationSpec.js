@@ -169,6 +169,19 @@ describe("ALA.Map tests", function () {
         expect(notifyCount).toBe(1);
     });
 
+    it("should notify subscribers once when addClusteredPoints is called", function() {
+        var map = new ALA.Map(ID);
+        var notifyCount = 0;
+
+        map.subscribe(function() {
+            notifyCount++;
+        });
+
+        map.addClusteredPoints([{lat: 1, lng: 1}]);
+
+        expect(notifyCount).toBe(1);
+    });
+
     it("should NOT notify subscribers when fitBounds is called", function() {
         var map = new ALA.Map(ID);
         var notifyCount = 0;

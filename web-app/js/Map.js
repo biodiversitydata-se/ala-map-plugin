@@ -110,6 +110,18 @@ ALA.Map = function (id, options) {
         drawOptions: DEFAULT_DRAW_OPTIONS
     };
 
+    /**
+     * Default options for clustered point markers.
+     *
+     * See http://leafletjs.com/reference.html#path-options for the options: this object overrides the standard Leaflet
+     * options with our default values, where they are different.
+     *
+     * @memberOf ALA.Map
+     * @var
+     */
+    var DEFAULT_POINT_MARKER_OPTIONS = {
+    };
+
     if (!id) {
         console.error("You must define a unique id for your map.")
     }
@@ -293,6 +305,7 @@ ALA.Map = function (id, options) {
      */
     self.clearLayers = function () {
         drawnItems.clearLayers();
+        self.fitBounds();
 
         self.notifyAll();
     };
@@ -333,8 +346,8 @@ ALA.Map = function (id, options) {
      *
      * @memberOf ALA.Map
      * @function addMarker
-     * @param lat {double} Latitude for the marker
-     * @param lng {double} Longitude for the marker
+     * @param lat {Number} Latitude for the marker
+     * @param lng {Number} Longitude for the marker
      * @returns {L.Marker} The L.marker object
      */
     self.addMarker = function (lat, lng) {
@@ -343,6 +356,55 @@ ALA.Map = function (id, options) {
         addMarker(marker, true);
 
         return marker;
+    };
+
+    /**
+     * Adds a layer of clustered L.circleMarker to the map. Clustered points are treated the same as other layers/shapes:
+     * i.e. they are NOT considered to be 'markers' like those added with the {@link #addMarker} function.
+     *
+     * See http://leafletjs.com/reference.html#path-options for the possible options.
+     *
+     * Each point object in the points array must have the following structure:
+     * <ul>
+     *     <li><pre>lat</pre> - the latitude for the point. Mandatory.</li>
+     *     <li><pre>lng</pre> - the longitude for the point. Mandatory.</li>
+     *     <li><pre>popup</pre> - Text or HTML to be used as the popup when the marker is clicked. Optional.</li>
+     *     <li><pre>options</pre> - options object to override specified options for the individual point. Optional.</li>
+     * </ul>
+     *
+     * Will notify all subscribers.
+     *
+     * @memberOf ALA.Map
+     * @function addClusteredPoints
+     * @param points {Array} Mandatory array of objects with mandatory properties 'lat' and 'lng', and optionally an 'options' object.
+     * @param pointOptions {Object} Optional object containing configuration options to be applied to ALL points.
+     */
+    self.addClusteredPoints = function(points, pointOptions) {
+        var groupOptions = {
+            chunkedLoading: true
+        };
+        var cluster = L.markerClusterGroup(groupOptions);
+
+        _.defaults(pointOptions, DEFAULT_POINT_MARKER_OPTIONS);
+
+        var layers = [];
+        points.forEach(function(point) {
+            var options = _.clone(pointOptions);
+            if (point.options) {
+                _.defaults(options, pointOptions);
+            }
+
+            var layer = L.circleMarker(new L.LatLng(point.lat, point.lng), options);
+            if (point.popup) {
+                layer.bindPopup(point.popup);
+            }
+
+            layers.push(layer);
+        });
+
+        cluster.addLayers(layers);
+
+        addLayer(cluster, true);
     };
 
     /**
@@ -737,6 +799,7 @@ ALA.Map = function (id, options) {
 
         if (options.zoomToObject && layer.getBounds) {
             mapImpl.fitBounds(drawnItems.getBounds(), {maxZoom: MAX_AUTO_ZOOM});
+            mapImpl.invalidateSize();
         }
 
         if (notify) {
