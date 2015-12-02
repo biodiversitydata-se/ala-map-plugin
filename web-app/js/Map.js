@@ -419,7 +419,7 @@ ALA.Map = function (id, options) {
         mapImpl.locate({setView: true});
         mapImpl.on("locationfound", function (locationEvent) {
             self.addMarker(locationEvent.latlng.lat, locationEvent.latlng.lng);
-            mapImpl.off("locationfound", this);
+            mapImpl.off("locationfound", arguments.callee);
         });
     };
 
