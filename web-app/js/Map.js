@@ -346,14 +346,19 @@ ALA.Map = function (id, options) {
      *
      * @memberOf ALA.Map
      * @function addMarker
-     * @param lat {Number} Latitude for the marker
-     * @param lng {Number} Longitude for the marker
+     * @param lat {Number} Latitude for the marker. Mandatory.
+     * @param lng {Number} Longitude for the marker. Mandatory.
+     * @param popup {String} Text or HTML to display in a popup when the marker is clicked. Optional.
      * @returns {L.Marker} The L.marker object
      */
-    self.addMarker = function (lat, lng) {
+    self.addMarker = function (lat, lng, popup) {
         var marker = L.marker([lat, lng], {draggable: options.draggableMarkers});
 
         addMarker(marker, true);
+
+        if (popup) {
+            marker.bindPopup(popup);
+        }
 
         return marker;
     };
@@ -418,7 +423,7 @@ ALA.Map = function (id, options) {
     self.markMyLocation = function () {
         mapImpl.locate({setView: true});
         mapImpl.on("locationfound", function (locationEvent) {
-            self.addMarker(locationEvent.latlng.lat, locationEvent.latlng.lng);
+            self.addMarker(locationEvent.latlng.lat, locationEvent.latlng.lng, null);
             mapImpl.off("locationfound", arguments.callee);
         });
     };
@@ -788,7 +793,7 @@ ALA.Map = function (id, options) {
         var geocodeControl = L.Control.geocoder({position: "topleft"}).addTo(mapImpl);
         $(".leaflet-control-geocoder-icon").attr("title", "Search for an address or location");
         geocodeControl.markGeocode = function (result) {
-            self.addMarker(result.center.lat, result.center.lng);
+            self.addMarker(result.center.lat, result.center.lng, null);
         }
     }
 
@@ -966,5 +971,4 @@ ALA.MapUtils = {
 
         return coordsArray;
     }
-
 };
