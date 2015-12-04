@@ -21,6 +21,7 @@ modules = {
         resource url: [dir: "js/controls", file: "Checkbox.js", plugin: "grails-map"]
         resource url: [dir: "js/controls", file: "Slider.js", plugin: "grails-map"]
         resource url: [dir: "js/controls", file: "TwoStepSelector.js", plugin: "grails-map"]
+        resource url: [dir: "js/controls", file: "Radio.js", plugin: "grails-map"]
     }
 
     leaflet {
