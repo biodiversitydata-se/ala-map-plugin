@@ -15,6 +15,7 @@ L.TileLayer.SmartWMS = L.TileLayer.WMS.extend({
     _wmsFeatureUrl: null,
     _callback: null,
     _pid: null,
+    _properties: {},
 
     initialize: function(url, options) {
         this._wmsFeatureUrl = options.wmsFeatureUrl;
@@ -36,6 +37,7 @@ L.TileLayer.SmartWMS = L.TileLayer.WMS.extend({
             if (data) {
                 self._lngLatBounds = ALA.MapUtils.bboxToPointArray(data.bbox, false);
                 self._latLngBounds = ALA.MapUtils.bboxToPointArray(data.bbox, true);
+                self._properties = data;
 
                 self.getBounds = function () {
                     return new L.LatLngBounds(self._latLngBounds);
@@ -43,9 +45,7 @@ L.TileLayer.SmartWMS = L.TileLayer.WMS.extend({
                 self.toGeoJSON = function () {
                     return {
                         type: "Feature",
-                        properties: {
-                            pid: self._pid
-                        },
+                        properties: self._properties,
                         geometry: {
                             type: "Polygon",
                             coordinates: [self._lngLatBounds]
