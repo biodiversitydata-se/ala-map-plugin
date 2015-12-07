@@ -1,5 +1,7 @@
 # ALA Map Plugin
 
+[Status]
+
 ## Status
 [![Build Status](https://travis-ci.org/AtlasOfLivingAustralia/ala-map-plugin.svg?branch=master)](https://travis-ci.org/AtlasOfLivingAustralia/ala-map-plugin)
 
@@ -55,6 +57,7 @@ myMap.subscribe(function() {...})
 * Custom controls:
   * Two-step selection control (two side-be-side select boxes to allow selection of, for example, known regions by category)
   * Checkbox control
+  * Radio button control
   * Slider control
 * Support for limiting the number of layers/shapes/markers that can added at a time (see the ```singleDraw```, ```singleMarker``` and ```markerOrShapeNotBoth``` options in the API doco)
 * Simple zoom and fit-bounds functions
@@ -195,7 +198,8 @@ For example, the ACT layer is represented as the following:
     {
       "type": "Feature",
       "properties": {
-        "pid": "3742602"
+        "pid": "3742602",
+        // plus other feature properties like area_km and layer details
       },
       "geometry": {
         "type": "Polygon",
@@ -234,3 +238,14 @@ For example, the ACT layer is represented as the following:
 The Geocoding widget is provided by https://github.com/perliedman/leaflet-control-geocoder, and is using the defaults from that library.
 
 The default geocoding provider is http://nominatim.openstreetmap.org/.
+
+## Resources
+
+This plugin makes use of:
+
+* The GeoJSON standard: [http://geojson.org/](http://geojson.org/)
+* The Underscore JS library: [http://underscorejs.org/](http://underscorejs.org/)
+* Turf, a geospatial library from Mapbox: [http://turfjs.org/static/docs/](http://turfjs.org/static/docs/)
+* Leaflet.Draw, a Leaflet plugin which provides the drawing controls we use: [https://github.com/Leaflet/Leaflet.draw](https://github.com/Leaflet/Leaflet.draw)
+* Leaflet.markercluster, a Leaflet plugin which provides clusering support for markers: [https://github.com/Leaflet/Leaflet.markercluster](https://github.com/Leaflet/Leaflet.markercluster)
+* ...plus other, more specific, plugins

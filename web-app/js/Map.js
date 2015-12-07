@@ -119,8 +119,7 @@ ALA.Map = function (id, options) {
      * @memberOf ALA.Map
      * @var
      */
-    var DEFAULT_POINT_MARKER_OPTIONS = {
-    };
+    var DEFAULT_POINT_MARKER_OPTIONS = {};
 
     if (!id) {
         console.error("You must define a unique id for your map.")
@@ -311,6 +310,20 @@ ALA.Map = function (id, options) {
     };
 
     /**
+     * Removes the specified layer from the map.
+     *
+     * @memberOf ALA.Map
+     * @function removeLayer
+     * @param layer {Object} the Leaflet Layer object to remove
+     */
+    self.removeLayer = function (layer) {
+        drawnItems.removeLayer(layer);
+        self.fitBounds();
+
+        self.notifyAll();
+    };
+
+    /**
      * Remove all markers from the map. This does not remove other layers or shapes: see {@link self#clearLayers}.
      *
      * Will notify all subscribers.
@@ -334,9 +347,9 @@ ALA.Map = function (id, options) {
      * @function getCentre
      * @returns {Object} lat/lng object
      */
-    self.getCentre = function() {
+    self.getCentre = function () {
         var centre = mapImpl.getCenter();
-        return { lat: centre.lat, lng: centre.lng };
+        return {lat: centre.lat, lng: centre.lng};
     };
 
     /**
@@ -349,10 +362,16 @@ ALA.Map = function (id, options) {
      * @param lat {Number} Latitude for the marker. Mandatory.
      * @param lng {Number} Longitude for the marker. Mandatory.
      * @param popup {String} Text or HTML to display in a popup when the marker is clicked. Optional.
+     * @param markerOptions {Object} Object containing configuration items to override the defaults. Optional,
      * @returns {L.Marker} The L.marker object
      */
-    self.addMarker = function (lat, lng, popup) {
-        var marker = L.marker([lat, lng], {draggable: options.draggableMarkers});
+    self.addMarker = function (lat, lng, popup, markerOptions) {
+        if (_.isUndefined(markerOptions)) {
+            markerOptions = {};
+        }
+        markerOptions.draggable = options.draggableMarkers;
+
+        var marker = L.marker([lat, lng], markerOptions);
 
         addMarker(marker, true);
 
@@ -384,7 +403,7 @@ ALA.Map = function (id, options) {
      * @param points {Array} Mandatory array of objects with mandatory properties 'lat' and 'lng', and optionally an 'options' object.
      * @param pointOptions {Object} Optional object containing configuration options to be applied to ALL points.
      */
-    self.addClusteredPoints = function(points, pointOptions) {
+    self.addClusteredPoints = function (points, pointOptions) {
         var groupOptions = {
             chunkedLoading: true
         };
@@ -393,7 +412,7 @@ ALA.Map = function (id, options) {
         _.defaults(pointOptions, DEFAULT_POINT_MARKER_OPTIONS);
 
         var layers = [];
-        points.forEach(function(point) {
+        points.forEach(function (point) {
             var options = _.clone(pointOptions);
             if (point.options) {
                 _.defaults(options, pointOptions);
@@ -441,6 +460,9 @@ ALA.Map = function (id, options) {
         if (options.singleDraw) {
             drawnItems.clearLayers();
         }
+        if (options.markerOrShapeNotBoth) {
+            self.clearMarkers();
+        }
 
         addLayer(layer, true);
     };
@@ -481,11 +503,39 @@ ALA.Map = function (id, options) {
         if (options.singleDraw) {
             drawnItems.clearLayers();
         }
+        if (options.markerOrShapeNotBoth) {
+            self.clearMarkers();
+        }
 
         addLayer(layer, false);
         layer.bringToFront(); // make sure the new layer sits on top of the other tile layers (like the base layer)
 
         return layer;
+    };
+
+    /**
+     * Retrieve the current bounds for the map, if possible.
+     *
+     * @memberOf ALA.Map
+     * @function getBounds
+     * @returns {Object} Leaflet Bounds object, or null if the bounds cannot be determined
+     */
+    self.getBounds = function () {
+        var bounds = null;
+
+        if (self.countFeatures() > 0) {
+            var hasGetBounds = true;
+
+            drawnItems.eachLayer(function (layer) {
+                hasGetBounds |= _.isUndefined(layer.getBounds);
+            });
+
+            if (hasGetBounds) {
+                bounds = drawnItems.getBounds();
+            }
+        }
+
+        return bounds;
     };
 
     /**
@@ -499,7 +549,7 @@ ALA.Map = function (id, options) {
         if (self.countFeatures() > 0) {
             var hasGetBounds = true;
 
-            mapImpl.eachLayer(function (layer) {
+            drawnItems.eachLayer(function (layer) {
                 hasGetBounds |= _.isUndefined(layer.getBounds);
             });
 
@@ -522,7 +572,7 @@ ALA.Map = function (id, options) {
      * @memberOf ALA.Map
      * @function redraw
      */
-    self.redraw = function() {
+    self.redraw = function () {
         mapImpl.invalidateSize();
 
         self.fitBounds();
@@ -568,8 +618,8 @@ ALA.Map = function (id, options) {
      * @function getAllMarkers
      * @returns {Array} of all L.Markers on the map
      */
-    self.getAllMarkers = function() {
-        return markers;
+    self.getAllMarkers = function () {
+        return _.clone(markers);
     };
 
     /**
@@ -579,7 +629,7 @@ ALA.Map = function (id, options) {
      * @function getMarkerLocations
      * @returns {Array} [lat: x, lng: y] of all markers
      */
-    self.getMarkerLocations = function() {
+    self.getMarkerLocations = function () {
         var locations = [];
 
         markers.forEach(function (marker) {
@@ -596,7 +646,7 @@ ALA.Map = function (id, options) {
      * @function countFeatures
      * @return {Integer} count of all features (shapes, layers, markers, etc) on the map
      */
-    self.countFeatures = function() {
+    self.countFeatures = function () {
         var count = 0;
         drawnItems.eachLayer(function () {
             count++;
@@ -695,7 +745,7 @@ ALA.Map = function (id, options) {
                 if (options.singleMarker) {
                     markers = [];
                 }
-                markers.push(event.layer);
+
                 if (options.draggableMarkers) {
                     event.layer.options.draggable = true;
                     event.layer.on("dragend", self.notifyAll);
@@ -767,6 +817,7 @@ ALA.Map = function (id, options) {
             if (options.draggableMarkers) {
                 marker.on("dragend", self.notifyAll);
             }
+            markers.push(marker);
             return marker;
         }
     }
@@ -970,5 +1021,77 @@ ALA.MapUtils = {
         });
 
         return coordsArray;
+    },
+
+    /**
+     * Utility function to create a new marker icon with sensible defaults
+     *
+     * @param iconUrl {String} The URL to the image for the marker. Mandatory.
+     * @param iconOptions {Object} Object containing leaflet Icon configuration options to override the defaults. Optional.
+     * @returns {Object} Leaflet Icon object
+     */
+    createIcon: function (iconUrl, iconOptions) {
+        if (_.isUndefined(iconOptions)) {
+            iconOptions = {};
+        }
+
+        var defaultOptions = {
+            iconUrl: iconUrl,
+            iconRetinaUrl: iconUrl,
+            iconSize: [25, 40],
+            popupAnchor: [0, -25]
+        };
+
+        _.defaults(iconOptions, defaultOptions);
+
+        return L.icon(iconOptions);
+    },
+
+    /**
+     * Convenience utility for creating a new marker with optional configuration parameters and popup.
+     *
+     * @param lat {Number} Latitude of the marker. Mandatory.
+     * @param lng {Number} Longitude of the marker. Mandatory.
+     * @param popup {String} Text or HTML to display in a popup when the marker is clicked. Optional.
+     * @param markerOptions {Object} Standard Leaflet L.Marker configuration options. Optional.
+     * @return {Object} Leaflet L.Marker object
+     */
+    createMarker: function (lat, lng, popup, markerOptions) {
+        var marker = L.marker([lat, lng], markerOptions);
+
+        if (popup) {
+            marker.bindPopup(popup);
+        }
+
+        return marker;
+    },
+
+    /**
+     * Calculate the area of a given GeoJSON object in square kilometers. The GeoJSON object can be a FeatureCollection or a Feature.
+     *
+     * For circle geometries, the Properties object must contain an attribute called Radius, with the radius in meters.
+     *
+     * @param geoJson {Object} GeoJSON object to calculate the area for
+     * @returns {number} The calculated area in square kilometers
+     */
+    calculateAreaKmSq: function (geoJson) {
+        // uses Turf from MapBox. The turf.area function returns the area in square meters.
+        var areaSqKm = turf.area(geoJson) / 1000000;
+
+        // Turf (and GeoJSON) doesn't support circles, so check if there are any and add them to the total
+        // This will work as long as the radius has been included in the properties object of the feature
+        if (geoJson.type == "FeatureCollection") {
+            geoJson.features.forEach(function(feature) {
+                if (feature.properties.radius) {
+                    areaSqKm += ((3.14 * feature.properties.radius * feature.properties.radius) / 1000) / 1000;
+                }
+            });
+        } else if (geoJson.type == "Feature") {
+            if (geoJson.properties.radius) {
+                areaSqKm += ((3.14 * geoJson.properties.radius * geoJson.properties.radius) / 1000) / 1000;
+            }
+        }
+
+        return areaSqKm;
     }
 };
