@@ -332,10 +332,7 @@ ALA.Map = function (id, options) {
      * @function clearMarkers
      */
     self.clearMarkers = function () {
-        markers.forEach(function (marker) {
-            drawnItems.removeLayer(marker);
-        });
-        markers = [];
+        clearMarkers();
 
         self.notifyAll();
     };
@@ -461,7 +458,7 @@ ALA.Map = function (id, options) {
             drawnItems.clearLayers();
         }
         if (options.markerOrShapeNotBoth) {
-            self.clearMarkers();
+            clearMarkers();
         }
 
         addLayer(layer, true);
@@ -504,7 +501,7 @@ ALA.Map = function (id, options) {
             drawnItems.clearLayers();
         }
         if (options.markerOrShapeNotBoth) {
-            self.clearMarkers();
+            clearMarkers();
         }
 
         addLayer(layer, false);
@@ -883,6 +880,13 @@ ALA.Map = function (id, options) {
         if (notify) {
             self.notifyAll();
         }
+    }
+
+    function clearMarkers() {
+        markers.forEach(function (marker) {
+            drawnItems.removeLayer(marker);
+        });
+        markers = [];
     }
 
     initialiseMap();
