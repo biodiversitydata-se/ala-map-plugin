@@ -79,6 +79,16 @@ ALA.Map = function (id, options) {
         edit: true
     };
 
+    var HIDDEN_LAYER = {
+        weight: 0,
+        fillOpacity: 0
+    };
+
+    var VISIBLE_LAYER = {
+        weight: 1,
+        fillOpacity: 0.5
+    };
+
     /**
      * Default Map options
      *
@@ -111,6 +121,25 @@ ALA.Map = function (id, options) {
     };
 
     /**
+     * Supported Layer options.
+     *
+     * The following configuration options are available:
+     * <ul>
+     *     <li><pre>markerWithMouseOver</pre> - show a marker at the center of the layer, and hide the layer outline until the mouse is moved over the marker. Default: false</li>
+     *     <li><pre>markerLocation</pre> - used with 'markerWithMouseOver' to specify the position of the marker - if not provided, the center of the layer's bounds will be used. Only works with a single feature.</li>
+     *     <li><pre>popup</pre> - text or HTML to display when the layer (or the placeholder marker if markerWithMouseOver = true) is clicked.</li>
+     * </ul>
+     *
+     * @memberOf ALA.Map
+     * @var
+     */
+    var LAYER_OPTIONS = {
+        markerWithMouseOver: false,
+        markerLocation: undefined,
+        popup: undefined
+    };
+
+    /**
      * Default options for clustered point markers.
      *
      * See http://leafletjs.com/reference.html#path-options for the options: this object overrides the standard Leaflet
@@ -139,7 +168,7 @@ ALA.Map = function (id, options) {
     /**
      * Subscribe to all update events on the map.
      *
-     * To listen for specific events, use {@link #registerListener} instead.
+     * To listen for specific events, use {@link ALA.Map#registerListener} instead.
      *
      * @memberOf ALA.Map
      * @function subscribe
@@ -225,13 +254,16 @@ ALA.Map = function (id, options) {
      * If the properties object of a feature includes a 'pid', then a new WMS layer will be added to the map instead of
      * a polygon layer.
      *
+     * See {@link LAYER_OPTIONS} for details of supported options.
+     *
      * Will notify all subscribers.
      *
      * @memberOf ALA.Map
      * @function setGeoJSON
      * @param geoJSON {GeoJSON} Standard GeoJSON metadata for map features. This can be a JSON string, or a GeoJSON object.
+     * @param layerOptions {Object} Configuration options for the layer. See {@link LAYER_OPTIONS} for details of supported options. Optional.
      */
-    self.setGeoJSON = function (geoJSON) {
+    self.setGeoJSON = function (geoJSON, layerOptions) {
         if (typeof geoJSON === 'string') {
             geoJSON = JSON.parse(geoJSON);
         }
@@ -240,16 +272,22 @@ ALA.Map = function (id, options) {
             pointToLayer: pointToLayerCircleSupport,
             onEachFeature: function (feature, layer) {
                 if (feature.properties.pid) {
-                    self.addWmsLayer(feature.properties.pid);
-                } else {
-                    drawnItems.addLayer(layer);
-
-                    if (options.zoomToObject) {
-                        self.fitBounds();
-                    }
+                    layer = createWmsLayer(feature.properties.pid);
                 }
+
+                drawnItems.addLayer(layer);
+                if (layer.bringToFront) {
+                    layer.bringToFront();
+                }
+
+                applyLayerOptions(layer, layerOptions);
             }
         });
+
+
+        if (options.zoomToObject) {
+            self.fitBounds();
+        }
 
         self.notifyAll();
     };
@@ -452,8 +490,9 @@ ALA.Map = function (id, options) {
      * @memberOf ALA.Map
      * @function addLayer
      * @param {ILayer} layer The Leaflet Layer to add
+     * @param layerOptions {Object} Configuration options for the layer. See {@link LAYER_OPTIONS} for details of supported options. Optional.
      */
-    self.addLayer = function (layer) {
+    self.addLayer = function (layer, layerOptions) {
         if (options.singleDraw) {
             drawnItems.clearLayers();
         }
@@ -462,6 +501,8 @@ ALA.Map = function (id, options) {
         }
 
         addLayer(layer, true);
+
+        applyLayerOptions(layer, layerOptions);
     };
 
     /**
@@ -472,30 +513,11 @@ ALA.Map = function (id, options) {
      * @memberOf ALA.Map
      * @function addWmsLayer
      * @param pid {String} the PID of the region to be displayed in the WMS layer
+     * @param layerOptions {Object} Configuration options for the layer. See {@link LAYER_OPTIONS} for details of supported options. Optional.
      * @returns {L.TileLayer.SmartWMS} the L.TileLayer.WMS object
      */
-    self.addWmsLayer = function (pid) {
-        var wmsOptions = {
-            tiled: true,
-            format: 'image/png',
-            opacity: 0.5,
-            transparent: true,
-            layers: "ALA:Objects",
-            version: "1.1.0",
-            srs: "EPSG:900913",
-            pid: pid,
-            viewparams: "s:" + pid,
-            wmsFeatureUrl: options.wmsFeatureUrl + pid,
-            callback: function () {
-                self.fitBounds();
-                self.notifyAll();
-            }
-        };
-
-        if (_.isUndefined(options.wmsLayerUrl)) {
-            console.error("You must specify the wmsLayerUrl and wmsFeatureUrl options for this map.")
-        }
-        var layer = L.tileLayer.smartWms(options.wmsLayerUrl, wmsOptions);
+    self.addWmsLayer = function (pid, layerOptions) {
+        var layer = createWmsLayer(pid);
 
         if (options.singleDraw) {
             drawnItems.clearLayers();
@@ -506,6 +528,8 @@ ALA.Map = function (id, options) {
 
         addLayer(layer, false);
         layer.bringToFront(); // make sure the new layer sits on top of the other tile layers (like the base layer)
+
+        applyLayerOptions(layer, layerOptions);
 
         return layer;
     };
@@ -879,6 +903,91 @@ ALA.Map = function (id, options) {
 
         if (notify) {
             self.notifyAll();
+        }
+    }
+
+    // Internal function to create a new WMS layer, but not to add it to the map, or trigger any notifications
+    function createWmsLayer(pid) {
+        var wmsOptions = {
+            tiled: true,
+            format: 'image/png',
+            opacity: 0.5,
+            transparent: true,
+            layers: "ALA:Objects",
+            version: "1.1.0",
+            srs: "EPSG:900913",
+            pid: pid,
+            viewparams: "s:" + pid,
+            wmsFeatureUrl: options.wmsFeatureUrl + pid,
+            callback: function () {
+                if (options.zoomToObject) {
+                    self.fitBounds();
+                }
+                self.notifyAll();
+            }
+        };
+
+        if (_.isUndefined(options.wmsLayerUrl)) {
+            console.error("You must specify the wmsLayerUrl and wmsFeatureUrl options for this map.")
+        }
+
+        return L.tileLayer.smartWms(options.wmsLayerUrl, wmsOptions);
+    }
+
+    // Internal function to apply layer-specific options to the provided layer. Handles all the logic to determine if
+    // particular options can be applied to different layer types
+    function applyLayerOptions(layer, layerOptions) {
+        if (_.isUndefined(layerOptions)) {
+            layerOptions = {};
+        }
+        _.defaults(layerOptions, LAYER_OPTIONS);
+
+        if (layer.bindPopup && layerOptions.popup && (!layerOptions.markerWithMouseOver || !layer.setStyle)) {
+            layer.bindPopup(layerOptions.popup);
+        }
+
+        if (layerOptions.markerWithMouseOver) {
+            hideLayer(layer);
+
+            var centre = layerOptions.markerLocation ? layerOptions.markerLocation : layer.getBounds().getCenter();
+            var placeholder = L.marker(centre);
+            placeholder.on("mouseover", function () {
+                showLayer(layer);
+            });
+            placeholder.on("mouseout", function () {
+                hideLayer(layer);
+            });
+
+            if (layerOptions.popup) {
+                placeholder.bindPopup(layerOptions.popup);
+            }
+            // this is not considered to be a 'marker' as with those added via addMarker, so don't add it to
+            // the 'markers' list.
+            drawnItems.addLayer(placeholder);
+        }
+    }
+
+    function hideLayer(layer) {
+        if (layer.setStyle) {
+            layer.setStyle(HIDDEN_LAYER)
+        } else if (layer.setOpacity) {
+            layer.setOpacity(0);
+        } else if (layer.options) {
+            layer.options.opacity = 0;
+        }
+    }
+
+    function showLayer(layer) {
+        if (layer.setStyle) {
+            layer.setStyle(VISIBLE_LAYER)
+        } else if (layer.setOpacity) {
+            layer.setOpacity(0.5);
+        } else if (layer.options) {
+            layer.options.opacity = 0.5;
+        }
+
+        if (layer.bringToFront) {
+            layer.bringToFront();
         }
     }
 
