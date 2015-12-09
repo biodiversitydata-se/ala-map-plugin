@@ -439,6 +439,8 @@ ALA.Map = function (id, options) {
      * @param pointOptions {Object} Optional object containing configuration options to be applied to ALL points.
      */
     self.addClusteredPoints = function (points, pointOptions) {
+        startLoading();
+
         var groupOptions = {
             chunkedLoading: true
         };
@@ -475,10 +477,13 @@ ALA.Map = function (id, options) {
      * @function markMyLocation
      */
     self.markMyLocation = function () {
+        startLoading();
+
         mapImpl.locate({setView: true});
         mapImpl.on("locationfound", function (locationEvent) {
             self.addMarker(locationEvent.latlng.lat, locationEvent.latlng.lng, null);
             mapImpl.off("locationfound", arguments.callee);
+            finishLoading();
         });
     };
 
@@ -696,6 +701,8 @@ ALA.Map = function (id, options) {
         mapImpl.addLayer(options.baseLayer);
         L.control.layers(options.otherLayers).addTo(mapImpl);
 
+        addLoadingControl();
+
         if (options.useMyLocation) {
             var title = options.myLocationControlTitle || "Use my location";
             self.addButton("<span class='ala-map-my-location fa fa-location-arrow' title='" + title + "'></span>", self.markMyLocation, "topleft");
@@ -734,7 +741,7 @@ ALA.Map = function (id, options) {
             maxZoom: 21
         });
 
-        if (_.isEmpty(options.otherLayers))
+        if (_.isEmpty(options.otherLayers)) {
             options.otherLayers = {
                 Minimal: minimalLayer,
                 WorldImagery: L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
@@ -742,6 +749,8 @@ ALA.Map = function (id, options) {
                     maxZoom: 17
                 })
             };
+        }
+
         if (_.isUndefined(options.baseLayer)) {
             options.baseLayer = minimalLayer;
         }
@@ -784,7 +793,34 @@ ALA.Map = function (id, options) {
             drawingStarted(event.layerType);
         });
 
+        registerSpinnerEvents();
+
         updateCircleFeaturesToIncludeTypeAndRadius();
+    }
+
+    function registerSpinnerEvents() {
+        var loadingEvents = ["movestart", "dragstart", "zoomstart"];
+
+        loadingEvents.forEach(function (eventName) {
+            mapImpl.on(eventName, function() {
+                startLoading();
+            })
+        });
+
+        var loadingFinishedEvents = ["moveend", "dragend", "zoomend"];
+        loadingFinishedEvents.forEach(function (eventName) {
+            mapImpl.on(eventName, function() {
+                finishLoading();
+            })
+        });
+    }
+
+    function startLoading() {
+        mapImpl.fire("dataloading");
+    }
+
+    function finishLoading() {
+        mapImpl.fire("dataload");
     }
 
     // Determines if existing items need to be removed before adding a new item
@@ -853,6 +889,15 @@ ALA.Map = function (id, options) {
         }).addTo(mapImpl);
     }
 
+    // Adds a loading spinner to the top right of the map
+    function addLoadingControl() {
+        var loadingControl = L.Control.loading({
+            separate: true,
+            position: "topright"
+        });
+        mapImpl.addControl(loadingControl);
+    }
+
     // The container div is expected to have an attribute 'data-leaflet-img' which contains the path to the Leaflet images.
     // The path is the absolute URL, minus the host/port.
     function getLeafletImageLocation() {
@@ -872,6 +917,8 @@ ALA.Map = function (id, options) {
     // Internal method to add a non-Marker layer to the map, to fit the map bounds if configured to do so, and optionally
     // to notify all subscribers that the map has changed.
     function addLayer(layer, notify) {
+        startLoading();
+
         layer.addTo(drawnItems);
 
         if (options.zoomToObject && layer.getBounds) {
@@ -882,11 +929,15 @@ ALA.Map = function (id, options) {
         if (notify) {
             self.notifyAll();
         }
+
+        finishLoading();
     }
 
     // Internal method to add a Marker to the map, to fit the map bounds if configured to do so, and optionally to notify
     // all subscribers that the map has changed.
     function addMarker(marker, notify) {
+        startLoading();
+
         drawingStarted(ALA.MapConstants.LAYER_TYPE.MARKER);
 
         if (options.draggableMarkers) {
@@ -904,6 +955,8 @@ ALA.Map = function (id, options) {
         if (notify) {
             self.notifyAll();
         }
+
+        finishLoading();
     }
 
     // Internal function to create a new WMS layer, but not to add it to the map, or trigger any notifications

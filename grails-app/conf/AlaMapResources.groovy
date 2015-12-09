@@ -9,6 +9,7 @@ modules = {
         dependsOn "leaflet_easyButton"
         dependsOn "leaflet_geocoder"
         dependsOn "leaflet_cluster"
+        dependsOn "leaflet_loading"
         dependsOn "turf"
         dependsOn "custom_controls"
         dependsOn "font-awesome"
@@ -60,6 +61,12 @@ modules = {
         resource url: [dir: "vendor/Leaflet.markercluster-0.4.0-hotfix.1", file: "leaflet.markercluster.js", plugin: "ala-map"]
         resource url: [dir: "vendor/Leaflet.markercluster-0.4.0-hotfix.1", file: "MarkerCluster.css", plugin: "ala-map"]
         resource url: [dir: "vendor/Leaflet.markercluster-0.4.0-hotfix.1", file: "MarkerCluster.Default.css", plugin: "ala-map"]
+    }
+
+    leaflet_loading {
+        dependsOn "leaflet"
+        resource url: [dir: "vendor/Leaflet.loading-0.1.16", file: "Control.Loading.js", plugin: "ala-map"]
+        resource url: [dir: "vendor/Leaflet.loading-0.1.16", file: "Control.Loading.css", plugin: "ala-map"]
     }
 
     turf {
