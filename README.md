@@ -18,6 +18,13 @@ So we can support server-side code like looking up regions from the ALA Layers s
 The JS files could be extracted into a standalone, generic mapping library if so desired. In fact, this would be a useful
 thing to do at some point.
 
+## API
+
+### [Click here for the full API documentation](http://atlasoflivingaustralia.github.io/ala-map-plugin/api/ALA.Map.html)
+
+## Demo
+
+### [Click here for some examples](http://atlasoflivingaustralia.github.io/ala-map-plugin/examples.html)
 
 ## Usage instructions
 
@@ -61,10 +68,6 @@ myMap.subscribe(function() {...})
 * Simple zoom and fit-bounds functions
 * Improved WMS layer support, with built-in functionality to retrieve features for layers
 * Support for clustered markers via https://github.com/Leaflet/Leaflet.markercluster ([demo](http://leaflet.github.io/Leaflet.markercluster/example/marker-clustering-realworld.388.html))
-
-## API
-
-### [Click here for the full API documentation](http://atlasoflivingaustralia.github.io/ala-map-plugin/ALA.Map.html)
 
 ### Updating the doco
 This doco is built using [JSDoc3](http://usejsdoc.org/) and stored on the gh-pages branch of this repository. The syntax for JSDoc is a bit quirky: basically, make sure you include ```@memberOf [parent]``` in the comments for nested objects/functions, and ```@function``` for functions or ```@var``` for variables.
