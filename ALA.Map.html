@@ -275,7 +275,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line88">line 88</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line98">line 98</a>
     </li></ul></dd>
     
 
@@ -340,7 +340,76 @@ options with our default values, where they are different.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line122">line 122</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line151">line 151</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id=".LAYER_OPTIONS"><span class="type-signature">(static) </span>LAYER_OPTIONS<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    Supported Layer options.
+
+The following configuration options are available:
+<ul>
+    <li><pre>markerWithMouseOver</pre> - show a marker at the center of the layer, and hide the layer outline until the mouse is moved over the marker. Default: false</li>
+    <li><pre>markerLocation</pre> - used with 'markerWithMouseOver' to specify the position of the marker - if not provided, the center of the layer's bounds will be used. Only works with a single feature.</li>
+    <li><pre>popup</pre> - text or HTML to display when the layer (or the placeholder marker if markerWithMouseOver = true) is clicked.</li>
+</ul>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line136">line 136</a>
     </li></ul></dd>
     
 
@@ -519,7 +588,7 @@ leaflet button. The second parameter will be the leaflet map. I.e.</td>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line592">line 592</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line618">line 618</a>
     </li></ul></dd>
     
 
@@ -686,7 +755,7 @@ Will notify all subscribers.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line385">line 385</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line420">line 420</a>
     </li></ul></dd>
     
 
@@ -817,7 +886,7 @@ Will notify all subscribers.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line581">line 581</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line607">line 607</a>
     </li></ul></dd>
     
 
@@ -848,7 +917,7 @@ Will notify all subscribers.
 
     
 
-    <h4 class="name" id=".addLayer"><span class="type-signature">(static) </span>addLayer<span class="signature">(layer)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id=".addLayer"><span class="type-signature">(static) </span>addLayer<span class="signature">(layer, layerOptions)</span><span class="type-signature"></span></h4>
 
     
 
@@ -913,6 +982,29 @@ Will notify all subscribers.
         </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>layerOptions</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Configuration options for the layer. See LAYER_OPTIONS for details of supported options. Optional.</td>
+        </tr>
+
+    
     </tbody>
 </table>
 
@@ -950,7 +1042,7 @@ Will notify all subscribers.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line450">line 450</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line490">line 490</a>
     </li></ul></dd>
     
 
@@ -1152,7 +1244,7 @@ Will notify all subscribers.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line355">line 355</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line390">line 390</a>
     </li></ul></dd>
     
 
@@ -1205,7 +1297,7 @@ Will notify all subscribers.
 
     
 
-    <h4 class="name" id=".addWmsLayer"><span class="type-signature">(static) </span>addWmsLayer<span class="signature">(pid)</span><span class="type-signature"> &rarr; {<a href="L.TileLayer.SmartWMS.html">L.TileLayer.SmartWMS</a>}</span></h4>
+    <h4 class="name" id=".addWmsLayer"><span class="type-signature">(static) </span>addWmsLayer<span class="signature">(pid, layerOptions)</span><span class="type-signature"> &rarr; {<a href="L.TileLayer.SmartWMS.html">L.TileLayer.SmartWMS</a>}</span></h4>
 
     
 
@@ -1270,6 +1362,29 @@ Triggers events draw:drawstart and draw:created, and will notify all subscribers
         </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>layerOptions</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Configuration options for the layer. See LAYER_OPTIONS for details of supported options. Optional.</td>
+        </tr>
+
+    
     </tbody>
 </table>
 
@@ -1307,7 +1422,7 @@ Triggers events draw:drawstart and draw:created, and will notify all subscribers
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line470">line 470</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line513">line 513</a>
     </li></ul></dd>
     
 
@@ -1413,7 +1528,7 @@ Will notify all subscribers.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line297">line 297</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line335">line 335</a>
     </li></ul></dd>
     
 
@@ -1497,7 +1612,7 @@ Will notify all subscribers.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line326">line 326</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line364">line 364</a>
     </li></ul></dd>
     
 
@@ -1579,7 +1694,7 @@ Will notify all subscribers.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line642">line 642</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line668">line 668</a>
     </li></ul></dd>
     
 
@@ -1684,7 +1799,7 @@ be set to the default zoom and centre.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line541">line 541</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line567">line 567</a>
     </li></ul></dd>
     
 
@@ -1766,7 +1881,7 @@ be set to the default zoom and centre.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line614">line 614</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line640">line 640</a>
     </li></ul></dd>
     
 
@@ -1870,7 +1985,7 @@ be set to the default zoom and centre.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line516">line 516</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line542">line 542</a>
     </li></ul></dd>
     
 
@@ -1974,7 +2089,7 @@ be set to the default zoom and centre.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line343">line 343</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line378">line 378</a>
     </li></ul></dd>
     
 
@@ -2082,7 +2197,7 @@ property object (this is still valid GeoJSON).
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line204">line 204</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line233">line 233</a>
     </li></ul></dd>
     
 
@@ -2186,7 +2301,7 @@ property object (this is still valid GeoJSON).
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line257">line 257</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line295">line 295</a>
     </li></ul></dd>
     
 
@@ -2290,7 +2405,7 @@ property object (this is still valid GeoJSON).
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line268">line 268</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line306">line 306</a>
     </li></ul></dd>
     
 
@@ -2394,7 +2509,7 @@ property object (this is still valid GeoJSON).
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line625">line 625</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line651">line 651</a>
     </li></ul></dd>
     
 
@@ -2500,7 +2615,7 @@ Will notify all subscribers.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line434">line 434</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line471">line 471</a>
     </li></ul></dd>
     
 
@@ -2582,7 +2697,7 @@ Will notify all subscribers.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line163">line 163</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line192">line 192</a>
     </li></ul></dd>
     
 
@@ -2664,7 +2779,7 @@ Will notify all subscribers.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line569">line 569</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line595">line 595</a>
     </li></ul></dd>
     
 
@@ -2818,7 +2933,7 @@ Will notify all subscribers.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line175">line 175</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line204">line 204</a>
     </li></ul></dd>
     
 
@@ -2949,7 +3064,7 @@ Will notify all subscribers.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line312">line 312</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line350">line 350</a>
     </li></ul></dd>
     
 
@@ -3104,7 +3219,7 @@ callback needs to be provided in order to find the listener to remove.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line191">line 191</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line220">line 220</a>
     </li></ul></dd>
     
 
@@ -3189,7 +3304,7 @@ Will notify all subscribers.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line279">line 279</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line317">line 317</a>
     </li></ul></dd>
     
 
@@ -3220,7 +3335,7 @@ Will notify all subscribers.
 
     
 
-    <h4 class="name" id=".setGeoJSON"><span class="type-signature">(static) </span>setGeoJSON<span class="signature">(geoJSON)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id=".setGeoJSON"><span class="type-signature">(static) </span>setGeoJSON<span class="signature">(geoJSON, layerOptions)</span><span class="type-signature"></span></h4>
 
     
 
@@ -3234,6 +3349,8 @@ rendered as a circle.
 
 If the properties object of a feature includes a 'pid', then a new WMS layer will be added to the map instead of
 a polygon layer.
+
+See LAYER_OPTIONS for details of supported options.
 
 Will notify all subscribers.
 </div>
@@ -3291,6 +3408,29 @@ Will notify all subscribers.
         </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>layerOptions</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Configuration options for the layer. See LAYER_OPTIONS for details of supported options. Optional.</td>
+        </tr>
+
+    
     </tbody>
 </table>
 
@@ -3328,7 +3468,7 @@ Will notify all subscribers.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line219">line 219</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line248">line 248</a>
     </li></ul></dd>
     
 
@@ -3368,7 +3508,7 @@ Will notify all subscribers.
 <div class="description">
     Subscribe to all update events on the map.
 
-To listen for specific events, use #registerListener instead.
+To listen for specific events, use ALA.Map#registerListener instead.
 </div>
 
 
@@ -3461,7 +3601,7 @@ To listen for specific events, use #registerListener instead.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line139">line 139</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line168">line 168</a>
     </li></ul></dd>
     
 
@@ -3592,7 +3732,7 @@ To listen for specific events, use #registerListener instead.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line152">line 152</a>
+        <a href="Map.js.html">Map.js</a>, <a href="Map.js.html#line181">line 181</a>
     </li></ul></dd>
     
 
@@ -3640,7 +3780,7 @@ To listen for specific events, use #registerListener instead.
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Mon Dec 07 2015 13:52:52 GMT+1100 (AEDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Wed Dec 09 2015 11:50:58 GMT+1100 (AEDT)
 </footer>
 
 <script> prettyPrint(); </script>
