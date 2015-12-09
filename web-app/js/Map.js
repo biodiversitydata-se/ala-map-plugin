@@ -439,7 +439,7 @@ ALA.Map = function (id, options) {
      * @param pointOptions {Object} Optional object containing configuration options to be applied to ALL points.
      */
     self.addClusteredPoints = function (points, pointOptions) {
-        startLoading();
+        self.startLoading();
 
         var groupOptions = {
             chunkedLoading: true
@@ -477,13 +477,13 @@ ALA.Map = function (id, options) {
      * @function markMyLocation
      */
     self.markMyLocation = function () {
-        startLoading();
+        self.startLoading();
 
         mapImpl.locate({setView: true});
         mapImpl.on("locationfound", function (locationEvent) {
             self.addMarker(locationEvent.latlng.lat, locationEvent.latlng.lng, null);
             mapImpl.off("locationfound", arguments.callee);
-            finishLoading();
+            self.finishLoading();
         });
     };
 
@@ -681,6 +681,30 @@ ALA.Map = function (id, options) {
         return count;
     };
 
+    /**
+     * Display a loading spinner on the map.
+     *
+     * Note: This is done automatically for any direct changes on the map.
+     *
+     * @memberOf ALA.Map
+     * @function startLoading
+     */
+    self.startLoading = function() {
+        mapImpl.fire("dataloading");
+    };
+
+    /**
+     * Stop the loading spinner on the map.
+     *
+     * Note: This is done automatically for any direct changes on the map.
+     *
+     * @memberOf ALA.Map
+     * @function finishLoading
+     */
+    self.finishLoading = function() {
+        mapImpl.fire("dataload");
+    };
+
     // ----------------------
     // Private functions
     // ----------------------
@@ -803,24 +827,16 @@ ALA.Map = function (id, options) {
 
         loadingEvents.forEach(function (eventName) {
             mapImpl.on(eventName, function() {
-                startLoading();
+                self.startLoading();
             })
         });
 
         var loadingFinishedEvents = ["moveend", "dragend", "zoomend"];
         loadingFinishedEvents.forEach(function (eventName) {
             mapImpl.on(eventName, function() {
-                finishLoading();
+                self.finishLoading();
             })
         });
-    }
-
-    function startLoading() {
-        mapImpl.fire("dataloading");
-    }
-
-    function finishLoading() {
-        mapImpl.fire("dataload");
     }
 
     // Determines if existing items need to be removed before adding a new item
@@ -917,7 +933,7 @@ ALA.Map = function (id, options) {
     // Internal method to add a non-Marker layer to the map, to fit the map bounds if configured to do so, and optionally
     // to notify all subscribers that the map has changed.
     function addLayer(layer, notify) {
-        startLoading();
+        self.startLoading();
 
         layer.addTo(drawnItems);
 
@@ -930,13 +946,13 @@ ALA.Map = function (id, options) {
             self.notifyAll();
         }
 
-        finishLoading();
+        self.finishLoading();
     }
 
     // Internal method to add a Marker to the map, to fit the map bounds if configured to do so, and optionally to notify
     // all subscribers that the map has changed.
     function addMarker(marker, notify) {
-        startLoading();
+        self.startLoading();
 
         drawingStarted(ALA.MapConstants.LAYER_TYPE.MARKER);
 
@@ -956,7 +972,7 @@ ALA.Map = function (id, options) {
             self.notifyAll();
         }
 
-        finishLoading();
+        self.finishLoading();
     }
 
     // Internal function to create a new WMS layer, but not to add it to the map, or trigger any notifications
