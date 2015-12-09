@@ -58,7 +58,7 @@ ALA.MapConstants = {
 ALA.Map = function (id, options) {
     var self = this;
 
-    var DEFAULT_CENTRE = {
+    self.DEFAULT_CENTRE = {
         lat: -28,
         lng: 134
     };
@@ -96,7 +96,7 @@ ALA.Map = function (id, options) {
      * @var
      */
     var DEFAULT_OPTIONS = {
-        center: [DEFAULT_CENTRE.lat, DEFAULT_CENTRE.lng],
+        center: [self.DEFAULT_CENTRE.lat, self.DEFAULT_CENTRE.lng],
         zoom: DEFAULT_ZOOM,
         maxZoom: DEFAULT_MAX_ZOOM,
         scrollWheelZoom: false,
@@ -327,7 +327,7 @@ ALA.Map = function (id, options) {
         drawnItems.clearLayers();
         markers = [];
         mapImpl.setZoom(DEFAULT_ZOOM);
-        mapImpl.panTo(DEFAULT_CENTRE);
+        mapImpl.panTo(self.DEFAULT_CENTRE);
 
         self.notifyAll();
     };
@@ -579,11 +579,11 @@ ALA.Map = function (id, options) {
             } else {
                 // cannot determine the bounds from the layers, set the map centre and zoom level to the defaults
                 mapImpl.setZoom(DEFAULT_ZOOM);
-                mapImpl.panTo(DEFAULT_CENTRE);
+                mapImpl.panTo(self.DEFAULT_CENTRE);
             }
         } else {
             mapImpl.setZoom(DEFAULT_ZOOM);
-            mapImpl.panTo(DEFAULT_CENTRE);
+            mapImpl.panTo(self.DEFAULT_CENTRE);
         }
     };
 

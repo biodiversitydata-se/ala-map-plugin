@@ -16,6 +16,7 @@ L.TileLayer.SmartWMS = L.TileLayer.WMS.extend({
     _callback: null,
     _pid: null,
     _properties: {},
+    _map: null,
 
     initialize: function(url, options) {
         this._wmsFeatureUrl = options.wmsFeatureUrl;
@@ -27,6 +28,8 @@ L.TileLayer.SmartWMS = L.TileLayer.WMS.extend({
 
     onAdd: function (map) {
         var self = this;
+
+        this._map = map;
 
         L.TileLayer.WMS.prototype.onAdd.call(this, map);
 
@@ -56,6 +59,10 @@ L.TileLayer.SmartWMS = L.TileLayer.WMS.extend({
                 self._callback();
             }
         });
+    },
+
+    getBounds: function() {
+        return self._latLngBounds ? new L.LatLngBounds(self._latLngBounds) : this._map ? this._map.getBounds() : new L.LatLng(ALA.Map.DEFAULT_CENTRE.lat, ALA.Map.DEFAULT_CENTRE.lng);
     }
 });
 
