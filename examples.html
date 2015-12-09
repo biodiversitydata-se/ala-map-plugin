@@ -118,7 +118,7 @@
         </div>
       </div>
       <script type="text/javascript">
-        var map = new ALA.Map("twoStepMap", {
+        var map1 = new ALA.Map("twoStepMap", {
             drawControl: false,
             singleMarker: false,
             useMyLocation: false,
@@ -139,11 +139,11 @@
               populateStep2Callback(step2);
           },
           selectionAction: function (selectedValue) {
-              map.addMarker(-28, 134).bindPopup(selectedValue);
+              map1.addMarker(-28, 134).bindPopup(selectedValue);
           }
         };
         var selector = new L.Control.TwoStepSelector(twoStep);
-        map.addControl(selector);
+        map1.addControl(selector);
       </script>
     </div>
 
@@ -167,15 +167,15 @@
         </div>
       </div>
       <script type="text/javascript">
-        var map = new ALA.Map("clusterMap", {});
+        var map2 = new ALA.Map("clusterMap", {});
 
         var coords = [];
         for (var i = 0; i < 100; i++) {
-          var latlng = getRandomLatLng(map.getMapImpl());
+          var latlng = getRandomLatLng(map2.getMapImpl());
           coords.push({lat: latlng.lat, lng: latlng.lng, popup: "Marker " + i});
         }
 
-        map.addClusteredPoints(coords);
+        map2.addClusteredPoints(coords);
 
         function getRandomLatLng(map) {
     			var bounds = map.getBounds(),
@@ -215,7 +215,7 @@
         </div>
       </div>
       <script type="text/javascript">
-        var map = new ALA.Map("geoMap", {});
+        var map3 = new ALA.Map("geoMap", {});
         var geoJson = {
           type: "Feature",
           properties: {},
@@ -227,7 +227,7 @@
             [133.06640625,  -22.10599879975055]]]
           }
         }
-        map.setGeoJSON(geoJson);
+        map3.setGeoJSON(geoJson);
       </script>
     </div>
 
@@ -257,7 +257,7 @@
         </div>
       </div>
       <script type="text/javascript">
-        var map = new ALA.Map("mouseoverMap", {});
+        var map4 = new ALA.Map("mouseoverMap", {});
         var geoJson = {
           type: "Feature",
           properties: {},
@@ -269,7 +269,7 @@
             [133.06640625,  -22.10599879975055]]]
           }
         };
-        map.setGeoJSON(geoJson, {
+        map4.setGeoJSON(geoJson, {
           markerWithMouseOver: true
         });
       </script>
