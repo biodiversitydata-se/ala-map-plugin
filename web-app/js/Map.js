@@ -271,7 +271,7 @@ ALA.Map = function (id, options) {
         L.geoJson(geoJSON, {
             pointToLayer: pointToLayerCircleSupport,
             onEachFeature: function (feature, layer) {
-                if (feature.properties.pid) {
+                if (feature.properties && feature.properties.pid) {
                     layer = createWmsLayer(feature.properties.pid);
                 }
 
