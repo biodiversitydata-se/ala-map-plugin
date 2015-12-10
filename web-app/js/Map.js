@@ -441,6 +441,13 @@ ALA.Map = function (id, options) {
     self.addClusteredPoints = function (points, pointOptions) {
         self.startLoading();
 
+        if (options.singleDraw) {
+            drawnItems.clearLayers();
+        }
+        if (options.markerOrShapeNotBoth) {
+            clearMarkers();
+        }
+
         var groupOptions = {
             chunkedLoading: true
         };
