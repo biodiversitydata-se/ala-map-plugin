@@ -18,6 +18,13 @@ So we can support server-side code like looking up regions from the ALA Layers s
 The JS files could be extracted into a standalone, generic mapping library if so desired. In fact, this would be a useful
 thing to do at some point.
 
+## API
+
+### [Click here for the full API documentation](http://atlasoflivingaustralia.github.io/ala-map-plugin/api/ALA.Map.html)
+
+## Demo
+
+### [Click here for some examples](http://atlasoflivingaustralia.github.io/ala-map-plugin/examples.html)
 
 ## Usage instructions
 
@@ -62,10 +69,6 @@ myMap.subscribe(function() {...})
 * Improved WMS layer support, with built-in functionality to retrieve features for layers
 * Support for clustered markers via https://github.com/Leaflet/Leaflet.markercluster ([demo](http://leaflet.github.io/Leaflet.markercluster/example/marker-clustering-realworld.388.html))
 
-## API
-
-### [Click here for the full API documentation](http://atlasoflivingaustralia.github.io/ala-map-plugin/ALA.Map.html)
-
 ### Updating the doco
 This doco is built using [JSDoc3](http://usejsdoc.org/) and stored on the gh-pages branch of this repository. The syntax for JSDoc is a bit quirky: basically, make sure you include ```@memberOf [parent]``` in the comments for nested objects/functions, and ```@function``` for functions or ```@var``` for variables.
 
@@ -81,7 +84,8 @@ git checkout gh-pages
 * In the root of the main directory (not the gh-pages branch):
   * Install npm if you don't already have it
   * Install jsdoc3 if you don't already have it (```npm install jsdoc```)
-  * Run jsdoc: ```./node_modules/.bin/jsdoc web-app/js/* -d [gh_pages_loc]```, where ```[gh_pages_loc]``` is the path to the directory you cloned the gh-pages branch to.
+  * Install the jsdoc3-bootstrap template if you don't already have it (```npm install jsdoc3-bootstrap```)
+  * Run jsdoc: ```./node_modules/.bin/jsdoc web-app/js/* -t ./node_modules/jsdoc3-bootstrap/ -d [gh_pages_loc]/api```, where ```[gh_pages_loc]``` is the path to the directory you cloned the gh-pages branch to (don't miss the /api on the end).
   * Commit the changes to the gh-branch
 
 ## Custom Leaflet controls and layers
