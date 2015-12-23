@@ -82,7 +82,8 @@ L.Control.TwoStepSelector = L.Control.extend({
             step2Placeholder.innerHTML = self.options.secondStepPlaceholder;
         }
 
-        L.DomEvent.addListener(icon, 'click', function () {
+        L.DomEvent.addListener(icon, 'click', function (e) {
+            e.preventDefault();
             $("#" + self.id + " .selectors").toggleClass("hide inline-block")
         });
 
