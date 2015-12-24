@@ -930,8 +930,9 @@ ALA.Map = function (id, options) {
     // Display an input field and search button to allow the user to enter an address, then perform a geocode address
     // search and place a marker on the map
     function addGeocodeControl() {
-        var geocodeControl = L.Control.geocoder({position: "topleft"}).addTo(mapImpl);
-        $(".leaflet-control-geocoder-icon").attr("title", "Search for an address or location");
+        var prompt = "Search for an address or location";
+        var geocodeControl = L.Control.geocoder({position: "topleft", placeholder:prompt}).addTo(mapImpl);
+        $(".leaflet-control-geocoder-icon").attr("title", prompt);
         geocodeControl.markGeocode = function (result) {
             self.addMarker(result.center.lat, result.center.lng, null);
         }
