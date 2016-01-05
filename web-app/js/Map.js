@@ -760,6 +760,13 @@ ALA.Map = function (id, options) {
                 callback: self.redraw
             });
         }
+
+        // make sure the base layers never sit on top of other layers when the base layer is changed
+        mapImpl.on('baselayerchange', function (event) {
+            if (event.layer.setZIndex) {
+                event.layer.setZIndex(-1);
+            }
+        });
     }
 
     // Populate any missing configuration items with the default values
