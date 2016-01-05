@@ -9,7 +9,7 @@ before_install:
 - export TZ=Australia/Canberra
 - date
 - rm -rf ~/.sdkman
-- curl -s get.gvmtool.net > ~/install_gvm.sh
+- curl -s get.sdkman.io > ~/install_gvm.sh
 - chmod 775 ~/install_gvm.sh
 - ~/install_gvm.sh
 - echo "sdkman_auto_answer=true" > ~/.sdkman/etc/config
