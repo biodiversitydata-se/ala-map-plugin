@@ -1369,6 +1369,13 @@ ALA.Map = function (id, options) {
     self.addClusteredPoints = function (points, pointOptions) {
         self.startLoading();
 
+        if (options.singleDraw) {
+            drawnItems.clearLayers();
+        }
+        if (options.markerOrShapeNotBoth) {
+            clearMarkers();
+        }
+
         var groupOptions = {
             chunkedLoading: true
         };
@@ -1681,6 +1688,13 @@ ALA.Map = function (id, options) {
                 callback: self.redraw
             });
         }
+
+        // make sure the base layers never sit on top of other layers when the base layer is changed
+        mapImpl.on('baselayerchange', function (event) {
+            if (event.layer.setZIndex) {
+                event.layer.setZIndex(-1);
+            }
+        });
     }
 
     // Populate any missing configuration items with the default values
@@ -1851,8 +1865,9 @@ ALA.Map = function (id, options) {
     // Display an input field and search button to allow the user to enter an address, then perform a geocode address
     // search and place a marker on the map
     function addGeocodeControl() {
-        var geocodeControl = L.Control.geocoder({position: "topleft"}).addTo(mapImpl);
-        $(".leaflet-control-geocoder-icon").attr("title", "Search for an address or location");
+        var prompt = "Search for an address or location";
+        var geocodeControl = L.Control.geocoder({position: "topleft", placeholder:prompt}).addTo(mapImpl);
+        $(".leaflet-control-geocoder-icon").attr("title", prompt);
         geocodeControl.markGeocode = function (result) {
             self.addMarker(result.center.lat, result.center.lng, null);
         }
