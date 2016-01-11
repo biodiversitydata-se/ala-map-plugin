@@ -5,19 +5,19 @@
  * <p/>
  * <b>Options:</b>
  * <ul>
- *     <li><pre>id</pre> - Unique id for the control</li>
- *     <li><pre>position</pre> - The location on the map (using leaflet's standard control positions). Default: topleft</li>
- *     <li><pre>title</pre> - The tooltip for the button. Default: 'Select...'</li>
- *     <li><pre>firstStepItems</pre> - array of items (key/value) to be displayed in the first selector (alternatively, use firstStepItemLookup)</li>
- *     <li><pre>firstStepItemLookup</pre> - Function callback to retrieve the list of items to be displayed in the first selector</li>
- *     <li><pre>firstStepTitle</pre> - Tooltip for the first select box</li>
- *     <li><pre>firstStepPlaceholder</pre> - Placeholder text for the first (null) item in the first selector. Default: 'Select one...'</li>
- *     <li><pre>secondStepItemLookup</pre> - Function callback to populate the second selector when the first selector is set</li>
- *     <li><pre>secondStepPlaceholder</pre> - Placeholder text for the first (null) item in the second selector. Default: 'Select one...'</li>
- *     <li><pre>secondStepTitle</pre> - Tooltip for the second select box</li>
- *     <li><pre>selectionAction</pre> - Function callback to invoke when the second selector is set</li>
- *     <li><pre>firstStepValue</pre> - The initial value for the first selector</li>
- *     <li><pre>iconClass</pre> - The CSS class(es) for the button icon. Default: 'fa fa-globe'</li>
+ *     <li><pre>id</pre> Unique id for the control</li>
+ *     <li><pre>position</pre> The location on the map (using leaflet's standard control positions). Default: topleft</li>
+ *     <li><pre>title</pre> The tooltip for the button. Default: 'Select...'</li>
+ *     <li><pre>firstStepItems</pre> array of items (key/value) to be displayed in the first selector (alternatively, use firstStepItemLookup)</li>
+ *     <li><pre>firstStepItemLookup</pre> Function callback to retrieve the list of items to be displayed in the first selector. Takes a single parameter: a callback function that must be called with the array of key/value pairs to populate the first selector.</li>
+ *     <li><pre>firstStepTitle</pre> Tooltip for the first select box</li>
+ *     <li><pre>firstStepPlaceholder</pre> Placeholder text for the first (null) item in the first selector. Default: 'Select one...'</li>
+ *     <li><pre>secondStepItemLookup</pre> Function callback to populate the second selector when the first selector is set. Takes 2 parameters: the key of the selected value from the first selector, and a callback function that must be called with the array of key/value pairs to populate the second selector.</li>
+ *     <li><pre>secondStepPlaceholder</pre> Placeholder text for the first (null) item in the second selector. Default: 'Select one...'</li>
+ *     <li><pre>secondStepTitle</pre> Tooltip for the second select box</li>
+ *     <li><pre>selectionAction</pre> Function callback to invoke when the second selector is set</li>
+ *     <li><pre>firstStepValue</pre> The initial value for the first selector</li>
+ *     <li><pre>iconClass</pre> The CSS class(es) for the button icon. Default: 'fa fa-globe'</li>
  * </ul>
  *
  * @class
@@ -65,11 +65,15 @@ L.Control.TwoStepSelector = L.Control.extend({
             step1Placeholder.innerHTML = self.options.firstStepPlaceholder;
         }
 
-        if (self.options.firstStepItems) {
+        if (self.options.firstStepItems && self.options.firstStepItems.length > 0) {
             self.options.firstStepItems.forEach(function (item) {
                 var option = L.DomUtil.create("option", "", self.step1);
                 option.value = item.key;
                 option.innerHTML = item.value;
+            });
+        } else if (self.options.firstStepItemLookup) {
+            self.options.firstStepItemLookup(function (keyValuePairs) {
+                self.populateStep1(self, keyValuePairs)
             });
         }
 
@@ -87,7 +91,6 @@ L.Control.TwoStepSelector = L.Control.extend({
             $("#" + self.id + " .selectors").toggleClass("hide inline-block")
         });
 
-
         L.DomEvent.addListener(self.step1, "change", function () {
             self.step1Changed(self)
         }, self);
@@ -98,6 +101,14 @@ L.Control.TwoStepSelector = L.Control.extend({
         L.DomEvent.disableClickPropagation(container);
 
         return container;
+    },
+
+    populateStep1: function (self, keyValuePairs) {
+        keyValuePairs.forEach(function (item) {
+            var option = L.DomUtil.create("option", "", self.step1);
+            option.value = item.key;
+            option.innerHTML = item.value;
+        });
     },
 
     step1Changed: function (self) {
