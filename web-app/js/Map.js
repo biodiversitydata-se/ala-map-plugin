@@ -68,6 +68,12 @@ ALA.Map = function (id, options) {
     var MAX_AUTO_ZOOM = 15;
     var DEFAULT_MAX_ZOOM = 20;
 
+    // There is a bug with Leaflet prior to v1.0 which causes drawing issues with animations enabled.
+    // E.g. Calling fitBounds multiple times sometimes causes the drawing of the map to fail, usually leaving some or
+    // all of the base tile layer's tiles out. Until that is fixed, we will disable animations.
+    // https://github.com/Leaflet/Leaflet/issues/3249
+    var ANIMATE = false;
+
     var DEFAULT_BASE_LAYER = {
         url: "http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
         subdomains: "abcd",
@@ -97,7 +103,7 @@ ALA.Map = function (id, options) {
         layers: "ALA:Objects",
         version: "1.1.0",
         srs: "EPSG:900913"
-    }
+    };
 
     /**
      * Default Map options
@@ -344,8 +350,8 @@ ALA.Map = function (id, options) {
         if (!_.isUndefined(fitToBoundsOfLayer) && fitToBoundsOfLayer != null) {
             self.fitToBoundsOf(fitToBoundsOfLayer);
         } else {
-            mapImpl.setZoom(DEFAULT_ZOOM);
-            mapImpl.panTo(self.DEFAULT_CENTRE);
+            mapImpl.setZoom(DEFAULT_ZOOM, {animate: ANIMATE});
+            mapImpl.panTo(self.DEFAULT_CENTRE, {animate: ANIMATE});
         }
 
         self.notifyAll();
@@ -606,15 +612,15 @@ ALA.Map = function (id, options) {
             });
 
             if (hasGetBounds) {
-                mapImpl.fitBounds(drawnItems.getBounds(), {maxZoom: MAX_AUTO_ZOOM});
+                mapImpl.fitBounds(drawnItems.getBounds(), {maxZoom: MAX_AUTO_ZOOM, animate: ANIMATE});
             } else {
                 // cannot determine the bounds from the layers, set the map centre and zoom level to the defaults
-                mapImpl.setZoom(DEFAULT_ZOOM);
-                mapImpl.panTo(self.DEFAULT_CENTRE);
+                mapImpl.setZoom(DEFAULT_ZOOM, {animate: ANIMATE});
+                mapImpl.panTo(self.DEFAULT_CENTRE, {animate: ANIMATE});
             }
         } else {
-            mapImpl.setZoom(DEFAULT_ZOOM);
-            mapImpl.panTo(self.DEFAULT_CENTRE);
+            mapImpl.setZoom(DEFAULT_ZOOM, {animate: ANIMATE});
+            mapImpl.panTo(self.DEFAULT_CENTRE, {animate: ANIMATE});
         }
     };
 
@@ -649,7 +655,7 @@ ALA.Map = function (id, options) {
                         wmsFeatureUrl: options.wmsFeatureUrl + feature.properties.pid,
                         callback: function () {
                             if (geoJsonLayer.getBounds && !_.isUndefined(geoJsonLayer.getBounds())) {
-                                mapImpl.fitBounds(geoJsonLayer.getBounds());
+                                mapImpl.fitBounds(geoJsonLayer.getBounds(), {maxZoom: MAX_AUTO_ZOOM, animate: ANIMATE});
                             }
                         }
                     };
@@ -665,7 +671,7 @@ ALA.Map = function (id, options) {
         // WMS layers may not have the bounds, or the fully populated bounds, until the layer is retrieved from the server.
         // There is a callback above which fits the bounds for WMS layers after they are populated.
         if (geoJsonLayer.getBounds && !_.isUndefined(geoJsonLayer.getBounds()) && !_.isUndefined(geoJsonLayer.getBounds().getNorthEast())) {
-            mapImpl.fitBounds(geoJsonLayer.getBounds());
+            mapImpl.fitBounds(geoJsonLayer.getBounds(), {maxZoom: MAX_AUTO_ZOOM, animate: ANIMATE});
         }
     };
 
@@ -1055,7 +1061,7 @@ ALA.Map = function (id, options) {
         layer.addTo(drawnItems);
 
         if (options.zoomToObject && layer.getBounds) {
-            mapImpl.fitBounds(drawnItems.getBounds(), {maxZoom: MAX_AUTO_ZOOM});
+            mapImpl.fitBounds(drawnItems.getBounds(), {maxZoom: MAX_AUTO_ZOOM, animate: ANIMATE});
             mapImpl.invalidateSize();
         }
 
@@ -1081,7 +1087,7 @@ ALA.Map = function (id, options) {
         markers.push(marker);
 
         if (options.zoomToObject) {
-            mapImpl.panTo(marker.getLatLng());
+            mapImpl.panTo(marker.getLatLng(), {animate: ANIMATE});
             mapImpl.fitBounds(new L.LatLngBounds(marker.getLatLng(), marker.getLatLng()), {maxZoom: SINGLE_POINT_ZOOM});
         }
 
