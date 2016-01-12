@@ -89,6 +89,16 @@ ALA.Map = function (id, options) {
         fillOpacity: 0.5
     };
 
+    var DEFAULT_WMS_PROPERTIES = {
+        tiled: true,
+        format: 'image/png',
+        opacity: 0.5,
+        transparent: true,
+        layers: "ALA:Objects",
+        version: "1.1.0",
+        srs: "EPSG:900913"
+    }
+
     /**
      * Default Map options
      *
@@ -160,6 +170,7 @@ ALA.Map = function (id, options) {
     populateDefaultOptions(options);
 
     var mapImpl = null;
+    var fitToBoundsOfLayer = null;
     var drawControl = null;
     var drawnItems = new L.FeatureGroup();
     var markers = [];
@@ -318,6 +329,9 @@ ALA.Map = function (id, options) {
      * Removes all custom layers, reverts to the initial base layer, resets the zoom level to the default and re-centres
      * the map.
      *
+     * If {@link fitToBoundsOf} has been called previously, then resetMap will fit the map to the previously supplied
+     * bounds. To reset to the default map centre & zoom, call {@link clearBoundLimits} before resetMap.
+     *
      * Will notify all subscribers.
      *
      * @memberOf ALA.Map
@@ -326,8 +340,13 @@ ALA.Map = function (id, options) {
     self.resetMap = function () {
         drawnItems.clearLayers();
         markers = [];
-        mapImpl.setZoom(DEFAULT_ZOOM);
-        mapImpl.panTo(self.DEFAULT_CENTRE);
+
+        if (!_.isUndefined(fitToBoundsOfLayer) && fitToBoundsOfLayer != null) {
+            self.fitToBoundsOf(fitToBoundsOfLayer);
+        } else {
+            mapImpl.setZoom(DEFAULT_ZOOM);
+            mapImpl.panTo(self.DEFAULT_CENTRE);
+        }
 
         self.notifyAll();
     };
@@ -597,6 +616,89 @@ ALA.Map = function (id, options) {
             mapImpl.setZoom(DEFAULT_ZOOM);
             mapImpl.panTo(self.DEFAULT_CENTRE);
         }
+    };
+
+    /**
+     * Zoom and centre the map to fit the bounds of the provided GeoJSON object, but do NOT draw the object.
+     *
+     * Subsequent calls to Reset Map will automatically fit the map to the bounds of this object.
+     *
+     * The difference between this and {@link setMaxBounds} is that setMaxBounds will prevent the user from panning
+     * outside the provided bounds, whereas this method will allow that.
+     *
+     * @memberOf ALA.Map
+     * @function fitToBoundsOf
+     * @param {Object} geoJSON Valid GeoJSON object to fit the map to
+     */
+    self.fitToBoundsOf = function(geoJSON) {
+        if (typeof geoJSON === 'string') {
+            geoJSON = JSON.parse(geoJSON);
+        }
+
+        fitToBoundsOfLayer = geoJSON;
+
+        var geoJsonLayer = new L.FeatureGroup();
+
+        L.geoJson(geoJSON, {
+            pointToLayer: pointToLayerCircleSupport,
+            onEachFeature: function (feature, layer) {
+                if (feature.properties && feature.properties.pid) {
+                    var wmsOptions = {
+                        pid: feature.properties.pid,
+                        viewparams: "s:" + feature.properties.pid,
+                        wmsFeatureUrl: options.wmsFeatureUrl + feature.properties.pid,
+                        callback: function () {
+                            if (geoJsonLayer.getBounds && !_.isUndefined(geoJsonLayer.getBounds())) {
+                                mapImpl.fitBounds(geoJsonLayer.getBounds());
+                            }
+                        }
+                    };
+                    _.defaults(wmsOptions, DEFAULT_WMS_PROPERTIES);
+                    layer = L.tileLayer.smartWms(options.wmsLayerUrl, wmsOptions);
+                    layer.retrieveLayer();
+                }
+
+                geoJsonLayer.addLayer(layer);
+            }
+        });
+
+        // WMS layers may not have the bounds, or the fully populated bounds, until the layer is retrieved from the server.
+        // There is a callback above which fits the bounds for WMS layers after they are populated.
+        if (geoJsonLayer.getBounds && !_.isUndefined(geoJsonLayer.getBounds()) && !_.isUndefined(geoJsonLayer.getBounds().getNorthEast())) {
+            mapImpl.fitBounds(geoJsonLayer.getBounds());
+        }
+    };
+
+    /**
+     * Zoom and centre the map to fit the provided bounds, and prevent the user from moving outside that boundary.
+     *
+     * Subsequent calls to Reset Map will automatically fit the map to the bounds of this object.
+     *
+     * The difference between this and {@link fitToBoundsOf} is that fitToBoundsOf will allow the user to pan outside
+     * the provided bounds, whereas this method will not.
+     *
+     * @memberOf ALA.Map
+     * @function setMaxBounds
+     * @param {LatLngBounds} latLngBounds The Leaflet LatLngBounds object to restrict the map to
+     */
+    self.setMaxBounds = function(latLngBounds) {
+        mapImpl.setMaxBounds(latLngBounds);
+    };
+
+    /**
+     * Clears any limits on the map bounds. This will remove the max bounds (from {@link setMaxBounds}) and the display
+     * bounds (from {@link fitToBoundsOf}) if they exist. The map will be reset to the bounds of the current content
+     * (as per {@link fitBounds}).
+     *
+     * @memberOf ALA.Map
+     * @function clearBoundLimits
+     */
+    self.clearBoundLimits = function() {
+        if (!_.isUndefined(fitToBoundsOfLayer) && fitToBoundsOfLayer != null) {
+            fitToBoundsOfLayer = null;
+        }
+
+        self.fitBounds();
     };
 
     /**
@@ -993,13 +1095,6 @@ ALA.Map = function (id, options) {
     // Internal function to create a new WMS layer, but not to add it to the map, or trigger any notifications
     function createWmsLayer(pid) {
         var wmsOptions = {
-            tiled: true,
-            format: 'image/png',
-            opacity: 0.5,
-            transparent: true,
-            layers: "ALA:Objects",
-            version: "1.1.0",
-            srs: "EPSG:900913",
             pid: pid,
             viewparams: "s:" + pid,
             wmsFeatureUrl: options.wmsFeatureUrl + pid,
@@ -1010,6 +1105,7 @@ ALA.Map = function (id, options) {
                 self.notifyAll();
             }
         };
+        _.defaults(wmsOptions, DEFAULT_WMS_PROPERTIES);
 
         if (_.isUndefined(options.wmsLayerUrl)) {
             console.error("You must specify the wmsLayerUrl and wmsFeatureUrl options for this map.")

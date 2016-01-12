@@ -26,12 +26,8 @@ L.TileLayer.SmartWMS = L.TileLayer.WMS.extend({
         L.TileLayer.WMS.prototype.initialize.call(this, url, options);
     },
 
-    onAdd: function (map) {
+    retrieveLayer: function() {
         var self = this;
-
-        this._map = map;
-
-        L.TileLayer.WMS.prototype.onAdd.call(this, map);
 
         $.ajax({
             url: this._wmsFeatureUrl,
@@ -61,8 +57,18 @@ L.TileLayer.SmartWMS = L.TileLayer.WMS.extend({
         });
     },
 
+    onAdd: function (map) {
+        var self = this;
+
+        this._map = map;
+
+        L.TileLayer.WMS.prototype.onAdd.call(this, map);
+
+        self.retrieveLayer();
+    },
+
     getBounds: function() {
-        return self._latLngBounds ? new L.LatLngBounds(self._latLngBounds) : this._map ? this._map.getBounds() : new L.LatLng(ALA.Map.DEFAULT_CENTRE.lat, ALA.Map.DEFAULT_CENTRE.lng);
+        return self._latLngBounds ? new L.LatLngBounds(self._latLngBounds) : this._map ? this._map.getBounds() : undefined;
     }
 });
 
