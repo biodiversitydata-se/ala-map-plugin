@@ -67,12 +67,21 @@ ALA.Map = function (id, options) {
     var SINGLE_POINT_ZOOM = 10;
     var MAX_AUTO_ZOOM = 15;
     var DEFAULT_MAX_ZOOM = 20;
+    var DEFAULT_OPACITY = 0.1;
+    var DEFAULT_LINE_WEIGHT = 1;
+    var DEFAULT_FILL_COLOUR = "#03f";
 
     // There is a bug with Leaflet prior to v1.0 which causes drawing issues with animations enabled.
     // E.g. Calling fitBounds multiple times sometimes causes the drawing of the map to fail, usually leaving some or
     // all of the base tile layer's tiles out. Until that is fixed, we will disable animations.
     // https://github.com/Leaflet/Leaflet/issues/3249
     var ANIMATE = false;
+
+    var DEFAULT_SHAPE_OPTIONS = {
+        weight: DEFAULT_LINE_WEIGHT,
+        fillOpacity: DEFAULT_OPACITY,
+        color: DEFAULT_FILL_COLOUR
+    };
 
     var DEFAULT_BASE_LAYER = {
         url: "http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
@@ -82,6 +91,15 @@ ALA.Map = function (id, options) {
 
     var DEFAULT_DRAW_OPTIONS = {
         polyline: false,
+        polygon: {
+            shapeOptions: DEFAULT_SHAPE_OPTIONS
+        },
+        rectangle: {
+            shapeOptions: DEFAULT_SHAPE_OPTIONS
+        },
+        circle: {
+            shapeOptions: DEFAULT_SHAPE_OPTIONS
+        },
         edit: true
     };
 
@@ -91,14 +109,15 @@ ALA.Map = function (id, options) {
     };
 
     var VISIBLE_LAYER = {
-        weight: 1,
-        fillOpacity: 0.5
+        weight: DEFAULT_LINE_WEIGHT,
+        fillOpacity: DEFAULT_OPACITY,
+        color: DEFAULT_FILL_COLOUR
     };
 
     var DEFAULT_WMS_PROPERTIES = {
         tiled: true,
         format: 'image/png',
-        opacity: 0.5,
+        opacity: 0.4,
         transparent: true,
         layers: "ALA:Objects",
         version: "1.1.0",
@@ -298,7 +317,8 @@ ALA.Map = function (id, options) {
                 }
 
                 applyLayerOptions(layer, layerOptions);
-            }
+            },
+            style: DEFAULT_SHAPE_OPTIONS
         });
 
 
@@ -1167,9 +1187,10 @@ ALA.Map = function (id, options) {
         if (layer.setStyle) {
             layer.setStyle(VISIBLE_LAYER)
         } else if (layer.setOpacity) {
-            layer.setOpacity(0.5);
+            layer.setOpacity(DEFAULT_OPACITY);
         } else if (layer.options) {
-            layer.options.opacity = 0.5;
+            layer.options.opacity = DEFAULT_OPACITY;
+            layer.options.weight = DEFAULT_LINE_WEIGHT;
         }
 
         if (layer.bringToFront) {
