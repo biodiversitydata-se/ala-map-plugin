@@ -117,7 +117,7 @@ ALA.Map = function (id, options) {
     var DEFAULT_WMS_PROPERTIES = {
         tiled: true,
         format: 'image/png',
-        opacity: 0.4,
+        opacity: 0.2,
         transparent: true,
         layers: "ALA:Objects",
         version: "1.1.0",
