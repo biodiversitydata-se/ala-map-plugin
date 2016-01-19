@@ -1016,24 +1016,31 @@ ALA.MapConstants = {
  * &lt;p/>
  * &lt;b>Options&lt;/b>
  * &lt;ul>
- *  &lt;li>&lt;pre>center&lt;/pre> - Centre position of the map. Default: -28, 134&lt;/li>
- *  &lt;li>&lt;pre>zoom&lt;/pre> - the initial zoom level. Default: 4&lt;/li>
- *  &lt;li>&lt;pre>scrollWheelZoom&lt;/pre> - whether to enable zooming in/out by scrolling the mouse. Default: false&lt;/li>
- *  &lt;li>&lt;pre>fullscreenControl&lt;/pre> - whether to include a full-screen option. Default: true&lt;/li>
+ *  &lt;li>&lt;pre>center&lt;/pre> Centre position of the map. Default: -28, 134&lt;/li>
+ *  &lt;li>&lt;pre>zoom&lt;/pre> the initial zoom level. Default: 4&lt;/li>
+ *  &lt;li>&lt;pre>scrollWheelZoom&lt;/pre> whether to enable zooming in/out by scrolling the mouse. Default: false&lt;/li>
+ *  &lt;li>&lt;pre>fullscreenControl&lt;/pre> whether to include a full-screen option. Default: true&lt;/li>
  *  &lt;li>&lt;pre>fullscreenControlOptions:&lt;/pre>
  *      &lt;ul>
- *          &lt;li>&lt;pre>position&lt;/pre> - position of the button on the map. Default: topleft&lt;/li>
+ *          &lt;li>&lt;pre>position&lt;/pre> position of the button on the map. Default: topleft&lt;/li>
  *      &lt;/ul>
- *  &lt;li>&lt;pre>drawControl&lt;/pre> - whether to include drawing controls or not. Default: true&lt;/li>
- *  &lt;li>&lt;pre>singleDraw&lt;/pre> - whether to allow more than 1 shape or region to be drawn at a time. This does NOT apply to markers - only layers and other shapes. See also singleMarker and markerOrShapeNotBoth. Default: true&lt;/li>
- *  &lt;li>&lt;pre>singleMarker&lt;/pre> - whether to allow more than 1 marker to be drawn at a time.. Default: true&lt;/li>
- *  &lt;li>&lt;pre>markerOrShapeNotBoth&lt;/pre> - whether to allow users to draw both markers and regions/shapes at the same time. Default: true&lt;/li>
- *  &lt;li>&lt;pre>useMyLocation&lt;/pre> - whether to include a "Use My Location" button to place a marker on the map at the user's location. Default: true&lt;/li>
- *  &lt;li>&lt;pre>allowSearchByAddress&lt;/pre> - whether to allow the user to search by address to place a marker on the map. Default: true&lt;/li>
- *  &lt;li>&lt;pre>zoomToObject&lt;/pre> - whether to automatically fit the map to the bounds of a new object when added. Default: true&lt;/li>
- *  &lt;li>&lt;pre>draggableMarkers&lt;/pre> - whether to allow point markers to be draggable by default. Default: true&lt;/li>
- *  &lt;li>&lt;pre>wmsFeatureUrl&lt;/pre> - the URL to call to fetch features of a WMS layer (e.g. http://spatial-dev.ala.org.au/geoserver/wms/reflect?). The PID will be appended to this URL.. Default: &lt;/li>
- *  &lt;li>&lt;pre>wmsLayerUrl&lt;/pre> - the URL to call to retrieve a WMS layer. The PID will be appended to this URL.. Default: &lt;/li>
+ *  &lt;li>&lt;pre>drawControl&lt;/pre> whether to include drawing controls or not. Default: true&lt;/li>
+ *  &lt;li>&lt;pre>singleDraw&lt;/pre> whether to allow more than 1 shape or region to be drawn at a time. This does NOT apply to markers - only layers and other shapes. See also singleMarker and markerOrShapeNotBoth. Default: true&lt;/li>
+ *  &lt;li>&lt;pre>singleMarker&lt;/pre> whether to allow more than 1 marker to be drawn at a time.. Default: true&lt;/li>
+ *  &lt;li>&lt;pre>markerOrShapeNotBoth&lt;/pre> whether to allow users to draw both markers and regions/shapes at the same time. Default: true&lt;/li>
+ *  &lt;li>&lt;pre>useMyLocation&lt;/pre> whether to include a "Use My Location" button to place a marker on the map at the user's location. Default: true&lt;/li>
+ *  &lt;li>&lt;pre>allowSearchByAddress&lt;/pre> whether to allow the user to search by address to place a marker on the map. Default: true&lt;/li>
+ *  &lt;li>&lt;pre>zoomToObject&lt;/pre> whether to automatically fit the map to the bounds of a new object when added. Default: true&lt;/li>
+ *  &lt;li>&lt;pre>draggableMarkers&lt;/pre> whether to allow point markers to be draggable by default. Default: true&lt;/li>
+ *  &lt;li>&lt;pre>wmsFeatureUrl&lt;/pre> the URL to call to fetch features of a WMS layer (e.g. http://spatial-dev.ala.org.au/geoserver/wms/reflect?). The PID will be appended to this URL. Default: &lt;/li>
+ *  &lt;li>&lt;pre>wmsLayerUrl&lt;/pre> the URL to call to retrieve a WMS layer. The PID will be appended to this URL. Default: &lt;/li>
+ *  &lt;li>&lt;pre>sleep&lt;/pre> True to disable mouse wheel zooming once the mouse has been out of the map for a certain time. Clicking in the map re-enables it. Overrides scrollWheelZoom. Default: true&lt;/li>
+ *  &lt;li>&lt;pre>sleepTime&lt;/pre> Time (milliseconds) until the map 'sleeps' up after the mouse moves away from the map. Only relevant if sleep = true. Default: 750&lt;/li>
+ *  &lt;li>&lt;pre>hoverToWake&lt;/pre> True to wake the map up after the mouse has been held over the map for a certain time (wakeTime). Only relevant if sleep = true. Default: true&lt;/li>
+ *  &lt;li>&lt;pre>wakeTime&lt;/pre> Time (milliseconds) until the map wakes up after mouse over. Only relevant if sleep = true and hoverToWake = true. Default: 750&lt;/li>
+ *  &lt;li>&lt;pre>sleepNote&lt;/pre> True to display text over the map when it is sleeping. Only relevant if sleep = true. Default: false&lt;/li>
+ *  &lt;li>&lt;pre>sleepOpacity&lt;/pre> Opacity of the sleep text. Only relevant if sleep = true and sleepNote = true. Default: 0.7&lt;/li>
+ *  &lt;li>&lt;pre>wakeMessage&lt;/pre> Text to display over the map when it is sleeping. Only relevant if sleep = true and sleepNote = true. Default: 'Click or hover to wake'.&lt;/li>
  * &lt;/ul>
  *
  * @class
@@ -1137,7 +1144,12 @@ ALA.Map = function (id, options) {
         wmsLayerUrl: null,
         wmsFeatureUrl: null,
         myLocationControlTitle: "Use my location",
-        drawOptions: DEFAULT_DRAW_OPTIONS
+        drawOptions: DEFAULT_DRAW_OPTIONS,
+        sleep: true,
+        sleepTime: 750,
+        wakeTime: 750,
+        sleepNote: false,
+        hoverToWake: true
     };
 
     /**
