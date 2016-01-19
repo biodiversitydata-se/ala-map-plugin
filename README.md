@@ -3,6 +3,16 @@
 ## Status
 [![Build Status](https://travis-ci.org/AtlasOfLivingAustralia/ala-map-plugin.svg?branch=master)](https://travis-ci.org/AtlasOfLivingAustralia/ala-map-plugin)
 
+
+## API
+
+### [Click here for the full API documentation](http://atlasoflivingaustralia.github.io/ala-map-plugin/api/ALA.Map.html)
+
+## Demo
+
+### [Click here for some examples](http://atlasoflivingaustralia.github.io/ala-map-plugin/examples.html)
+
+
 ## Why?
 
 Many ALA applications require mapping features, and to-date all of them have had their own custom implementations.
@@ -17,14 +27,6 @@ So we can support server-side code like looking up regions from the ALA Layers s
 
 The JS files could be extracted into a standalone, generic mapping library if so desired. In fact, this would be a useful
 thing to do at some point.
-
-## API
-
-### [Click here for the full API documentation](http://atlasoflivingaustralia.github.io/ala-map-plugin/api/ALA.Map.html)
-
-## Demo
-
-### [Click here for some examples](http://atlasoflivingaustralia.github.io/ala-map-plugin/examples.html)
 
 ## Usage instructions
 
