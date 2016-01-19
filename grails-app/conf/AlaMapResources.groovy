@@ -13,6 +13,7 @@ modules = {
         dependsOn "turf"
         dependsOn "custom_controls"
         dependsOn "font-awesome"
+        dependsOn "leaflet_sleep"
         resource url: [dir: "js", file: "Map.js", plugin: "ala-map"]
         resource url: [dir: "js/layers", file: "SmartWmsLayer.js", plugin: "ala-map"]
         resource url: [dir: "css", file: "map.css", plugin: "ala-map"]
@@ -67,6 +68,11 @@ modules = {
         dependsOn "leaflet"
         resource url: [dir: "vendor/Leaflet.loading-0.1.16", file: "Control.Loading.js", plugin: "ala-map"]
         resource url: [dir: "vendor/Leaflet.loading-0.1.16", file: "Control.Loading.css", plugin: "ala-map"]
+    }
+
+    leaflet_sleep {
+        dependsOn "leaflet"
+        resource url: [dir: "vendor/Leaflet.Sleep", file: "Leaflet.Sleep.js", plugin: "ala-map"]
     }
 
     turf {

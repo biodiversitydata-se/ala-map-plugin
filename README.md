@@ -48,7 +48,7 @@ myMap.subscribe(function() {...})
 
 ## Features
 
-### Version 0.1
+### Version 1.1
 * Built in options to:
   * display a 'Use My Location' button on the map
   * perform a geocoding address search (default implementation uses http://nominatim.openstreetmap.org/)
@@ -68,6 +68,7 @@ myMap.subscribe(function() {...})
 * Simple zoom and fit-bounds functions
 * Improved WMS layer support, with built-in functionality to retrieve features for layers
 * Support for clustered markers via https://github.com/Leaflet/Leaflet.markercluster ([demo](http://leaflet.github.io/Leaflet.markercluster/example/marker-clustering-realworld.388.html))
+* Smart mouse wheel scroll: the mouse wheel will only zoom the map if the mouse has been over the map for a certain amount of time or is clicked. This resolves cases where the map 'steals' the scroll when trying to scroll down the page. Uses https://github.com/CliffCloud/Leaflet.Sleep
 
 ### Updating the doco
 This doco is built using [JSDoc3](http://usejsdoc.org/) and stored on the gh-pages branch of this repository. The syntax for JSDoc is a bit quirky: basically, make sure you include ```@memberOf [parent]``` in the comments for nested objects/functions, and ```@function``` for functions or ```@var``` for variables.
@@ -249,5 +250,5 @@ This plugin makes use of:
 * The Underscore JS library: [http://underscorejs.org/](http://underscorejs.org/)
 * Turf, a geospatial library from Mapbox: [http://turfjs.org/static/docs/](http://turfjs.org/static/docs/)
 * Leaflet.Draw, a Leaflet plugin which provides the drawing controls we use: [https://github.com/Leaflet/Leaflet.draw](https://github.com/Leaflet/Leaflet.draw)
-* Leaflet.markercluster, a Leaflet plugin which provides clusering support for markers: [https://github.com/Leaflet/Leaflet.markercluster](https://github.com/Leaflet/Leaflet.markercluster)
+* Leaflet.markercluster, a Leaflet plugin which provides clustering support for markers: [https://github.com/Leaflet/Leaflet.markercluster](https://github.com/Leaflet/Leaflet.markercluster)
 * ...plus other, more specific, plugins
