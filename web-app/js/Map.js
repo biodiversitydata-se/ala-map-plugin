@@ -31,6 +31,7 @@ ALA.MapConstants = {
  * <p/>
  * <b>Options</b>
  * <ul>
+ *  <li><pre>baseLayer</pre> Either a Leaflet.Layer, or the name of one of the supported base layers (currently 'Minimal' and 'WorldImagery'. Default: Minimal</li>
  *  <li><pre>center</pre> Centre position of the map. Default: -28, 134</li>
  *  <li><pre>zoom</pre> the initial zoom level. Default: 4</li>
  *  <li><pre>scrollWheelZoom</pre> whether to enable zooming in/out by scrolling the mouse. Default: false</li>
@@ -931,6 +932,15 @@ ALA.Map = function (id, options) {
 
         if (_.isUndefined(options.baseLayer)) {
             options.baseLayer = minimalLayer;
+        } else if (_.isString(options.baseLayer)) {
+            if (options.baseLayer.toLowerCase() == "minimal") {
+                options.baseLayer = minimalLayer;
+            } else if (options.baseLayer.toLowerCase() == "worldimagery") {
+                options.baseLayer = options.otherLayers.WorldImagery;
+            } else {
+                console.warn("Unrecognised base layer name: supported base layers are 'Minimal' and 'WorldImagery'. Defaulting to Minimal.");
+                options.baseLayer = minimalLayer;
+            }
         }
     }
 
