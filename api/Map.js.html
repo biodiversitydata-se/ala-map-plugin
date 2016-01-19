@@ -1016,31 +1016,32 @@ ALA.MapConstants = {
  * &lt;p/>
  * &lt;b>Options&lt;/b>
  * &lt;ul>
- *  &lt;li>&lt;pre>center&lt;/pre> Centre position of the map. Default: -28, 134&lt;/li>
- *  &lt;li>&lt;pre>zoom&lt;/pre> the initial zoom level. Default: 4&lt;/li>
- *  &lt;li>&lt;pre>scrollWheelZoom&lt;/pre> whether to enable zooming in/out by scrolling the mouse. Default: false&lt;/li>
- *  &lt;li>&lt;pre>fullscreenControl&lt;/pre> whether to include a full-screen option. Default: true&lt;/li>
- *  &lt;li>&lt;pre>fullscreenControlOptions:&lt;/pre>
+ *  &lt;li>&lt;code>baseLayer&lt;/code> Either a Leaflet.Layer, or the name of one of the supported base layers (currently 'Minimal' and 'WorldImagery'. Default: Minimal&lt;/li>
+ *  &lt;li>&lt;code>center&lt;/code> Centre position of the map. Default: -28, 134&lt;/li>
+ *  &lt;li>&lt;code>zoom&lt;/code> the initial zoom level. Default: 4&lt;/li>
+ *  &lt;li>&lt;code>scrollWheelZoom&lt;/code> whether to enable zooming in/out by scrolling the mouse. Default: false&lt;/li>
+ *  &lt;li>&lt;code>fullscreenControl&lt;/code> whether to include a full-screen option. Default: true&lt;/li>
+ *  &lt;li>&lt;code>fullscreenControlOptions:&lt;/code>
  *      &lt;ul>
- *          &lt;li>&lt;pre>position&lt;/pre> position of the button on the map. Default: topleft&lt;/li>
+ *          &lt;li>&lt;code>position&lt;/code> position of the button on the map. Default: topleft&lt;/li>
  *      &lt;/ul>
- *  &lt;li>&lt;pre>drawControl&lt;/pre> whether to include drawing controls or not. Default: true&lt;/li>
- *  &lt;li>&lt;pre>singleDraw&lt;/pre> whether to allow more than 1 shape or region to be drawn at a time. This does NOT apply to markers - only layers and other shapes. See also singleMarker and markerOrShapeNotBoth. Default: true&lt;/li>
- *  &lt;li>&lt;pre>singleMarker&lt;/pre> whether to allow more than 1 marker to be drawn at a time.. Default: true&lt;/li>
- *  &lt;li>&lt;pre>markerOrShapeNotBoth&lt;/pre> whether to allow users to draw both markers and regions/shapes at the same time. Default: true&lt;/li>
- *  &lt;li>&lt;pre>useMyLocation&lt;/pre> whether to include a "Use My Location" button to place a marker on the map at the user's location. Default: true&lt;/li>
- *  &lt;li>&lt;pre>allowSearchByAddress&lt;/pre> whether to allow the user to search by address to place a marker on the map. Default: true&lt;/li>
- *  &lt;li>&lt;pre>zoomToObject&lt;/pre> whether to automatically fit the map to the bounds of a new object when added. Default: true&lt;/li>
- *  &lt;li>&lt;pre>draggableMarkers&lt;/pre> whether to allow point markers to be draggable by default. Default: true&lt;/li>
- *  &lt;li>&lt;pre>wmsFeatureUrl&lt;/pre> the URL to call to fetch features of a WMS layer (e.g. http://spatial-dev.ala.org.au/geoserver/wms/reflect?). The PID will be appended to this URL. Default: &lt;/li>
- *  &lt;li>&lt;pre>wmsLayerUrl&lt;/pre> the URL to call to retrieve a WMS layer. The PID will be appended to this URL. Default: &lt;/li>
- *  &lt;li>&lt;pre>sleep&lt;/pre> True to disable mouse wheel zooming once the mouse has been out of the map for a certain time. Clicking in the map re-enables it. Overrides scrollWheelZoom. Default: true&lt;/li>
- *  &lt;li>&lt;pre>sleepTime&lt;/pre> Time (milliseconds) until the map 'sleeps' up after the mouse moves away from the map. Only relevant if sleep = true. Default: 750&lt;/li>
- *  &lt;li>&lt;pre>hoverToWake&lt;/pre> True to wake the map up after the mouse has been held over the map for a certain time (wakeTime). Only relevant if sleep = true. Default: true&lt;/li>
- *  &lt;li>&lt;pre>wakeTime&lt;/pre> Time (milliseconds) until the map wakes up after mouse over. Only relevant if sleep = true and hoverToWake = true. Default: 750&lt;/li>
- *  &lt;li>&lt;pre>sleepNote&lt;/pre> True to display text over the map when it is sleeping. Only relevant if sleep = true. Default: false&lt;/li>
- *  &lt;li>&lt;pre>sleepOpacity&lt;/pre> Opacity of the sleep text. Only relevant if sleep = true and sleepNote = true. Default: 0.7&lt;/li>
- *  &lt;li>&lt;pre>wakeMessage&lt;/pre> Text to display over the map when it is sleeping. Only relevant if sleep = true and sleepNote = true. Default: 'Click or hover to wake'.&lt;/li>
+ *  &lt;li>&lt;code>drawControl&lt;/code> whether to include drawing controls or not. Default: true&lt;/li>
+ *  &lt;li>&lt;code>singleDraw&lt;/code> whether to allow more than 1 shape or region to be drawn at a time. This does NOT apply to markers - only layers and other shapes. See also singleMarker and markerOrShapeNotBoth. Default: true&lt;/li>
+ *  &lt;li>&lt;code>singleMarker&lt;/code> whether to allow more than 1 marker to be drawn at a time.. Default: true&lt;/li>
+ *  &lt;li>&lt;code>markerOrShapeNotBoth&lt;/code> whether to allow users to draw both markers and regions/shapes at the same time. Default: true&lt;/li>
+ *  &lt;li>&lt;code>useMyLocation&lt;/code> whether to include a "Use My Location" button to place a marker on the map at the user's location. Default: true&lt;/li>
+ *  &lt;li>&lt;code>allowSearchByAddress&lt;/code> whether to allow the user to search by address to place a marker on the map. Default: true&lt;/li>
+ *  &lt;li>&lt;code>zoomToObject&lt;/code> whether to automatically fit the map to the bounds of a new object when added. Default: true&lt;/li>
+ *  &lt;li>&lt;code>draggableMarkers&lt;/code> whether to allow point markers to be draggable by default. Default: true&lt;/li>
+ *  &lt;li>&lt;code>wmsFeatureUrl&lt;/code> the URL to call to fetch features of a WMS layer (e.g. http://spatial-dev.ala.org.au/geoserver/wms/reflect?). The PID will be appended to this URL. Default: &lt;/li>
+ *  &lt;li>&lt;code>wmsLayerUrl&lt;/code> the URL to call to retrieve a WMS layer. The PID will be appended to this URL. Default: &lt;/li>
+ *  &lt;li>&lt;code>sleep&lt;/code> True to disable mouse wheel zooming once the mouse has been out of the map for a certain time. Clicking in the map re-enables it. Overrides scrollWheelZoom. Default: true&lt;/li>
+ *  &lt;li>&lt;code>sleepTime&lt;/code> Time (milliseconds) until the map 'sleeps' up after the mouse moves away from the map. Only relevant if sleep = true. Default: 750&lt;/li>
+ *  &lt;li>&lt;code>hoverToWake&lt;/code> True to wake the map up after the mouse has been held over the map for a certain time (wakeTime). Only relevant if sleep = true. Default: true&lt;/li>
+ *  &lt;li>&lt;code>wakeTime&lt;/code> Time (milliseconds) until the map wakes up after mouse over. Only relevant if sleep = true and hoverToWake = true. Default: 750&lt;/li>
+ *  &lt;li>&lt;code>sleepNote&lt;/code> True to display text over the map when it is sleeping. Only relevant if sleep = true. Default: false&lt;/li>
+ *  &lt;li>&lt;code>sleepOpacity&lt;/code> Opacity of the sleep text. Only relevant if sleep = true and sleepNote = true. Default: 0.7&lt;/li>
+ *  &lt;li>&lt;code>wakeMessage&lt;/code> Text to display over the map when it is sleeping. Only relevant if sleep = true and sleepNote = true. Default: 'Click or hover to wake'.&lt;/li>
  * &lt;/ul>
  *
  * @class
@@ -1157,9 +1158,9 @@ ALA.Map = function (id, options) {
      *
      * The following configuration options are available:
      * &lt;ul>
-     *     &lt;li>&lt;pre>markerWithMouseOver&lt;/pre> - show a marker at the center of the layer, and hide the layer outline until the mouse is moved over the marker. Default: false&lt;/li>
-     *     &lt;li>&lt;pre>markerLocation&lt;/pre> - used with 'markerWithMouseOver' to specify the position of the marker - if not provided, the center of the layer's bounds will be used. Only works with a single feature.&lt;/li>
-     *     &lt;li>&lt;pre>popup&lt;/pre> - text or HTML to display when the layer (or the placeholder marker if markerWithMouseOver = true) is clicked.&lt;/li>
+     *     &lt;li>&lt;code>markerWithMouseOver&lt;/code> - show a marker at the center of the layer, and hide the layer outline until the mouse is moved over the marker. Default: false&lt;/li>
+     *     &lt;li>&lt;code>markerLocation&lt;/code> - used with 'markerWithMouseOver' to specify the position of the marker - if not provided, the center of the layer's bounds will be used. Only works with a single feature.&lt;/li>
+     *     &lt;li>&lt;code>popup&lt;/code> - text or HTML to display when the layer (or the placeholder marker if markerWithMouseOver = true) is clicked.&lt;/li>
      * &lt;/ul>
      *
      * @memberOf ALA.Map
@@ -1467,10 +1468,10 @@ ALA.Map = function (id, options) {
      *
      * Each point object in the points array must have the following structure:
      * &lt;ul>
-     *     &lt;li>&lt;pre>lat&lt;/pre> - the latitude for the point. Mandatory.&lt;/li>
-     *     &lt;li>&lt;pre>lng&lt;/pre> - the longitude for the point. Mandatory.&lt;/li>
-     *     &lt;li>&lt;pre>popup&lt;/pre> - Text or HTML to be used as the popup when the marker is clicked. Optional.&lt;/li>
-     *     &lt;li>&lt;pre>options&lt;/pre> - options object to override specified options for the individual point. Optional.&lt;/li>
+     *     &lt;li>&lt;code>lat&lt;/code> - the latitude for the point. Mandatory.&lt;/li>
+     *     &lt;li>&lt;code>lng&lt;/code> - the longitude for the point. Mandatory.&lt;/li>
+     *     &lt;li>&lt;code>popup&lt;/code> - Text or HTML to be used as the popup when the marker is clicked. Optional.&lt;/li>
+     *     &lt;li>&lt;code>options&lt;/code> - options object to override specified options for the individual point. Optional.&lt;/li>
      * &lt;/ul>
      *
      * Will notify all subscribers.
@@ -1751,9 +1752,9 @@ ALA.Map = function (id, options) {
      * Adds a button to the map..
      *
      * E.g.
-     * &lt;pre>
+     * &lt;code>
      *     addButton('fa fa-map-marker', function (button, map) { ... }
-     * &lt;/pre>
+     * &lt;/code>
      *
      * @memberOf ALA.Map
      * @function addButton
@@ -1916,6 +1917,15 @@ ALA.Map = function (id, options) {
 
         if (_.isUndefined(options.baseLayer)) {
             options.baseLayer = minimalLayer;
+        } else if (_.isString(options.baseLayer)) {
+            if (options.baseLayer.toLowerCase() == "minimal") {
+                options.baseLayer = minimalLayer;
+            } else if (options.baseLayer.toLowerCase() == "worldimagery") {
+                options.baseLayer = options.otherLayers.WorldImagery;
+            } else {
+                console.warn("Unrecognised base layer name: supported base layers are 'Minimal' and 'WorldImagery'. Defaulting to Minimal.");
+                options.baseLayer = minimalLayer;
+            }
         }
     }
 
@@ -2217,7 +2227,7 @@ ALA.MapUtils = {
      * a property of 'point_type' with a value of 'circle', and a property of 'radius'.
      *
      * I.e. this function will convert
-     * &lt;pre>
+     * &lt;code>
      *      {
      *         "type": "FeatureCollection",
      *         "features": [
@@ -2237,9 +2247,9 @@ ALA.MapUtils = {
      *           }
      *         ]
      *       }
-     * &lt;/pre>
+     * &lt;/code>
      * into
-     * &lt;pre>
+     * &lt;code>
      * {
      *     "type": "FeatureCollection",
      *     "features": [
@@ -2264,7 +2274,7 @@ ALA.MapUtils = {
      *       }
      *     ]
      *   }
-     * &lt;/pre>
+     * &lt;/code>
      * @param geoJSON
      * @returns {*}
      */
