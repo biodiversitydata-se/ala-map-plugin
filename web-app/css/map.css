@@ -67,3 +67,11 @@
 .leaflet-tile-pane {
     z-index: 1 !important;
 }
+
+.geocoder-icon-override {
+    background: none;
+    /*content: '\f05b';*/
+    /*font-family: FontAwesome;*/
+    width: 22px !important;
+    margin-left: 4px;
+}
