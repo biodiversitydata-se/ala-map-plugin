@@ -1030,7 +1030,13 @@ ALA.MapConstants = {
  *  &lt;li>&lt;code>singleMarker&lt;/code> whether to allow more than 1 marker to be drawn at a time.. Default: true&lt;/li>
  *  &lt;li>&lt;code>markerOrShapeNotBoth&lt;/code> whether to allow users to draw both markers and regions/shapes at the same time. Default: true&lt;/li>
  *  &lt;li>&lt;code>useMyLocation&lt;/code> whether to include a "Use My Location" button to place a marker on the map at the user's location. Default: true&lt;/li>
- *  &lt;li>&lt;code>allowSearchByAddress&lt;/code> whether to allow the user to search by address to place a marker on the map. Default: true&lt;/li>
+ *  &lt;li>&lt;code>allowSearchLocationByAddress&lt;/code> whether to allow the user to search by address to place a marker on the map. Default: true&lt;/li>
+ *  &lt;li>&lt;code>allowSearchRegionByAddress&lt;/code> whether to allow the user to search by address to draw a polygon on the map. Default: true&lt;/li>
+ *  &lt;li>&lt;code>geocodeRegionOptions&lt;/code> additional configuration options when using the allowSearchRegionByAddress control. Only relevant when allowSearchRegionByAddress = true:&lt;/li>
+ *      &lt;ul>
+ *          &lt;li>&lt;code>pointToCircle&lt;/code> true to render any point locations returned by the geocode service as circles. Default: true&lt;/li>
+ *          &lt;li>&lt;code>pointRadiusMeters&lt;/code> The radius of the circle to use when pointToCircle = true. Units are in meters. Default: 500&lt;/li>
+ *      &lt;/ul>
  *  &lt;li>&lt;code>zoomToObject&lt;/code> whether to automatically fit the map to the bounds of a new object when added. Default: true&lt;/li>
  *  &lt;li>&lt;code>draggableMarkers&lt;/code> whether to allow point markers to be draggable by default. Default: true&lt;/li>
  *  &lt;li>&lt;code>wmsFeatureUrl&lt;/code> the URL to call to fetch features of a WMS layer (e.g. http://spatial-dev.ala.org.au/geoserver/wms/reflect?). The PID will be appended to this URL. Default: &lt;/li>
@@ -1137,7 +1143,12 @@ ALA.Map = function (id, options) {
         singleMarker: true,
         markerOrShapeNotBoth: true,
         useMyLocation: true,
-        allowSearchByAddress: true,
+        allowSearchLocationByAddress: true,
+        allowSearchRegionByAddress: true,
+        geocodeRegionOptions: {
+            pointToCircle: true,
+            pointRadiusMeters: 500
+        },
         zoomToObject: true,
         worldCopyJump: true,
         draggableMarkers: true,
@@ -1307,6 +1318,13 @@ ALA.Map = function (id, options) {
             onEachFeature: function (feature, layer) {
                 if (feature.properties &amp;&amp; feature.properties.pid) {
                     layer = createWmsLayer(feature.properties.pid);
+                }
+
+                if (options.singleDraw) {
+                    drawnItems.clearLayers();
+                }
+                if (options.markerOrShapeNotBoth) {
+                    clearMarkers();
                 }
 
                 drawnItems.addLayer(layer);
@@ -1865,8 +1883,12 @@ ALA.Map = function (id, options) {
             self.addButton("&lt;span class='ala-map-my-location fa fa-location-arrow' title='" + title + "'>&lt;/span>", self.markMyLocation, "topleft");
         }
 
-        if (options.allowSearchByAddress) {
-            addGeocodeControl();
+        if (options.allowSearchLocationByAddress) {
+            addGeocodeControl(ALA.MapConstants.DRAW_TYPE.POINT_TYPE);
+        }
+
+        if (options.allowSearchRegionByAddress) {
+            addGeocodeControl(ALA.MapConstants.DRAW_TYPE.POLYGON_TYPE);
         }
 
         if (enableDrawing) {
@@ -2032,7 +2054,7 @@ ALA.Map = function (id, options) {
     // Render any GeoJSON feature where the geometry type = Point but the properties contains point_type = 'Circle'
     // as a circle instead of a point. This is because GeoJSON does not support Circle types.
     function pointToLayerCircleSupport(feature, latlng) {
-        if (feature.properties.point_type === ALA.MapConstants.DRAW_TYPE.CIRCLE_TYPE) {
+        if (feature.properties &amp;&amp; feature.properties.point_type === ALA.MapConstants.DRAW_TYPE.CIRCLE_TYPE) {
             return L.circle(latlng, feature.properties.radius, {});
         } else {
             var marker = L.marker(latlng, {draggable: options.draggableMarkers});
@@ -2071,12 +2093,49 @@ ALA.Map = function (id, options) {
 
     // Display an input field and search button to allow the user to enter an address, then perform a geocode address
     // search and place a marker on the map
-    function addGeocodeControl() {
+    function addGeocodeControl(drawType) {
         var prompt = "Search for an address or location";
-        var geocodeControl = L.Control.geocoder({position: "topleft", placeholder:prompt}).addTo(mapImpl);
-        $(".leaflet-control-geocoder-icon").attr("title", prompt);
+        if (drawType == ALA.MapConstants.DRAW_TYPE.POLYGON_TYPE) {
+            prompt = "Search for a region or area";
+        }
+
+        var geocodeControl = L.Control.geocoder({
+            position: "topleft",
+            placeholder: prompt,
+            geocoder: new L.Control.Geocoder.Nominatim({
+                geocodingQueryParams: {polygon_geojson: 1, dedupe: 1}
+            })
+        }).addTo(mapImpl);
+
+        var button = $(geocodeControl._container).find("a");
+        button.attr("title", prompt);
+
+        if (drawType == ALA.MapConstants.DRAW_TYPE.POINT_TYPE) {
+            button.addClass("geocoder-icon-override fa fa-crosshairs");
+        }
+
         geocodeControl.markGeocode = function (result) {
-            self.addMarker(result.center.lat, result.center.lng, null);
+            if (drawType == ALA.MapConstants.DRAW_TYPE.POINT_TYPE) {
+                self.addMarker(result.center.lat, result.center.lng, null);
+            } else if (drawType == ALA.MapConstants.DRAW_TYPE.POLYGON_TYPE) {
+                var geojson = {
+                    type: "Feature",
+                    geometry: result.properties.geojson,
+                    properties: {}
+                };
+
+                if (options.geocodeRegionOptions.pointToCircle) {
+                    // when selecting a geocoded region that has a Point type, we will convert it to a circle with a
+                    // specific radius
+                    if (geojson.geometry.type == ALA.MapConstants.DRAW_TYPE.POINT_TYPE) {
+                        geojson.properties.point_type = ALA.MapConstants.DRAW_TYPE.CIRCLE_TYPE;
+                        geojson.properties.radius = options.geocodeRegionOptions.pointRadiusMeters;
+                    }
+                }
+                self.setGeoJSON(geojson);
+            } else {
+                self.addMarker(result.center.lat, result.center.lng, null);
+            }
         }
     }
 

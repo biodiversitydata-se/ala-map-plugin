@@ -1130,7 +1130,13 @@
  <li><code>singleMarker</code> whether to allow more than 1 marker to be drawn at a time.. Default: true</li>
  <li><code>markerOrShapeNotBoth</code> whether to allow users to draw both markers and regions/shapes at the same time. Default: true</li>
  <li><code>useMyLocation</code> whether to include a "Use My Location" button to place a marker on the map at the user's location. Default: true</li>
- <li><code>allowSearchByAddress</code> whether to allow the user to search by address to place a marker on the map. Default: true</li>
+ <li><code>allowSearchLocationByAddress</code> whether to allow the user to search by address to place a marker on the map. Default: true</li>
+ <li><code>allowSearchRegionByAddress</code> whether to allow the user to search by address to draw a polygon on the map. Default: true</li>
+ <li><code>geocodeRegionOptions</code> additional configuration options when using the allowSearchRegionByAddress control. Only relevant when allowSearchRegionByAddress = true:</li>
+     <ul>
+         <li><code>pointToCircle</code> true to render any point locations returned by the geocode service as circles. Default: true</li>
+         <li><code>pointRadiusMeters</code> The radius of the circle to use when pointToCircle = true. Units are in meters. Default: 500</li>
+     </ul>
  <li><code>zoomToObject</code> whether to automatically fit the map to the bounds of a new object when added. Default: true</li>
  <li><code>draggableMarkers</code> whether to allow point markers to be draggable by default. Default: true</li>
  <li><code>wmsFeatureUrl</code> the URL to call to fetch features of a WMS layer (e.g. http://spatial-dev.ala.org.au/geoserver/wms/reflect?). The PID will be appended to this URL. Default: </li>
