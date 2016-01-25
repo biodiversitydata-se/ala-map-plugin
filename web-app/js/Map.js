@@ -417,7 +417,12 @@ ALA.Map = function (id, options) {
      * @function clearLayers
      */
     self.clearLayers = function () {
-        drawnItems.clearLayers();
+        drawnItems.eachLayer(function (layer) {
+            if (markers.indexOf(layer) == -1) {
+                drawnItems.removeLayer(layer);
+            }
+        });
+
         self.fitBounds();
 
         self.notifyAll();
