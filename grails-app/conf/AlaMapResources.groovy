@@ -34,8 +34,8 @@ modules = {
 
     leaflet_draw {
         dependsOn "leaflet"
-        resource url: [dir: "vendor/leaflet.draw-0.2.4", file: "leaflet.draw.css", plugin: "ala-map"]
-        resource url: [dir: "vendor/leaflet.draw-0.2.4", file: "leaflet.draw.js", plugin: "ala-map"]
+        resource url: [dir: "vendor/Leaflet.draw-0.2.4", file: "leaflet.draw.css", plugin: "ala-map"]
+        resource url: [dir: "vendor/Leaflet.draw-0.2.4", file: "leaflet.draw.js", plugin: "ala-map"]
     }
 
     leaflet_coords {
