@@ -1,6 +1,6 @@
 class AlaMapGrailsPlugin {
     // the plugin version
-    def version = "1.2"
+    def version = "1.3-SNAPSHOT"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "2.5 > *"
     // resources that are excluded from plugin packaging
