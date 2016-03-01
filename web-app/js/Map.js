@@ -1420,7 +1420,7 @@ ALA.MapUtils = {
      * @returns {Array} array of points
      */
     bboxToPointArray: function (bboxString, latFirst) {
-        var coords = bboxString.replace(/POLYGON|LINESTRING/g, "").replace(/[\\(|\\)]/g, "");
+        var coords = bboxString.replace(/POLYGON|LINESTRING|POINT/g, "").replace(/[\\(|\\)]/g, "");
         var coordsArray = [];
         coords.split(",").forEach(function (item) {
             coordsArray.push(latFirst ? item.split(" ").reverse() : item.split(" "));
