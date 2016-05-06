@@ -98,7 +98,8 @@ ALA.Map = function (id, options) {
     };
 
     var DEFAULT_BASE_LAYER = {
-        url: "http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+        // HTTPS tile url as per https://cartodb.com/location-data-services/basemaps/
+        url: "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png",
         subdomains: "abcd",
         attribution: "Map data &copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>, imagery &copy; <a href='http://cartodb.com/attributions'>CartoDB</a>"
     };

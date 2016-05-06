@@ -4,3 +4,4 @@
 .project
 coverage/
 node_modules/
+target/
