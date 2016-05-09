@@ -66,6 +66,7 @@ ALA.MapConstants = {
  * </ul>
  *
  * @class
+ * @memberOf ALA
  * @param {String} id Unique id of the map container div. Mandatory.
  * @param {Object} options Configuration options for the map. Optional - sensible defaults will be used if not provided. See the list above.
  */

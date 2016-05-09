@@ -19,6 +19,7 @@ var ALA = ALA || {};
  * <ul>
  *  <li><code>mapOptions</code> Object containing configuration options for the underlying map. See ALA.Map for details. If not provided, the defaults from ALA.Map will be used.</li>
  *  <li><code>showFacets</code> True to allow the user to change the facets used for the query. Default: true</li>
+ *  <li><code>facetNameMapping</code> Object containing a mapping from the default facet field names to display labels to be used. If not provided then the field names will be formatted into human-readable form (capitalised, camel-case changed to sentence case, underscores replaced with spaces, etc). The format must be <code>{fieldName: "label", ...}</code>. All values displayed in the facet list can be mapped using this construct.</li>
  *  <li><code>excludeSingles</code> True to hide any facet group which only contains a single option. Default: true</li>
  *  <li><code>wms</code> True to use a WMS layer to display occurrences, false to render individual points as circles on a clustered map. Default: true</li>
  *  <li><code>mapAttribution</code> Attribution text to be displayed on the map. Default: blank</li>
@@ -33,6 +34,7 @@ var ALA = ALA || {};
  * </ul>
  *
  * @class
+ * @memberOf ALA
  * @param {String} id Unique id of the map container div. Mandatory.
  * @param {String} biocacheBaseUrl The base URL of the Biocache instance that will be used as the source for all data. Mandatory.
  * @param {String} baseQuery The initial query string to use to populate map (it will be passed to the Biocache's search service). This property must include the <code>q=</code> parameter at a minimum. Mandatory.
@@ -56,7 +58,7 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, baseQuery, options) {
     /**
      * Default Map options
      *
-     * @memberOf ALA.Map
+     * @memberOf ALA.OccurrenceMap
      * @var
      */
     var DEFAULT_OPTIONS = {
@@ -68,6 +70,13 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, baseQuery, options) {
                 marker: false
             },
             drawControl: false // temporary
+        },
+        facetNameMapping: {
+            taxon_name: "Scientific name",
+            raw_taxon_name: "Scientific name (unprocessed)",
+            "": "Unknown",
+            " ": "Unknown",
+            Taxon: "Taxonomy"
         },
         showFacets: true,
         excludeSingles: true,
@@ -99,11 +108,25 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, baseQuery, options) {
     // Public functions
     //
 
+    /**
+     * Retrieve the current query (excluding the server) for the occurrence records on the map
+     *
+     * @memberOf ALA.OccurrenceMap
+     * @function getQueryString
+     * @return {String} The current biocache query string to retrieve the occurrence records
+     */
     self.getQueryString = function () {
         return self.biocacheQuery;
     };
 
-    self.setQueryString = function(queryString) {
+    /**
+     * Set the current query string and update the occurrence map with the results.
+     *
+     * @memberOf ALA.OccurrenceMap
+     * @function setQueryString
+     * @param queryString {String} the biocache query string to populate the map and facet list
+     */
+    self.setQueryString = function (queryString) {
         selectedFacets = [];
 
         baseQuery = queryString;
@@ -111,14 +134,30 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, baseQuery, options) {
         update();
     };
 
+    /**
+     * Select a particular facet and update the occurrence map and facet list.
+     *
+     * @memberOf ALA.OccurrenceMap
+     * @function selectFacet
+     * @param facet {Object} An object containing a minimum of 'label' and 'fq': the 'fq' property will be used to identify the facet.
+     */
     self.selectFacet = function (facet) {
         selectedFacets.push(facet);
 
         update();
     };
 
+    /**
+     * Remove a particular selected facet and update the occurrence map and facet list.
+     *
+     * @memberOf ALA.OccurrenceMap
+     * @function clearFacet
+     * @param facet {Object} An object containing a minimum of 'label' and 'fq': the 'fq' property will be used to identify the facet.
+     */
     self.clearFacet = function (facet) {
-        var index = _.findIndex(selectedFacets, function (f) { return f.fq == facet.fq });
+        var index = _.findIndex(selectedFacets, function (f) {
+            return f.fq == facet.fq
+        });
 
         if (index > -1) {
             selectedFacets.splice(index, 1);
@@ -127,7 +166,13 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, baseQuery, options) {
         }
     };
 
-    self.clearAllFacets = function() {
+    /**
+     * Clear all selected facets and update the occurrence map and facet list.
+     *
+     * @memberOf ALA.OccurrenceMap
+     * @function clearAllFacets
+     */
+    self.clearAllFacets = function () {
         selectedFacets = [];
         // remove all fq= filters from the query string
         baseQuery = baseQuery.replace(/fq=.*(&|$)/g, "").replace(/&$/, "");
@@ -228,9 +273,14 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, baseQuery, options) {
 
     function updateSelectedFacets(facetsForQuery) {
         $.each(facetsForQuery.activeFacetMap, function (fieldName, facet) {
-            var selectedFacet = {label: formatFacetName(facet.name) + ": " + facet.value, fq: facet.name + ":" + facet.value};
+            var selectedFacet = {
+                label: formatFacetName(facet.name) + ": " + formatFacetName(facet.value),
+                fq: facet.name + ":" + facet.value
+            };
 
-            if (_.isUndefined(_.find(selectedFacets, function (f) { return f.fq == selectedFacet.fq }))) {
+            if (_.isUndefined(_.find(selectedFacets, function (f) {
+                    return f.fq == selectedFacet.fq
+                }))) {
                 selectedFacets.push(selectedFacet);
             }
         });
@@ -241,7 +291,7 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, baseQuery, options) {
 
         facetGroups.forEach(function (group) {
             group.facets.forEach(function (facet) {
-                fieldsToGroups[facet.field] = group.title;
+                fieldsToGroups[facet.field] = formatFacetName(group.title);
             });
         });
 
@@ -314,17 +364,21 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, baseQuery, options) {
         var fieldName = elem.attr("data-field-name");
         var fq = elem.attr("data-fq");
         var label = elem.attr("data-label");
-        var count = elem.attr("data-count");
 
         return {label: fieldName + ": " + label, fq: fq}
     }
 
     function formatFacetName(name) {
-        if (name && !_.isUndefined(name)) {
-            name = name.replace(/[^a-zA-Z0-9\-\\\/\.]/g, " ").replace(/([a-z])([A-Z])/g, "$1 $2").replace(/ +/g, " ");
-            name = name.charAt(0).toUpperCase() + name.substring(1);
+        var mappedDisplayName = options.facetNameMapping[name];
+        if (_.isUndefined(mappedDisplayName)) {
+            if (name && !_.isUndefined(name)) {
+                name = name.replace(/[^a-zA-Z0-9\-\\\/\.]/g, " ").replace(/([a-z])([A-Z])/g, "$1 $2").replace(/ +/g, " ");
+                name = name.charAt(0).toUpperCase() + name.substring(1);
+            } else {
+                name = "Unknown";
+            }
         } else {
-            name = "Unknown";
+            name = mappedDisplayName;
         }
 
         return name;
@@ -335,6 +389,7 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, baseQuery, options) {
         _.defaults(options, DEFAULT_OPTIONS);
         _.defaults(options.point, DEFAULT_OPTIONS.point);
         _.defaults(options.mapOptions, DEFAULT_OPTIONS.mapOptions);
+        _.defaults(options.facetNameMapping, DEFAULT_OPTIONS.facetNameMapping);
     }
 
     initialiseMap();
