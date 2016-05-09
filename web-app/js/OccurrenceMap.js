@@ -19,7 +19,8 @@ var ALA = ALA || {};
  * <ul>
  *  <li><code>mapOptions</code> Object containing configuration options for the underlying map. See ALA.Map for details. If not provided, the defaults from ALA.Map will be used.</li>
  *  <li><code>showFacets</code> True to allow the user to change the facets used for the query. Default: true</li>
- *  <li><code>facetNameMapping</code> Object containing a mapping from the default facet field names to display labels to be used. If not provided then the field names will be formatted into human-readable form (capitalised, camel-case changed to sentence case, underscores replaced with spaces, etc). The format must be <code>{fieldName: "label", ...}</code>. All values displayed in the facet list can be mapped using this construct.</li>
+ *  <li><code>facetNameMapping</code> Object containing a mapping from the default facet field names to display labels to be used. If not provided then the field names will be formatted into human-readable form (capitalised, camel-case changed to sentence case, underscores replaced with spaces, etc). The format must be <code>{fieldName: "label", ...}</code>. All values displayed in the facet list can be mapped using this construct, regardless of the display level.</li>
+ *  <li><code>excludeFacets</code> List of facet names to exclude from dislay. This list can contain items from any level in the facet list. If not provided, all available facets will be displayed.</li>
  *  <li><code>excludeSingles</code> True to hide any facet group which only contains a single option. Default: true</li>
  *  <li><code>wms</code> True to use a WMS layer to display occurrences, false to render individual points as circles on a clustered map. Default: true</li>
  *  <li><code>mapAttribution</code> Attribution text to be displayed on the map. Default: blank</li>
@@ -44,11 +45,11 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, baseQuery, options) {
     var self = this;
 
     if (!biocacheBaseUrl || _.isUndefined(biocacheBaseUrl) || _.isEmpty(biocacheBaseUrl)) {
-        console.error("You must define the base URL for the Biocache instance you wish to use.")
+        console.error("You must define the base URL for the Biocache instance you wish to use.");
     }
 
     if (!baseQuery || _.isUndefined(baseQuery) || _.isEmpty(baseQuery) || "q=" === baseQuery) {
-        console.error("You must define the base query to use to populate the map.")
+        console.error("You must define the base query to use to populate the map.");
     }
 
     if (_.isUndefined(options)) {
@@ -76,10 +77,57 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, baseQuery, options) {
             raw_taxon_name: "Scientific name (unprocessed)",
             "": "Unknown",
             " ": "Unknown",
-            Taxon: "Taxonomy"
+            "state": "State or Territory",
+            "synonym.decade": "occurrence_year",
+            "location_id": "Location ID",
+            "event_id": "Event ID",
+            "elevation_d_rng": "Elevation (in metres)",
+            "min_elevation_d_rng": "Minimum elevation (in metres)",
+            "cl1048": "IBRA 7 Regions",
+            "cl21": "IMCRA Regions",
+            "raw_identification_qualifier": "Raw identification qualifier",
+            "original_name_usage": "Original name usage",
+            "cl2079": "capad 2014 terrestrial",
+            "cl2078": "capad 2014 marine",
+            "cl925": "Estuary habitat mapping",
+            "cl901": "Directory of Important Wetlands",
+            "cl958": "Commonwealth Electoral Boundaries",
+            "cl1049": "IBRA 7 Subregions",
+            "cl1085": "Koppen Climate Classification (All Classes)",
+            "cl678": "Land use",
+            "cl991": "Geomorphology of the Australian Margin and adjacent seafloor",
+            "cl916": "NRM Regions",
+            "cl935": "RAMSAR wetland regions",
+            "cl1057": "River Regions",
+            "cl2013": "ASGS Australian States and Territories",
+            "cl927": "States including coastal waters",
+            "cl923": "Surface Geology of Australia",
+            "cl619": "Vegetation - condition",
+            "cl1076": "IGBP Land Cover vegetation classification scheme (2011)",
+            "cl918": "National Dynamic Land Cover",
+            "occurrence_decade_i": "Year (by decade)",
+            "data_resource_uid": "Data resource",
+            "data_resource": "Data resource",
+            "dataset_name": "Dataset name",
+            "species_list_uid": "Species lists",
+            "Taxonomic ": " Taxonomic",
+            "Taxon ": " Taxon",
+            "Geospatial ": " Geospatial",
+            "Temporal ": " Temporal",
+            "Record\ details ": " Record details",
+            "Attribution ": " Attribution",
+            "Record\ assertions ": " Record assertions",
+            "Ungrouped ": " Miscellaneous",
+            "Identification": "Identification",
+            "Occurrence": "Occurrence",
+            "Location": "Location",
+            "Assertions": "Assertions",
+            "Record": "Record"
         },
         showFacets: true,
         excludeSingles: true,
+        excludeFacets: [],
+        includeFacets: [],
         wms: true,
         mapAttribution: "",
         point: {
@@ -290,9 +338,13 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, baseQuery, options) {
         var fieldsToGroups = {};
 
         facetGroups.forEach(function (group) {
-            group.facets.forEach(function (facet) {
-                fieldsToGroups[facet.field] = formatFacetName(group.title);
-            });
+            if (includeFacet(group.title)) {
+                group.facets.forEach(function (facet) {
+                    if (includeFacet(group.field)) {
+                        fieldsToGroups[facet.field] = formatFacetName(group.title);
+                    }
+                });
+            }
         });
 
         return fieldsToGroups;
@@ -305,7 +357,7 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, baseQuery, options) {
             var fieldResults = [];
 
             facet.fieldResult.forEach (function (result) {
-                if (result.count > 0) {
+                if (result.count > 0 && includeFacet(result.label)) {
                     result.label = formatFacetName(result.label);
 
                     fieldResults.push(result);
@@ -315,14 +367,27 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, baseQuery, options) {
             if (fieldResults.length > 1 || !options.excludeSingles) {
                 var title = fieldsToGroups[facet.fieldName];
 
-                if (_.isUndefined(facets[title])) {
-                    facets[title] = [];
+                if (!_.isUndefined(title)) {
+                    if (_.isUndefined(facets[title])) {
+                        facets[title] = [];
+                    }
+
+                    facets[title].push({fieldName: formatFacetName(facet.fieldName), fieldResult: fieldResults});
                 }
-                facets[title].push({fieldName: formatFacetName(facet.fieldName), fieldResult: fieldResults});
             }
         });
 
         return facets;
+    }
+
+    function includeFacet(facet) {
+        var include = true;
+
+        if (!_.isEmpty(options.excludeFacets)) {
+            include = !_.contains(options.excludeFacets, facet);
+        }
+
+        return include;
     }
 
     function updateFacetDOM(facets) {
@@ -370,16 +435,18 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, baseQuery, options) {
 
     function formatFacetName(name) {
         var mappedDisplayName = options.facetNameMapping[name];
+
         if (_.isUndefined(mappedDisplayName)) {
             if (name && !_.isUndefined(name)) {
                 name = name.replace(/[^a-zA-Z0-9\-\\\/\.]/g, " ").replace(/([a-z])([A-Z])/g, "$1 $2").replace(/ +/g, " ");
-                name = name.charAt(0).toUpperCase() + name.substring(1);
             } else {
                 name = "Unknown";
             }
         } else {
             name = mappedDisplayName;
         }
+
+        name = name.charAt(0).toUpperCase() + name.substring(1);
 
         return name;
     }
