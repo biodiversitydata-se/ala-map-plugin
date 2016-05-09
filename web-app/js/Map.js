@@ -1,7 +1,7 @@
 /**
  * @namespace
  */
-var ALA = {};
+var ALA = ALA || {};
 
 /**
  * @class
@@ -26,7 +26,7 @@ ALA.MapConstants = {
 };
 
 /**
- * Object for interacting with the map.
+ * Object for interacting with a generic map.
  *
  * <p/>
  * <b>Options</b>
@@ -582,7 +582,7 @@ ALA.Map = function (id, options) {
      *
      * @memberOf ALA.Map
      * @function addLayer
-     * @param {ILayer} layer The Leaflet Layer to add
+     * @param {Object} layer The Leaflet ILayer to add
      * @param layerOptions {Object} Configuration options for the layer. See {@link LAYER_OPTIONS} for details of supported options. Optional.
      */
     self.addLayer = function (layer, layerOptions) {

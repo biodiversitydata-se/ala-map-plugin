@@ -11,10 +11,12 @@ modules = {
         dependsOn "leaflet_cluster"
         dependsOn "leaflet_loading"
         dependsOn "turf"
+        dependsOn "handlebars"
         dependsOn "custom_controls"
         dependsOn "font-awesome"
         dependsOn "leaflet_sleep"
         resource url: [dir: "js", file: "Map.js", plugin: "ala-map"]
+        resource url: [dir: "js", file: "OccurrenceMap.js", plugin: "ala-map"]
         resource url: [dir: "js/layers", file: "SmartWmsLayer.js", plugin: "ala-map"]
         resource url: [dir: "css", file: "map.css", plugin: "ala-map"]
     }
@@ -90,5 +92,9 @@ modules = {
     jqueryScrollView {
         dependsOn "jquery"
         resource url: [dir: "vendor/onImpressions", file: "jquery.onimpression.js", plugin: "ala-map"]
+    }
+
+    handlebars {
+        resource url: [dir: "vendor/handlebars-4.0.5", file: "handlebars.js", plugin: "ala-map"]
     }
 }

@@ -3,20 +3,31 @@ package au.org.ala.map.taglib
 class MapTagLib {
     static namespace = "m"
 
-    static final String DEFAULT_WIDTH = "650px"
-    static final String DEFAULT_HEIGHT = "500px"
+    static final String DEFAULT_MAP_WIDTH = "650px"
+    static final String DEFAULT_MAP_HEIGHT = "500px"
+
+    static final String DEFAULT_FACETED_MAP_WIDTH = "100%"
+    static final String DEFAULT_FACETED_MAP_HEIGHT = "600px"
 
     /**
      * Render a Map container.
      *
      * @attr id REQUIRED the unique ID for the map
-     * @attr width The width for the map div. Optional - defaults to {@link #DEFAULT_WIDTH}
-     * @attr height The height for the map div. Optional - defaults to {@link #DEFAULT_HEIGHT}
+     * @attr width The width for the map div. Optional - defaults to {@link #DEFAULT_MAP_WIDTH}
+     * @attr height The height for the map div. Optional - defaults to {@link #DEFAULT_MAP_HEIGHT}
      */
     def map = { attrs ->
         String leafletImageLocation = "${resource(dir: '/vendor/leaflet-0.7.7/images', plugin: 'ala-map')}"
-        String style = "width: ${attrs.width ?: DEFAULT_WIDTH}; height: ${attrs.height ?: DEFAULT_HEIGHT}"
+        String style = "width: ${attrs.width ?: DEFAULT_MAP_WIDTH}; height: ${attrs.height ?: DEFAULT_MAP_HEIGHT}"
 
         out << "<div id='${attrs.id}' style='${style}' data-leaflet-img='${leafletImageLocation}'></div>"
     }
+
+    def occurrenceMap = { attrs ->
+        String leafletImageLocation = "${resource(dir: '/vendor/leaflet-0.7.7/images', plugin: 'ala-map')}"
+        String style = "width: ${attrs.width ?: DEFAULT_FACETED_MAP_WIDTH}; height: ${attrs.height ?: DEFAULT_FACETED_MAP_HEIGHT}"
+
+        out << render(template: "/map/occurrenceMap", model: [id: attrs.id, style: style, leafletImageLocation: leafletImageLocation], plugin: "ala-map")
+    }
+
 }

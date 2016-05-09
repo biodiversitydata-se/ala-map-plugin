@@ -75,3 +75,59 @@
     width: 22px !important;
     margin-left: 4px;
 }
+
+.facet-list {
+
+}
+
+.facet-group {
+    border-top: 1px solid lightblue;
+}
+
+.facet-list ul {
+    list-style: none;
+    padding-left: 0;
+    font-size: 13px;
+    line-height: 1.3em;
+}
+
+.facet-list ul li {
+    font-weight: bold;
+    padding-left: 0;
+    font-size: 13px;
+    line-height: 1.3em;
+}
+
+.facet-list ul li ul li {
+    font-weight: inherit;
+    padding-left: 0;
+    font-size: 13px;
+    line-height: 1.3em;
+}
+
+.facet-item {
+    /*cursor: pointer;*/
+}
+
+.facet-group-items {
+    max-height: 100px;
+    overflow: scroll;
+}
+
+.facet-group-name a {
+    text-decoration: none;
+}
+
+.facet-group-name a:before {
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: inherit;
+    font-size: 12px;
+    margin-right: 10px;
+    content: '\f0da';
+}
+
+.facet-group-name a.collapsed:before {
+    content: '\f0d7'
+}
