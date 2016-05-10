@@ -22,6 +22,7 @@ var ALA = ALA || {};
  *  <li><code>facetNameMapping</code> Object containing a mapping from the default facet field names to display labels to be used. If not provided then the field names will be formatted into human-readable form (capitalised, camel-case changed to sentence case, underscores replaced with spaces, etc). The format must be <code>{fieldName: "label", ...}</code>. All values displayed in the facet list can be mapped using this construct, regardless of the display level.</li>
  *  <li><code>excludeFacets</code> List of facet names to exclude from dislay. This list can contain items from any level in the facet list. If not provided, all available facets will be displayed.</li>
  *  <li><code>excludeSingles</code> True to hide any facet group which only contains a single option. Default: true</li>
+ *  <li><code>maximumFacets</code> The maximum number of facets that can be selected via the 'choose more' dialog. Default: 15</li>
  *  <li><code>wms</code> True to use a WMS layer to display occurrences, false to render individual points as circles on a clustered map. Default: true</li>
  *  <li><code>mapAttribution</code> Attribution text to be displayed on the map. Default: blank</li>
  *  <li><code>points</code>Config options for the points on the map:
@@ -128,6 +129,7 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, baseQuery, options) {
         excludeSingles: true,
         excludeFacets: [],
         includeFacets: [],
+        maximumFacets: 15,
         wms: true,
         mapAttribution: "",
         point: {
@@ -144,13 +146,19 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, baseQuery, options) {
 
     populateDefaultOptions(options);
 
+    /**
+     * The underlying ALA.Map object
+     *
+     * @memberOf ALA.OccurrenceMap
+     * @var
+     */
     self.map = null;
-    self.biocacheQuery = baseQuery;
+
+    var biocacheQuery = baseQuery;
     var selectedFacets = [];
     var wmsLayer = null;
     var facetGroups = null;
     var fieldsToGroups = null;
-    var expandedGroups = {};
 
     //
     // Public functions
@@ -164,7 +172,7 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, baseQuery, options) {
      * @return {String} The current biocache query string to retrieve the occurrence records
      */
     self.getQueryString = function () {
-        return self.biocacheQuery;
+        return biocacheQuery;
     };
 
     /**
@@ -188,9 +196,64 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, baseQuery, options) {
      * @memberOf ALA.OccurrenceMap
      * @function selectFacet
      * @param facet {Object} An object containing a minimum of 'label' and 'fq': the 'fq' property will be used to identify the facet.
+     * @param include True to INCLUDE the specified facet. False to EXCLUDE. Default: true.
      */
-    self.selectFacet = function (facet) {
+    self.selectFacet = function (facet, include) {
+        if (_.isUndefined(include)) {
+            include = true;
+        }
+
+        if (!include) {
+            facet.label = "[exclude] " + facet.label;
+            facet.fq = "-" + facet.fq;
+        }
+
         selectedFacets.push(facet);
+
+        update();
+    };
+
+    /**
+     * Select a number of facets, combining them as either AND or OR
+     *
+     * @memberOf ALA.OccurrenceMap
+     * @param facetsList List of facet objects (containing a minimum of 'label' and 'fq') to be added
+     * @param and True to combine the facets as a logical AND, false to use a logical OR. Default: true.
+     * @param include True to INCLUDE the specified facets. False to EXCLUDE. Default: true.
+     */
+    self.selectMultipleFacets = function (facetsList, and, include) {
+        if (_.isUndefined(and)) {
+            and = true;
+        }
+        if (_.isUndefined(include)) {
+            include = true;
+        }
+
+        if (and) {
+            _.each(facetsList, function (facet) {
+                if (!include) {
+                    facet.label = "[exclude] " + facet.label;
+                    facet.fq = "-" + facet.fq;
+                }
+                selectedFacets.push(facet);
+            });
+        } else {
+            var fq = include ? "(" : "-(";
+            var label = include ? "(" : "[exclude] (";
+            _.each(facetsList, function (facet, index) {
+                fq += facet.fq;
+                label += facet.label;
+                if (index < facetsList.length - 1) {
+                    fq += " OR ";
+                    label += " OR ";
+                }
+            });
+
+            fq += ")";
+            label += ")";
+
+            selectedFacets.push({label: label, fq: fq});
+        }
 
         update();
     };
@@ -246,7 +309,7 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, baseQuery, options) {
 
             updateWMS();
         } else {
-
+            console.error("WMS is the only option supported at the moment.");
         }
 
         self.map.finishLoading();
@@ -308,7 +371,7 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, baseQuery, options) {
             dataType: "json"
         }).done(function (facetsForQuery) {
             if (facetsForQuery) {
-                self.biocacheQuery = query;
+                biocacheQuery = query;
 
                 var facets = constructFacetList(fieldsToGroups, facetsForQuery);
 
@@ -321,14 +384,29 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, baseQuery, options) {
 
     function updateSelectedFacets(facetsForQuery) {
         $.each(facetsForQuery.activeFacetMap, function (fieldName, facet) {
+            // ensure the fq is formatted consistently: this library always wraps AND and OR facets with brackets, but
+            // the returned activeFacetMap from the biocache does not. The biocache also does not include the '-' in the
+            // value attribute when using exclusion queries, but does put it in the displayName attribute. We need it in the fq.
+            var fq = "";
+            if ((facet.value.indexOf(" OR ") > -1 || facet.value.indexOf(" AND ") > -1)
+                && facet.value.charAt(facet.length - 1) != ")") {
+                if (facet.displayName.charAt(0) == "-") {
+                    fq += "-";
+                }
+                fq += "(" + facet.name + ":" + facet.value + ")";
+            } else {
+                fq = facet.name + ":" + facet.value
+            }
+
             var selectedFacet = {
                 label: formatFacetName(facet.name) + ": " + formatFacetName(facet.value),
-                fq: facet.name + ":" + facet.value
+                fq: fq
             };
 
-            if (_.isUndefined(_.find(selectedFacets, function (f) {
-                    return f.fq == selectedFacet.fq
-                }))) {
+            var existingSelectedFacet = _.find(selectedFacets, function (f) {
+                return f.fq == selectedFacet.fq
+            });
+            if (_.isUndefined(existingSelectedFacet)) {
                 selectedFacets.push(selectedFacet);
             }
         });
@@ -372,7 +450,11 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, baseQuery, options) {
                         facets[title] = [];
                     }
 
-                    facets[title].push({fieldName: formatFacetName(facet.fieldName), fieldResult: fieldResults});
+                    facets[title].push({
+                        facetId: facet.fieldName,
+                        fieldName: formatFacetName(facet.fieldName),
+                        fieldResult: fieldResults
+                    });
                 }
             }
         });
@@ -391,62 +473,146 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, baseQuery, options) {
     }
 
     function updateFacetDOM(facets) {
-        var source = $("#facetsTemplate").html();
-        var template = Handlebars.compile(source);
-        var container = $("#" + id + "Facets");
-        container.empty();
-
         var content = {
             facets: facets,
-            selectedFacets: selectedFacets,
-            expandedGroups: expandedGroups
+            selectedFacets: selectedFacets
         };
 
-        container.append(template(content));
+        renderTemplate("#facetsTemplate", "#" + id + "Facets", content);
 
-        $("#" + id + "Facets li .facet-item").click(function () {
-            self.selectFacet(constructFacetFromElement($(this)));
+        $("#chooseMoreModal").on("show.bs.modal", function (event) {
+            populateModalDialog(event, facets);
         });
 
-        $("#" + id + "Facets li .selected-facet-item").click(function () {
+        $(".facet-item").click(function (event) {
+            self.selectFacet(constructFacetFromElement($(this)), true);
+            event.preventDefault();
+        });
+
+        $(".selected-facet-item").click(function (event) {
             self.clearFacet(constructFacetFromElement($(this)));
+            event.preventDefault();
         });
 
-        $("#" + id + "Facets .facet-group-name a").click(function () {
-            var group = $(this).attr("data-group");
-            if (_.isUndefined(expandedGroups[group])) {
-                expandedGroups[group] = {expanded: false};
-            }
-            expandedGroups[group].expanded = !expandedGroups[group].expanded;
-        });
-
-        $("#" + id + "Facets .remove-all-facets").click(function () {
+        $("#" + id + "Facets .remove-all-facets").click(function (event) {
             self.clearAllFacets();
+            event.preventDefault();
         });
     }
 
+    function populateModalDialog(event, facets) {
+        var trigger = $(event.relatedTarget);
+        var group = trigger.data("facet-group");
+        var facetId = trigger.data("facet-id");
+
+        var facet = _.find(facets[group], function (f) {
+            return f.facetId == facetId
+        });
+
+        renderTemplate("#chooseMoreModalBodyTemplate", "#chooseMoreModalBody", facet);
+
+        $(".facet-item").click(function (event) {
+            self.selectFacet(constructFacetFromElement($(this)));
+            hideModal(event);
+        });
+
+        $("#include").click(function (event) {
+            var selectedFacets = selectionCount();
+            if (selectedFacets > 0 && selectedFacets <= options.maximumFacets) {
+                self.selectMultipleFacets(getMultiSelectFacets(), false, true);
+                hideModal(event);
+            } else if (selectedFacets > options.maximumFacets) {
+                showTooManyFacetsError(selectedFacets);
+            }
+        });
+
+        $("#exclude").click(function (event) {
+            var selectedFacets = selectionCount();
+            if (selectedFacets > 0 && selectedFacets <= options.maximumFacets) {
+                self.selectMultipleFacets(getMultiSelectFacets(), false, false);
+                hideModal(event);
+            } else if (selectedFacets > options.maximumFacets) {
+                showTooManyFacetsError(selectedFacets);
+            }
+        });
+
+        $("#includeAll").click(function (event) {
+            self.selectFacet({label: $(this).data("label") + ": *", fq: $(this).data("field-name") + ":*"}, true);
+            hideModal(event);
+        });
+
+        $("#excludeAll").click(function (event) {
+            self.selectFacet({label: $(this).data("label") + ": *", fq: $(this).data("field-name") + ":*"}, false);
+            hideModal(event);
+        });
+    }
+
+    function hideModal(event) {
+        $("#chooseMoreModal").modal('hide');
+        if (!_.isUndefined(event)) {
+            event.preventDefault();
+        }
+    }
+
+    function showTooManyFacetsError(numberSelected) {
+        alert("Too many options selected - maximum is " + options.maximumFacets + ", you have selected " + numberSelected + ", please de-select " +
+            (numberSelected - options.maximumFacets) + " options. \n\nNote: if you want to include/exclude all possible values (wildcard filter), use the drop-down option on the buttons below.");
+    }
+
+    function selectionCount() {
+        return $(".facet-item-select:checked").length;
+    }
+
+    function getMultiSelectFacets() {
+        var multiselectItems = [];
+        $(".facet-item-select:checked").each(function () {
+            multiselectItems.push(constructFacetFromElement($(this)));
+        });
+
+        return multiselectItems;
+    }
+
+    function renderTemplate(templateId, containerId, contents) {
+        var source = $(templateId).html();
+        var template = Handlebars.compile(source);
+        var container = $(containerId);
+
+        container.empty();
+        container.append(template(contents));
+    }
+
     function constructFacetFromElement(elem) {
-        var fieldName = elem.attr("data-field-name");
-        var fq = elem.attr("data-fq");
-        var label = elem.attr("data-label");
+        var fieldName = formatFacetName(elem.data("field-name"));
+        var fq = elem.data("fq");
+        var label = formatFacetName(elem.data("label"));
 
         return {label: fieldName + ": " + label, fq: fq}
     }
 
     function formatFacetName(name) {
-        var mappedDisplayName = options.facetNameMapping[name];
-
-        if (_.isUndefined(mappedDisplayName)) {
-            if (name && !_.isUndefined(name)) {
-                name = name.replace(/[^a-zA-Z0-9\-\\\/\.]/g, " ").replace(/([a-z])([A-Z])/g, "$1 $2").replace(/ +/g, " ");
-            } else {
-                name = "Unknown";
-            }
+        if (_.isUndefined(name) || _.isEmpty(name)) {
+            name = "Unknown";
         } else {
-            name = mappedDisplayName;
-        }
+            if (name.charAt(0) == "-" && name.length > 1) {
+                name = name.substring(1);
+            }
 
-        name = name.charAt(0).toUpperCase() + name.substring(1);
+            var mappedDisplayName = options.facetNameMapping[name];
+
+            if (_.isUndefined(mappedDisplayName)) {
+                if (name && !_.isUndefined(name)) {
+                    name = name.replace(/[^a-zA-Z0-9\-\\\/\.\?\*]/g, " ").replace(/([a-z])([A-Z])/g, "$1 $2").replace(/ +/g, " ");
+                } else {
+                    name = "Unknown";
+                }
+            } else {
+                name = mappedDisplayName;
+            }
+
+            if (name.length > 1) {
+                name = name.charAt(0).toUpperCase() + name.substring(1);
+            }
+        }
 
         return name;
     }

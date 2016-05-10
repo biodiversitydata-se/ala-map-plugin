@@ -131,3 +131,16 @@
 .facet-group-name a.collapsed:before {
     content: '\f0d7'
 }
+
+#chooseMoreModal .modal-body{
+    max-height: 400px;
+    overflow: scroll;
+}
+
+.selected-facet-item {
+    font-weight: normal;
+}
+
+.facet-group-items {
+    margin-bottom: 5px;
+}
