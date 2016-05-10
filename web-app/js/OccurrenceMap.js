@@ -385,15 +385,15 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, baseQuery, options) {
     function updateSelectedFacets(facetsForQuery) {
         $.each(facetsForQuery.activeFacetMap, function (fieldName, facet) {
             // ensure the fq is formatted consistently: this library always wraps AND and OR facets with brackets, but
-            // the returned activeFacetMap from the biocache does not. The biocache also does not include the '-' in the
-            // value attribute when using exclusion queries, but does put it in the displayName attribute. We need it in the fq.
+            // the returned activeFacetMap from the biocache does not wrap its 'value' attribute (which is the actual fq
+            // value). The biocache also does not include the '-' in the value attribute when using exclusion queries.
+            // It does, however put the - and () in the displayName attribute. We need it in the fq.
             var fq = "";
-            if ((facet.value.indexOf(" OR ") > -1 || facet.value.indexOf(" AND ") > -1)
-                && facet.value.charAt(facet.length - 1) != ")") {
-                if (facet.displayName.charAt(0) == "-") {
-                    fq += "-";
-                }
-                fq += "(" + facet.name + ":" + facet.value + ")";
+
+            if (facet.displayName.charAt(0) == "-") {
+                fq += "-(" + facet.name + ":" + facet.value + ")";
+            } else if (facet.displayName.charAt(0) == "(") {
+                fq = "(" + facet.name + ":" + facet.value + ")";
             } else {
                 fq = facet.name + ":" + facet.value
             }
