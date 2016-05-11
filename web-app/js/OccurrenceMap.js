@@ -39,17 +39,17 @@ var ALA = ALA || {};
  * @memberOf ALA
  * @param {String} id Unique id of the map container div. Mandatory.
  * @param {String} biocacheBaseUrl The base URL of the Biocache instance that will be used as the source for all data. Mandatory.
- * @param {String} baseQuery The initial query string to use to populate map (it will be passed to the Biocache's search service). This property must include the <code>q=</code> parameter at a minimum. Mandatory.
+ * @param {String} queryString The initial query string to use to populate map (it will be passed to the Biocache's search service). This property must include the <code>q=</code> parameter at a minimum. Mandatory.
  * @param {Object} options Configuration options for the map. Optional - sensible defaults will be used if not provided. See the list above.
  */
-ALA.OccurrenceMap = function (id, biocacheBaseUrl, baseQuery, options) {
+ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
     var self = this;
 
     if (!biocacheBaseUrl || _.isUndefined(biocacheBaseUrl) || _.isEmpty(biocacheBaseUrl)) {
         console.error("You must define the base URL for the Biocache instance you wish to use.");
     }
 
-    if (!baseQuery || _.isUndefined(baseQuery) || _.isEmpty(baseQuery) || "q=" === baseQuery) {
+    if (!queryString || _.isUndefined(queryString) || _.isEmpty(queryString) || "q=" === queryString) {
         console.error("You must define the base query to use to populate the map.");
     }
 
@@ -154,7 +154,8 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, baseQuery, options) {
      */
     self.map = null;
 
-    var biocacheQuery = baseQuery;
+    // the biocache query with just the q= parameter, no facets (fq=). Facets are added via the selectedFacets list.
+    var baseQuery = null;
     var selectedFacets = [];
     var wmsLayer = null;
     var facetGroups = null;
@@ -175,7 +176,7 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, baseQuery, options) {
      * @return {String} The current biocache query string to retrieve the occurrence records
      */
     self.getQueryString = function () {
-        return biocacheQuery;
+        return constructBiocacheQuery();
     };
 
     /**
@@ -188,9 +189,9 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, baseQuery, options) {
     self.setQueryString = function (queryString) {
         selectedFacets = [];
 
-        baseQuery = queryString;
+        baseQuery = extractBaseQuery(queryString);
 
-        update();
+        update(queryString);
     };
 
     /**
@@ -288,8 +289,6 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, baseQuery, options) {
      */
     self.clearAllFacets = function () {
         selectedFacets = [];
-        // remove all fq= filters from the query string
-        baseQuery = baseQuery.replace(/fq=.*(&|$)/g, "").replace(/&$/, "");
 
         update();
     };
@@ -301,16 +300,18 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, baseQuery, options) {
     function initialiseMap() {
         self.map = new ALA.Map(id, options.mapOptions);
 
-        update();
+        baseQuery = extractBaseQuery(queryString);
+
+        update(queryString);
     }
 
-    function update() {
+    function update(queryString) {
         self.map.startLoading();
 
         if (options.wms) {
-            populateFacetGroups();
+            populateFacetGroups(queryString);
 
-            updateWMS();
+            updateWMS(queryString);
         } else {
             console.error("WMS is the only option supported at the moment.");
         }
@@ -318,13 +319,16 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, baseQuery, options) {
         self.map.finishLoading();
     }
 
-    function updateWMS() {
+    function updateWMS(queryString) {
         if (wmsLayer != null) {
             self.map.removeLayer(wmsLayer);
         }
 
-        var query = constructBiocacheQuery();
-        var wmsLayerUrl = WMS_LAYER_URL + query;
+        if (_.isUndefined(queryString)) {
+            queryString = constructBiocacheQuery();
+        }
+
+        var wmsLayerUrl = WMS_LAYER_URL + queryString;
 
         wmsLayer = L.tileLayer.smartWms(wmsLayerUrl, {
             layers: 'ALA:occurrences',
@@ -339,6 +343,7 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, baseQuery, options) {
     }
 
     function constructBiocacheQuery() {
+        // remove any existing fq= query parameters first.
         var newQuery = baseQuery;
 
         selectedFacets.forEach(function (facet) {
@@ -348,7 +353,7 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, baseQuery, options) {
         return newQuery;
     }
 
-    function populateFacetGroups() {
+    function populateFacetGroups(queryString) {
         $.ajax({
             url: FACET_GROUP_URL,
             dataType: "json"
@@ -357,21 +362,21 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, baseQuery, options) {
                 facetGroups = data;
                 fieldsToGroups = mapFacetFieldsToGroups(facetGroups);
 
-                populateFacets();
+                populateFacets(queryString);
             }
         });
     }
 
-    function populateFacets() {
-        var query = constructBiocacheQuery();
+    function populateFacets(queryString) {
+        if (_.isUndefined(queryString)) {
+            queryString = constructBiocacheQuery();
+        }
 
         $.ajax({
-            url: SEARCH_URL_PREFIX + query,
+            url: SEARCH_URL_PREFIX + queryString,
             dataType: "json"
         }).done(function (facetsForQuery) {
             if (facetsForQuery) {
-                biocacheQuery = query;
-
                 var facets = constructFacetList(fieldsToGroups, facetsForQuery);
 
                 updateSelectedFacets(facetsForQuery);
@@ -660,6 +665,10 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, baseQuery, options) {
         _.defaults(ALA.Map.DEFAULT_OPTIONS, DEFAULT_OPTIONS.mapOptions);
         _.defaults(options.mapOptions, ALA.Map.DEFAULT_OPTIONS);
         _.defaults(options.facetNameMapping, DEFAULT_OPTIONS.facetNameMapping);
+    }
+
+    function extractBaseQuery(queryString) {
+        return queryString.replace(/q=(.*)fq=/g, "q=$1");
     }
 
     initialiseMap();
