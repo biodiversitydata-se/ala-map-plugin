@@ -16,6 +16,7 @@ modules = {
         dependsOn "custom_controls"
         dependsOn "font-awesome"
         dependsOn "leaflet_sleep"
+        dependsOn "uri"
         resource url: [dir: "js", file: "Map.js", plugin: "ala-map"]
         resource url: [dir: "js", file: "OccurrenceMap.js", plugin: "ala-map"]
         resource url: [dir: "js/layers", file: "SmartWmsLayer.js", plugin: "ala-map"]
@@ -102,5 +103,9 @@ modules = {
 
     handlebars {
         resource url: [dir: "vendor/handlebars-4.0.5", file: "handlebars.js", plugin: "ala-map"]
+    }
+
+    uri {
+        resource url: [dir: "vendor/urijs-1.18.0", file: "URI.js", plugin: "ala-map"]
     }
 }

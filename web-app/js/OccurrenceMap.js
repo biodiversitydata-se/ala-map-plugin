@@ -158,6 +158,7 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
     var baseQuery = null;
     var selectedFacets = [];
     var wmsLayer = null;
+    var currentFacets = null;
     var facetGroups = null;
     var fieldsToGroups = null;
     var facetPageSize = 50;
@@ -303,13 +304,15 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
         baseQuery = extractBaseQuery(queryString);
 
         update(queryString);
+
+        queryString = null;
     }
 
     function update(queryString) {
         self.map.startLoading();
 
+        populateFacetGroups(queryString);
         if (options.wms) {
-            populateFacetGroups(queryString);
 
             updateWMS(queryString);
         } else {
@@ -347,7 +350,7 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
         var newQuery = baseQuery;
 
         selectedFacets.forEach(function (facet) {
-            newQuery += "&fq=" + facet.fq;
+            newQuery += "&fq=" + encodeURIComponent(facet.fq);
         });
 
         return newQuery;
@@ -377,11 +380,11 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
             dataType: "json"
         }).done(function (facetsForQuery) {
             if (facetsForQuery) {
-                var facets = constructFacetList(fieldsToGroups, facetsForQuery);
+                currentFacets = constructFacetList(fieldsToGroups, facetsForQuery);
 
                 updateSelectedFacets(facetsForQuery);
 
-                updateFacetDOM(facets);
+                updateFacetDOM();
             }
         });
     }
@@ -476,40 +479,40 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
         return include;
     }
 
-    function updateFacetDOM(facets) {
+    function updateFacetDOM() {
         var content = {
-            facets: facets,
+            facets: currentFacets,
             selectedFacets: selectedFacets
         };
 
         renderTemplate("#facetsTemplate", "#" + id + "Facets", content, true);
 
-        $("#chooseMoreModal").on("show.bs.modal", function (event) {
-            populateModalDialog(event, facets);
+        $("#chooseMoreModal").off().on("show.bs.modal", function (event) {
+            populateModalDialog(event);
         });
 
-        $(".facet-item").click(function (event) {
+        $(".facet-item").off().on("click", function (event) {
             self.selectFacet(constructFacetFromElement($(this)), true);
             event.preventDefault();
         });
 
-        $(".selected-facet-item").click(function (event) {
+        $(".selected-facet-item").off().on("click", function (event) {
             self.clearFacet(constructFacetFromElement($(this)));
             event.preventDefault();
         });
 
-        $("#" + id + "Facets .remove-all-facets").click(function (event) {
+        $("#" + id + "Facets .remove-all-facets").off().on("click", function (event) {
             self.clearAllFacets();
             event.preventDefault();
         });
     }
 
-    function populateModalDialog(event, facets) {
+    function populateModalDialog(event) {
         var trigger = $(event.relatedTarget);
         var group = trigger.data("facet-group");
         var facetId = trigger.data("facet-id");
 
-        var facet = _.find(facets[group], function (f) {
+        var facet = _.find(currentFacets[group], function (f) {
             return f.facetId == facetId
         });
 
@@ -519,7 +522,7 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
         facetForModal = facet;
         loadFacetsForModal();
 
-        $("#include").click(function (event) {
+        $("#include").off().on("click", function (event) {
             var selectedFacets = selectionCount();
             if (selectedFacets > 0 && selectedFacets <= options.maximumFacets) {
                 self.selectMultipleFacets(getMultiSelectFacets(), false, true);
@@ -529,7 +532,7 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
             }
         });
 
-        $("#exclude").click(function (event) {
+        $("#exclude").off().on("click", function (event) {
             var selectedFacets = selectionCount();
             if (selectedFacets > 0 && selectedFacets <= options.maximumFacets) {
                 self.selectMultipleFacets(getMultiSelectFacets(), false, false);
@@ -539,12 +542,12 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
             }
         });
 
-        $("#includeAll").click(function (event) {
+        $("#includeAll").off().on("click", function (event) {
             self.selectFacet({label: $(this).data("label") + ": *", fq: $(this).data("field-name") + ":*"}, true);
             hideModal(event);
         });
 
-        $("#excludeAll").click(function (event) {
+        $("#excludeAll").off().on("click", function (event) {
             self.selectFacet({label: $(this).data("label") + ": *", fq: $(this).data("field-name") + ":*"}, false);
             hideModal(event);
         });
@@ -558,12 +561,13 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
 
         var query = constructBiocacheQuery();
 
-        facetOffset = facetOffset + facetPageSize;
         $.ajax({
-            url: SEARCH_URL_PREFIX + query + "&pageSize=0&facets=" + facetForModal.facetId + "&flimit=" + facetPageSize + "&foffset=" + facetOffset,
+            url: SEARCH_URL_PREFIX + query + "&pageSize=0&fsort=index&facets=" + facetForModal.facetId + "&flimit=" + facetPageSize + "&foffset=" + facetOffset,
             dataType: "json"
         }).done(function (facets) {
             if (facets && facets.facetResults.length > 0) {
+                facetOffset = facetOffset + facetPageSize;
+
                 var content = {
                     fieldResult: facets.facetResults[0].fieldResult,
                     facetId: facetForModal.facetId,
@@ -572,12 +576,12 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
 
                 renderTemplate("#chooseMoreTableTemplate", "#facetTableBody", content, false);
 
-                $(".facet-item").click(function (event) {
+                $(".facet-item").off().on("click", function (event) {
                     self.selectFacet(constructFacetFromElement($(this)));
                     hideModal(event);
                 });
 
-                $('#infiniscrollMarker').on('inview', function (event, isVisible) {
+                $('#infiniscrollMarker').off().on('inview', function () {
                     loadFacetsForModal();
                 });
             }
@@ -667,7 +671,8 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
     }
 
     function extractBaseQuery(queryString) {
-        return queryString.replace(/q=(.*)fq=/g, "q=$1");
+        var queryParams = URI.parseQuery(queryString);
+        return "q=" + queryParams.q;
     }
 
     initialiseMap();
