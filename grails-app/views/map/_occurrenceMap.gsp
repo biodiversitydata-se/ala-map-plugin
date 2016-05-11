@@ -68,10 +68,37 @@
             </li>
             {{/each}}
         </ul>
-
     </div>
 </div>
 {{/each}}
+</script>
+
+<script id="chooseMoreTableTemplate" type="text/x-handlebars-template">
+{{#each fieldResult}}
+<tr>
+    <td>
+        <input type="checkbox" name="fqs" class="facet-item-select" value="{{fq}}"
+               data-fq="{{fq}}" data-label="{{label}}" data-field-name="{{../facetId}}"
+               title="Add {{label}} to the list of selected facets">
+    </td>
+    <td>
+        <a class="facet-item" data-fq="{{fq}}" data-label="{{label}}" data-count="{{count}}"
+           data-field-name="{{../fieldName}}">
+            {{label}}
+        </a>
+    </td>
+    <td>
+        {{count}}
+    </td>
+</tr>
+{{#if @last}}
+<tr id="infiniscrollMarker">
+    <td colspan="3"><span class="fa fa-spin fa-spinner">&nbsp;&nbsp;</span>Loading more options...</td>
+</tr>
+{{/if}}
+
+{{/each}}
+<tr></tr>
 </script>
 
 <script id="chooseMoreModalBodyTemplate" type="text/x-handlebars-template">
@@ -91,23 +118,8 @@
                 <th>Count</th>
             </tr>
             </thead>
-            <tbody>
-            {{#each fieldResult}}
-            <tr>
-                <td>
-                    <input type="checkbox" name="fqs" class="facet-item-select" value="{{fq}}"
-                           data-fq="{{fq}}" data-label="{{label}}" data-field-name="{{../facetId}}"
-                           title="Add {{label}} to the list of selected facets">
-                </td>
-                <td>
-                    <a class="facet-item" data-fq="{{fq}}" data-label="{{label}}" data-count="{{count}}"
-                       data-field-name="{{../fieldName}}">
-                        {{label}}
-                    </a>
-                </td>
-                <td>{{count}}</td>
-            </tr>
-            {{/each}}
+            <tbody id="facetTableBody">
+            <!-- populated by Handlebars: chooseMoreTableTemplate -->
             </tbody>
         </table>
     </div>
@@ -122,7 +134,8 @@
         </a>
         <ul class="dropdown-menu">
             <li>
-                <a id="includeAll" class="wildcard" target="_self" data-label="{{fieldName}}" data-field-name="{{facetId}}">INCLUDE all values (wildcard include)</a>
+                <a id="includeAll" class="wildcard" target="_self" data-label="{{fieldName}}"
+                   data-field-name="{{facetId}}">INCLUDE all values (wildcard include)</a>
             </li>
         </ul>
     </div>
@@ -135,7 +148,8 @@
         </a>
         <ul class="dropdown-menu">
             <li>
-                <a id="excludeAll" target="_self" class="wildcard" data-label="{{fieldName}}" data-field-name="{{facetId}}">EXCLUDE all values (wildcard exclude)</a>
+                <a id="excludeAll" target="_self" class="wildcard" data-label="{{fieldName}}"
+                   data-field-name="{{facetId}}">EXCLUDE all values (wildcard exclude)</a>
             </li>
         </ul>
     </div>

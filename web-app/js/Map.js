@@ -227,6 +227,21 @@ ALA.Map = function (id, options) {
     var subscribers = [];
 
     /**
+     * Destroy the map and clear all related event listeners
+     *
+     * @memberOf ALA.Map
+     * @function destroy
+     */
+    self.destroy = function () {
+        mapImpl.remove();
+        fitToBoundsOfLayer = null;
+        drawControl = null;
+        drawnItems = null;
+        markers = [];
+        subscribers = [];
+    };
+
+    /**
      * Subscribe to all update events on the map.
      *
      * To listen for specific events, use {@link ALA.Map#registerListener} instead.
@@ -654,6 +669,19 @@ ALA.Map = function (id, options) {
     };
 
     /**
+     * Zoom to the specified level and centre the map at the specified coordinates
+     *
+     * @memberOf ALA.Map
+     * @function zoom
+     * @param {Number} zoom The zoom level
+     * @param {Object} centre The coordinates to centre the map on. Must be an object with 'lat' and 'lng' attributes. Defaults to the map's default centre if not provided.
+     */
+    self.zoom = function(zoom, centre) {
+        mapImpl.setZoom(zoom, {animate: ANIMATE});
+        mapImpl.panTo(centre || self.DEFAULT_CENTRE, {animate: ANIMATE});
+    };
+
+    /**
      * Zoom and centre the map to fit the bounds of the current feature(s). If there are no features, then the map will
      * be set to the default zoom and centre.
      *
@@ -886,6 +914,7 @@ ALA.Map = function (id, options) {
         var enableDrawing = options.drawControl;
 
         options.drawControl = false;
+
         mapImpl = L.map(id, options);
 
         mapImpl.addLayer(drawnItems);

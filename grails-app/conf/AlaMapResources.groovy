@@ -3,6 +3,7 @@ modules = {
         dependsOn "underscore"
         dependsOn "jquery"
         dependsOn "jqueryScrollView"
+        dependsOn "jqueryInView"
         dependsOn "leaflet"
         dependsOn "leaflet_draw"
         dependsOn "leaflet_coords"
@@ -92,6 +93,11 @@ modules = {
     jqueryScrollView {
         dependsOn "jquery"
         resource url: [dir: "vendor/onImpressions", file: "jquery.onimpression.js", plugin: "ala-map"]
+    }
+
+    jqueryInView {
+        dependsOn "jquery"
+        resource url: [dir: "vendor/jquery.inview-1.1.2", file: "jquery.inview.min.js", plugin: "ala-map"]
     }
 
     handlebars {

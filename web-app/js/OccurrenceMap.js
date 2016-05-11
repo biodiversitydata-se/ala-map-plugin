@@ -159,6 +159,9 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, baseQuery, options) {
     var wmsLayer = null;
     var facetGroups = null;
     var fieldsToGroups = null;
+    var facetPageSize = 50;
+    var facetOffset = 0;
+    var facetForModal = null;
 
     //
     // Public functions
@@ -346,21 +349,17 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, baseQuery, options) {
     }
 
     function populateFacetGroups() {
-        if (_.isUndefined(facetGroups) || _.isEmpty(facetGroups)) {
-            $.ajax({
-                url: FACET_GROUP_URL,
-                dataType: "json"
-            }).done(function (data) {
-                if (data) {
-                    facetGroups = data;
-                    fieldsToGroups = mapFacetFieldsToGroups(facetGroups);
+        $.ajax({
+            url: FACET_GROUP_URL,
+            dataType: "json"
+        }).done(function (data) {
+            if (data) {
+                facetGroups = data;
+                fieldsToGroups = mapFacetFieldsToGroups(facetGroups);
 
-                    populateFacets();
-                }
-            });
-        } else {
-            populateFacets();
-        }
+                populateFacets();
+            }
+        });
     }
 
     function populateFacets() {
@@ -478,7 +477,7 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, baseQuery, options) {
             selectedFacets: selectedFacets
         };
 
-        renderTemplate("#facetsTemplate", "#" + id + "Facets", content);
+        renderTemplate("#facetsTemplate", "#" + id + "Facets", content, true);
 
         $("#chooseMoreModal").on("show.bs.modal", function (event) {
             populateModalDialog(event, facets);
@@ -509,12 +508,11 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, baseQuery, options) {
             return f.facetId == facetId
         });
 
-        renderTemplate("#chooseMoreModalBodyTemplate", "#chooseMoreModalBody", facet);
+        renderTemplate("#chooseMoreModalBodyTemplate", "#chooseMoreModalBody", facet, true);
 
-        $(".facet-item").click(function (event) {
-            self.selectFacet(constructFacetFromElement($(this)));
-            hideModal(event);
-        });
+        facetOffset = 0;
+        facetForModal = facet;
+        loadFacetsForModal();
 
         $("#include").click(function (event) {
             var selectedFacets = selectionCount();
@@ -547,8 +545,44 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, baseQuery, options) {
         });
     }
 
+    function loadFacetsForModal() {
+        var infiniscrollElem = $("#infiniscrollMarker");
+        if (infiniscrollElem) {
+            infiniscrollElem.remove();
+        }
+
+        var query = constructBiocacheQuery();
+
+        facetOffset = facetOffset + facetPageSize;
+        $.ajax({
+            url: SEARCH_URL_PREFIX + query + "&pageSize=0&facets=" + facetForModal.facetId + "&flimit=" + facetPageSize + "&foffset=" + facetOffset,
+            dataType: "json"
+        }).done(function (facets) {
+            if (facets && facets.facetResults.length > 0) {
+                var content = {
+                    fieldResult: facets.facetResults[0].fieldResult,
+                    facetId: facetForModal.facetId,
+                    fieldName: facetForModal.fieldName
+                };
+
+                renderTemplate("#chooseMoreTableTemplate", "#facetTableBody", content, false);
+
+                $(".facet-item").click(function (event) {
+                    self.selectFacet(constructFacetFromElement($(this)));
+                    hideModal(event);
+                });
+
+                $('#infiniscrollMarker').on('inview', function (event, isVisible) {
+                    loadFacetsForModal();
+                });
+            }
+        });
+    }
+
     function hideModal(event) {
         $("#chooseMoreModal").modal('hide');
+        facetOffset = 0;
+        facetForModal = null;
         if (!_.isUndefined(event)) {
             event.preventDefault();
         }
@@ -572,12 +606,14 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, baseQuery, options) {
         return multiselectItems;
     }
 
-    function renderTemplate(templateId, containerId, contents) {
+    function renderTemplate(templateId, containerId, contents, emptyFirst) {
         var source = $(templateId).html();
         var template = Handlebars.compile(source);
         var container = $(containerId);
 
-        container.empty();
+        if (emptyFirst) {
+            container.empty();
+        }
         container.append(template(contents));
     }
 
@@ -621,7 +657,8 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, baseQuery, options) {
     function populateDefaultOptions(options) {
         _.defaults(options, DEFAULT_OPTIONS);
         _.defaults(options.point, DEFAULT_OPTIONS.point);
-        _.defaults(options.mapOptions, DEFAULT_OPTIONS.mapOptions);
+        _.defaults(ALA.Map.DEFAULT_OPTIONS, DEFAULT_OPTIONS.mapOptions);
+        _.defaults(options.mapOptions, ALA.Map.DEFAULT_OPTIONS);
         _.defaults(options.facetNameMapping, DEFAULT_OPTIONS.facetNameMapping);
     }
 
