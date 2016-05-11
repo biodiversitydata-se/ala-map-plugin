@@ -662,8 +662,7 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
     function populateDefaultOptions(options) {
         _.defaults(options, DEFAULT_OPTIONS);
         _.defaults(options.point, DEFAULT_OPTIONS.point);
-        _.defaults(ALA.Map.DEFAULT_OPTIONS, DEFAULT_OPTIONS.mapOptions);
-        _.defaults(options.mapOptions, ALA.Map.DEFAULT_OPTIONS);
+        _.defaults(options.mapOptions, DEFAULT_OPTIONS.mapOptions);
         _.defaults(options.facetNameMapping, DEFAULT_OPTIONS.facetNameMapping);
     }
 
