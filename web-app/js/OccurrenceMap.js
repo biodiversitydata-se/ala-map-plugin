@@ -581,9 +581,13 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
                     hideModal(event);
                 });
 
-                $('#infiniscrollMarker').off().on('inview', function () {
-                    loadFacetsForModal();
-                });
+                if (facets.facetResults[0].fieldResult.length >= facetPageSize) {
+                    $('#infiniscrollMarker').off().on('inview', function () {
+                        loadFacetsForModal();
+                    });
+                } else {
+                    $("#infiniscrollMarker").remove();
+                }
             }
         });
     }
