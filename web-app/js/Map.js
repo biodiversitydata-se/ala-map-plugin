@@ -34,6 +34,8 @@ ALA.MapConstants = {
  *  <li><code>baseLayer</code> Either a Leaflet.Layer, or the name of one of the supported base layers (currently 'Minimal' and 'WorldImagery'. Default: Minimal</li>
  *  <li><code>center</code> Centre position of the map. Default: -28, 134</li>
  *  <li><code>zoom</code> the initial zoom level. Default: 4</li>
+ *  <li><code>maxZoom</code> the maximum allowed zoom level. Default: 20</li>
+ *  <li><code>maxAutoZoom</code> the maximum zoom level to automatically zoom to (when zoomToObject = true). Default: 15</li>
  *  <li><code>scrollWheelZoom</code> whether to enable zooming in/out by scrolling the mouse. Default: false</li>
  *  <li><code>fullscreenControl</code> whether to include a full-screen option. Default: true</li>
  *  <li><code>fullscreenControlOptions:</code>
@@ -44,6 +46,7 @@ ALA.MapConstants = {
  *  <li><code>singleDraw</code> whether to allow more than 1 shape or region to be drawn at a time. This does NOT apply to markers - only layers and other shapes. See also singleMarker and markerOrShapeNotBoth. Default: true</li>
  *  <li><code>singleMarker</code> whether to allow more than 1 marker to be drawn at a time.. Default: true</li>
  *  <li><code>markerOrShapeNotBoth</code> whether to allow users to draw both markers and regions/shapes at the same time. Default: true</li>
+ *  <li><code>showFitBoundsToggle</code> whether to include a button to toggle between the initial map zoom and the bounds of the data. Default: false</li>
  *  <li><code>useMyLocation</code> whether to include a "Use My Location" button to place a marker on the map at the user's location. Default: true</li>
  *  <li><code>allowSearchLocationByAddress</code> whether to allow the user to search by address to place a marker on the map. Default: true</li>
  *  <li><code>allowSearchRegionByAddress</code> whether to allow the user to search by address to draw a polygon on the map. Default: true</li>
@@ -149,6 +152,7 @@ ALA.Map = function (id, options) {
         center: [self.DEFAULT_CENTRE.lat, self.DEFAULT_CENTRE.lng],
         zoom: DEFAULT_ZOOM,
         maxZoom: DEFAULT_MAX_ZOOM,
+        maxAutoZoom: MAX_AUTO_ZOOM,
         scrollWheelZoom: false,
         fullscreenControl: true,
         fullscreenControlOptions: {
@@ -158,6 +162,7 @@ ALA.Map = function (id, options) {
         singleDraw: true,
         singleMarker: true,
         markerOrShapeNotBoth: true,
+        showFitBoundsToggle: false,
         useMyLocation: true,
         allowSearchLocationByAddress: true,
         allowSearchRegionByAddress: true,
@@ -225,6 +230,7 @@ ALA.Map = function (id, options) {
     var drawnItems = new L.FeatureGroup();
     var markers = [];
     var subscribers = [];
+    var fitToBoundsToggle = options.zoomToObject;
 
     /**
      * Destroy the map and clear all related event listeners
@@ -621,12 +627,14 @@ ALA.Map = function (id, options) {
      *
      * @memberOf ALA.Map
      * @function addWmsLayer
-     * @param pid {String} the PID of the region to be displayed in the WMS layer
-     * @param layerOptions {Object} Configuration options for the layer. See {@link LAYER_OPTIONS} for details of supported options. Optional.
+     * @param pid {String} the PID of the region to be displayed in the WMS layer - set as undefined if you do not need to use an existing region.
+     * @param layerOptions {Object} Configuration options for the layer. If pid is undefined, then the layerOptions object must contain the required WMS configuration parameters. See {@link LAYER_OPTIONS} for details of additional supported options. Optional.
      * @returns {L.TileLayer.SmartWMS} the L.TileLayer.WMS object
      */
     self.addWmsLayer = function (pid, layerOptions) {
-        var layer = createWmsLayer(pid);
+        self.startLoading();
+
+        var layer = createWmsLayer(pid, layerOptions);
 
         if (options.singleDraw) {
             drawnItems.clearLayers();
@@ -639,6 +647,8 @@ ALA.Map = function (id, options) {
         layer.bringToFront(); // make sure the new layer sits on top of the other tile layers (like the base layer)
 
         applyLayerOptions(layer, layerOptions);
+
+        self.finishLoading();
 
         return layer;
     };
@@ -676,7 +686,7 @@ ALA.Map = function (id, options) {
      * @param {Number} zoom The zoom level
      * @param {Object} centre The coordinates to centre the map on. Must be an object with 'lat' and 'lng' attributes. Defaults to the map's default centre if not provided.
      */
-    self.zoom = function(zoom, centre) {
+    self.zoom = function (zoom, centre) {
         mapImpl.setZoom(zoom, {animate: ANIMATE});
         mapImpl.panTo(centre || self.DEFAULT_CENTRE, {animate: ANIMATE});
     };
@@ -689,6 +699,7 @@ ALA.Map = function (id, options) {
      * @function fitBounds
      */
     self.fitBounds = function () {
+        self.startLoading();
         if (self.countFeatures() > 0) {
             var hasGetBounds = true;
 
@@ -707,6 +718,7 @@ ALA.Map = function (id, options) {
             mapImpl.setZoom(DEFAULT_ZOOM, {animate: ANIMATE});
             mapImpl.panTo(self.DEFAULT_CENTRE, {animate: ANIMATE});
         }
+        self.finishLoading();
     };
 
     /**
@@ -721,7 +733,7 @@ ALA.Map = function (id, options) {
      * @function fitToBoundsOf
      * @param {Object} geoJSON Valid GeoJSON object to fit the map to
      */
-    self.fitToBoundsOf = function(geoJSON) {
+    self.fitToBoundsOf = function (geoJSON) {
         if (typeof geoJSON === 'string') {
             geoJSON = JSON.parse(geoJSON);
         }
@@ -772,7 +784,7 @@ ALA.Map = function (id, options) {
      * @function setMaxBounds
      * @param {LatLngBounds} latLngBounds The Leaflet LatLngBounds object to restrict the map to
      */
-    self.setMaxBounds = function(latLngBounds) {
+    self.setMaxBounds = function (latLngBounds) {
         mapImpl.setMaxBounds(latLngBounds);
     };
 
@@ -784,7 +796,7 @@ ALA.Map = function (id, options) {
      * @memberOf ALA.Map
      * @function clearBoundLimits
      */
-    self.clearBoundLimits = function() {
+    self.clearBoundLimits = function () {
         if (!_.isUndefined(fitToBoundsOfLayer) && fitToBoundsOfLayer != null) {
             fitToBoundsOfLayer = null;
         }
@@ -889,7 +901,7 @@ ALA.Map = function (id, options) {
      * @memberOf ALA.Map
      * @function startLoading
      */
-    self.startLoading = function() {
+    self.startLoading = function () {
         mapImpl.fire("dataloading");
     };
 
@@ -901,8 +913,28 @@ ALA.Map = function (id, options) {
      * @memberOf ALA.Map
      * @function finishLoading
      */
-    self.finishLoading = function() {
+    self.finishLoading = function () {
         mapImpl.fire("dataload");
+    };
+
+    /**
+     * Toggle the view between fitting the bounds of the data and the initial centre and zoom
+     *
+     * @memberOf ALA.Map
+     * @function toggleFitBounds
+     */
+    self.toggleFitBounds = function () {
+        fitToBoundsToggle = !fitToBoundsToggle;
+        var button = $(".ala-map-fit-bounds");
+        if (fitToBoundsToggle) {
+            self.fitBounds();
+            button.removeClass("fa-search-plus");
+            button.addClass("fa-search-minus");
+        } else {
+            self.zoom(options.zoom, options.centre);
+            button.removeClass("fa-search-minus");
+            button.addClass("fa-search-plus");
+        }
     };
 
     // ----------------------
@@ -927,6 +959,11 @@ ALA.Map = function (id, options) {
         L.control.layers(options.otherLayers).addTo(mapImpl);
 
         addLoadingControl();
+
+        if (options.showFitBoundsToggle) {
+            var css = "ala-map-fit-bounds fa " + (options.zoomToObject ? "fa-search-minus" : "fa-search-plus");
+            self.addButton("<span class='" + css + "' title='Toggle between the full map and the bounds of the data'></span>", self.toggleFitBounds, "topleft");
+        }
 
         if (options.useMyLocation) {
             var title = options.myLocationControlTitle || "Use my location";
@@ -1047,14 +1084,14 @@ ALA.Map = function (id, options) {
         var loadingEvents = ["movestart", "dragstart", "zoomstart"];
 
         loadingEvents.forEach(function (eventName) {
-            mapImpl.on(eventName, function() {
+            mapImpl.on(eventName, function () {
                 self.startLoading();
             })
         });
 
         var loadingFinishedEvents = ["moveend", "dragend", "zoomend"];
         loadingFinishedEvents.forEach(function (eventName) {
-            mapImpl.on(eventName, function() {
+            mapImpl.on(eventName, function () {
                 self.finishLoading();
             })
         });
@@ -1235,25 +1272,27 @@ ALA.Map = function (id, options) {
     }
 
     // Internal function to create a new WMS layer, but not to add it to the map, or trigger any notifications
-    function createWmsLayer(pid) {
-        var wmsOptions = {
-            pid: pid,
-            viewparams: "s:" + pid,
-            wmsFeatureUrl: options.wmsFeatureUrl + pid,
-            callback: function () {
-                if (options.zoomToObject) {
-                    self.fitBounds();
-                }
-                self.notifyAll();
-            }
-        };
-        _.defaults(wmsOptions, DEFAULT_WMS_PROPERTIES);
-
-        if (_.isUndefined(options.wmsLayerUrl)) {
-            console.error("You must specify the wmsLayerUrl and wmsFeatureUrl options for this map.")
+    function createWmsLayer(pid, wmsOptions) {
+        if (!_.isUndefined(pid) && pid != null) {
+            wmsOptions.pid = pid;
+            wmsOptions.viewparams = "s:" + pid;
+            wmsOptions.wmsFeatureUrl = options.wmsFeatureUrl + pid;
         }
 
-        return L.tileLayer.smartWms(options.wmsLayerUrl, wmsOptions);
+        wmsOptions.callback = function () {
+            if (options.zoomToObject) {
+                self.fitBounds();
+            }
+            self.notifyAll();
+        };
+
+        _.defaults(wmsOptions, DEFAULT_WMS_PROPERTIES);
+
+        if ((_.isUndefined(options.wmsLayerUrl) || options.wmsLayer == null) && (_.isUndefined(wmsOptions.wmsLayerUrl) || wmsOptions.wmsLayerUrl == null)) {
+            console.error("You must specify the wmsLayerUrl option for this map or for the layer.")
+        }
+
+        return L.tileLayer.smartWms(wmsOptions.wmsLayerUrl || options.wmsLayerUrl, wmsOptions);
     }
 
     // Internal function to apply layer-specific options to the provided layer. Handles all the logic to determine if
@@ -1517,7 +1556,7 @@ ALA.MapUtils = {
         // Turf (and GeoJSON) doesn't support circles, so check if there are any and add them to the total
         // This will work as long as the radius has been included in the properties object of the feature
         if (geoJson.type == "FeatureCollection") {
-            geoJson.features.forEach(function(feature) {
+            geoJson.features.forEach(function (feature) {
                 if (feature.properties.radius) {
                     areaSqKm += ((3.14 * feature.properties.radius * feature.properties.radius) / 1000) / 1000;
                 }

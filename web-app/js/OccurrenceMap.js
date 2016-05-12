@@ -1,4 +1,4 @@
-"use strict";
+//"use strict";
 
 /**
  * @namespace
@@ -143,6 +143,7 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
     var FACET_GROUP_URL = biocacheBaseUrl + "/ws/search/grouped/facets";
     var SEARCH_URL_PREFIX = biocacheBaseUrl + "/ws/occurrences/search.json?";
     var WMS_LAYER_URL = biocacheBaseUrl + "/ws/mapping/wms/reflect?";
+    var WMS_BOUNDS_URL = biocacheBaseUrl + "/ws/mapping/bounds.json?";
 
     populateDefaultOptions(options);
 
@@ -332,17 +333,20 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
         }
 
         var wmsLayerUrl = WMS_LAYER_URL + queryString;
+        var boundsUrl = WMS_BOUNDS_URL + queryString;
 
-        wmsLayer = L.tileLayer.smartWms(wmsLayerUrl, {
+        self.map.addWmsLayer(undefined, {
+            wmsLayerUrl: wmsLayerUrl,
             layers: 'ALA:occurrences',
             format: 'image/png',
             attribution: options.mapAttribution,
             outline: "true",
-            ENV: "color:" + options.point.colour + ";name:" + options.point.name + ";size:" + options.point.size + ";opacity:" + options.point.opacity
+            transparent: false,
+            opacity: 1,
+            ENV: "color:" + options.point.colour + ";name:" + options.point.name + ";size:" + options.point.size + ";opacity:" + options.point.opacity,
+            boundsUrl: boundsUrl,
+            callback: self.setBounds
         });
-        wmsLayer.setZIndex(99);
-
-        self.map.addLayer(wmsLayer, {});
     }
 
     function constructBiocacheQuery() {
