@@ -708,7 +708,7 @@ ALA.Map = function (id, options) {
             });
 
             if (hasGetBounds) {
-                mapImpl.fitBounds(drawnItems.getBounds(), {maxZoom: MAX_AUTO_ZOOM, animate: ANIMATE});
+                mapImpl.fitBounds(drawnItems.getBounds(), {maxZoom: options.maxAutoZoom, animate: ANIMATE});
             } else {
                 // cannot determine the bounds from the layers, set the map centre and zoom level to the defaults
                 mapImpl.setZoom(DEFAULT_ZOOM, {animate: ANIMATE});
@@ -752,7 +752,7 @@ ALA.Map = function (id, options) {
                         wmsFeatureUrl: options.wmsFeatureUrl + feature.properties.pid,
                         callback: function () {
                             if (geoJsonLayer.getBounds && !_.isUndefined(geoJsonLayer.getBounds())) {
-                                mapImpl.fitBounds(geoJsonLayer.getBounds(), {maxZoom: MAX_AUTO_ZOOM, animate: ANIMATE});
+                                mapImpl.fitBounds(geoJsonLayer.getBounds(), {maxZoom: options.maxAutoZoom, animate: ANIMATE});
                             }
                         }
                     };
@@ -768,7 +768,7 @@ ALA.Map = function (id, options) {
         // WMS layers may not have the bounds, or the fully populated bounds, until the layer is retrieved from the server.
         // There is a callback above which fits the bounds for WMS layers after they are populated.
         if (geoJsonLayer.getBounds && !_.isUndefined(geoJsonLayer.getBounds()) && !_.isUndefined(geoJsonLayer.getBounds().getNorthEast())) {
-            mapImpl.fitBounds(geoJsonLayer.getBounds(), {maxZoom: MAX_AUTO_ZOOM, animate: ANIMATE});
+            mapImpl.fitBounds(geoJsonLayer.getBounds(), {maxZoom: options.maxAutoZoom, animate: ANIMATE});
         }
     };
 
@@ -1234,7 +1234,7 @@ ALA.Map = function (id, options) {
         layer.addTo(drawnItems);
 
         if (options.zoomToObject && layer.getBounds) {
-            mapImpl.fitBounds(drawnItems.getBounds(), {maxZoom: MAX_AUTO_ZOOM, animate: ANIMATE});
+            mapImpl.fitBounds(drawnItems.getBounds(), {maxZoom: options.maxAutoZoom, animate: ANIMATE});
             mapImpl.invalidateSize();
         }
 
