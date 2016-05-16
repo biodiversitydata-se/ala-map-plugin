@@ -348,14 +348,14 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
         var newQuery = baseQuery;
 
         selectedFacets.forEach(function (facet) {
-            newQuery += "&fq=" + encodeURIComponent(facet.fq);
+            newQuery += "&fq=" + facet.fq;
         });
 
         if (!_.isUndefined(colourBy) && !_.isEmpty(colourBy) && colourBy != null) {
             newQuery += "&colourBy=" + colourBy;
         }
 
-        return newQuery;
+        return URI.encodeReserved(newQuery);
     }
 
     function populateFacetGroups(queryString) {
