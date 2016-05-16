@@ -36,6 +36,7 @@ ALA.MapConstants = {
  *  <li><code>zoom</code> the initial zoom level. Default: 4</li>
  *  <li><code>maxZoom</code> the maximum allowed zoom level. Default: 20</li>
  *  <li><code>maxAutoZoom</code> the maximum zoom level to automatically zoom to (when zoomToObject = true). Default: 15</li>
+ *  <li><code>defaultLayersControl</code> true to use the default layers control, false to use your own. Default: true</li>
  *  <li><code>scrollWheelZoom</code> whether to enable zooming in/out by scrolling the mouse. Default: false</li>
  *  <li><code>fullscreenControl</code> whether to include a full-screen option. Default: true</li>
  *  <li><code>fullscreenControlOptions:</code>
@@ -107,6 +108,10 @@ ALA.Map = function (id, options) {
         attribution: "Map data &copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>, imagery &copy; <a href='http://cartodb.com/attributions'>CartoDB</a>"
     };
 
+    var DEFAULT_LAYER_CONTROL_OPTIONS = {
+        position: "topright"
+    };
+
     var DEFAULT_DRAW_OPTIONS = {
         polyline: false,
         polygon: {
@@ -153,6 +158,7 @@ ALA.Map = function (id, options) {
         zoom: DEFAULT_ZOOM,
         maxZoom: DEFAULT_MAX_ZOOM,
         maxAutoZoom: MAX_AUTO_ZOOM,
+        defaultLayersControl: true,
         scrollWheelZoom: false,
         fullscreenControl: true,
         fullscreenControlOptions: {
@@ -648,8 +654,6 @@ ALA.Map = function (id, options) {
 
         applyLayerOptions(layer, layerOptions);
 
-        self.finishLoading();
-
         return layer;
     };
 
@@ -937,6 +941,26 @@ ALA.Map = function (id, options) {
         }
     };
 
+    /**
+     * Add a layer selection control to the map. If options#defaultLayersControl = false, then this function can be used
+     * to place the layers control in a position other than the default (top right).
+     *
+     * See http://leafletjs.com/reference.html#control-layers for details.
+     *
+     * @memberOf ALA.Map
+     * @function addLayersControl
+     * @param {Object} baseLayers Collection of base layers to add to the control
+     * @param {Object} overlays Collection of overlay layers to add to the control
+     * @param {Object} controlOptions config options
+     */
+    self.addLayersControl = function(baseLayers, overlays, controlOptions) {
+        _.defaults(controlOptions, DEFAULT_LAYER_CONTROL_OPTIONS);
+        L.control.layers(baseLayers || options.otherLayers, overlays || {}, controlOptions).addTo(mapImpl);
+
+        // always display the loading indicator below the layer control
+        addLoadingControl();
+    };
+
     // ----------------------
     // Private functions
     // ----------------------
@@ -956,9 +980,9 @@ ALA.Map = function (id, options) {
         L.Icon.Default.imagePath = getLeafletImageLocation();
 
         mapImpl.addLayer(options.baseLayer);
-        L.control.layers(options.otherLayers).addTo(mapImpl);
-
-        addLoadingControl();
+        if (options.defaultLayersControl) {
+            self.addLayersControl(options.otherLayers);
+        }
 
         if (options.showFitBoundsToggle) {
             var css = "ala-map-fit-bounds fa " + (options.zoomToObject ? "fa-search-minus" : "fa-search-plus");
@@ -1284,6 +1308,7 @@ ALA.Map = function (id, options) {
                 self.fitBounds();
             }
             self.notifyAll();
+            self.finishLoading();
         };
 
         _.defaults(wmsOptions, DEFAULT_WMS_PROPERTIES);

@@ -19,12 +19,14 @@ var ALA = ALA || {};
  * <ul>
  *  <li><code>mapOptions</code> Object containing configuration options for the underlying map. See ALA.Map for details. If not provided, the defaults from ALA.Map will be used.</li>
  *  <li><code>showFacets</code> True to allow the user to change the facets used for the query. Default: true</li>
- *  <li><code>facetNameMapping</code> Object containing a mapping from the default facet field names to display labels to be used. If not provided then the field names will be formatted into human-readable form (capitalised, camel-case changed to sentence case, underscores replaced with spaces, etc). The format must be <code>{fieldName: "label", ...}</code>. All values displayed in the facet list can be mapped using this construct, regardless of the display level.</li>
+ *  <li><code>facetNameMapping</code> Object containing a mapping from the default facet field names to display labels to be used. The format must be <code>{fieldName: "label", ...}</code>. All values displayed in the facet list can be mapped using this construct, regardless of the display level. If not provided then the ALA.OccurrenceMapUtils.DEFAULT_FACET_NAME object will be used, or field names will be formatted into human-readable form (capitalised, camel-case changed to sentence case, underscores replaced with spaces, etc). </li>
  *  <li><code>excludeFacets</code> List of facet names to exclude from dislay. This list can contain items from any level in the facet list. If not provided, all available facets will be displayed.</li>
  *  <li><code>excludeSingles</code> True to hide any facet group which only contains a single option. Default: true</li>
  *  <li><code>maximumFacets</code> The maximum number of facets that can be selected via the 'choose more' dialog. Default: 15</li>
  *  <li><code>wms</code> True to use a WMS layer to display occurrences, false to render individual points as circles on a clustered map. Default: true</li>
  *  <li><code>mapAttribution</code> Attribution text to be displayed on the map. Default: blank</li>
+ *  <li><code>allowColourBy</code> True to include a colour-by control. Default: true</li>
+ *  <li><code>showLegend</code> True to include a legend for coloured maps. Default: true</li>
  *  <li><code>points</code>Config options for the points on the map:
  *    <ul>
  *      <li><code>colour</code> The initial colour (in hex, without the #) to use for rendering occurrence points on the map. Default: #FF9900</li>
@@ -66,6 +68,7 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
     var DEFAULT_OPTIONS = {
         mapOptions: {
             useMyLocation: false,
+            defaultLayersControl: false,
             allowSearchLocationByAddress: false,
             allowSearchRegionByAddress: false,
             drawOptions: {
@@ -73,60 +76,11 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
             },
             drawControl: false // temporary
         },
-        facetNameMapping: {
-            taxon_name: "Scientific name",
-            raw_taxon_name: "Scientific name (unprocessed)",
-            "": "Unknown",
-            " ": "Unknown",
-            "state": "State or Territory",
-            "synonym.decade": "occurrence_year",
-            "location_id": "Location ID",
-            "event_id": "Event ID",
-            "elevation_d_rng": "Elevation (in metres)",
-            "min_elevation_d_rng": "Minimum elevation (in metres)",
-            "cl1048": "IBRA 7 Regions",
-            "cl21": "IMCRA Regions",
-            "raw_identification_qualifier": "Raw identification qualifier",
-            "original_name_usage": "Original name usage",
-            "cl2079": "capad 2014 terrestrial",
-            "cl2078": "capad 2014 marine",
-            "cl925": "Estuary habitat mapping",
-            "cl901": "Directory of Important Wetlands",
-            "cl958": "Commonwealth Electoral Boundaries",
-            "cl1049": "IBRA 7 Subregions",
-            "cl1085": "Koppen Climate Classification (All Classes)",
-            "cl678": "Land use",
-            "cl991": "Geomorphology of the Australian Margin and adjacent seafloor",
-            "cl916": "NRM Regions",
-            "cl935": "RAMSAR wetland regions",
-            "cl1057": "River Regions",
-            "cl2013": "ASGS Australian States and Territories",
-            "cl927": "States including coastal waters",
-            "cl923": "Surface Geology of Australia",
-            "cl619": "Vegetation - condition",
-            "cl1076": "IGBP Land Cover vegetation classification scheme (2011)",
-            "cl918": "National Dynamic Land Cover",
-            "occurrence_decade_i": "Year (by decade)",
-            "data_resource_uid": "Data resource",
-            "data_resource": "Data resource",
-            "dataset_name": "Dataset name",
-            "species_list_uid": "Species lists",
-            "Taxonomic ": " Taxonomic",
-            "Taxon ": " Taxon",
-            "Geospatial ": " Geospatial",
-            "Temporal ": " Temporal",
-            "Record\ details ": " Record details",
-            "Attribution ": " Attribution",
-            "Record\ assertions ": " Record assertions",
-            "Ungrouped ": " Miscellaneous",
-            "Identification": "Identification",
-            "Occurrence": "Occurrence",
-            "Location": "Location",
-            "Assertions": "Assertions",
-            "Record": "Record"
-        },
+        facetNameMapping: {},
         showFacets: true,
         excludeSingles: true,
+        allowColourBy: true,
+        showLegend: true,
         excludeFacets: [],
         includeFacets: [],
         maximumFacets: 15,
@@ -144,6 +98,7 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
     var SEARCH_URL_PREFIX = biocacheBaseUrl + "/ws/occurrences/search.json?";
     var WMS_LAYER_URL = biocacheBaseUrl + "/ws/mapping/wms/reflect?";
     var WMS_BOUNDS_URL = biocacheBaseUrl + "/ws/mapping/bounds.json?";
+    var LEGEND_URL = biocacheBaseUrl + "/occurrence/legend?type=application/json&";
 
     populateDefaultOptions(options);
 
@@ -158,6 +113,7 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
     // the biocache query with just the q= parameter, no facets (fq=). Facets are added via the selectedFacets list.
     var baseQuery = null;
     var selectedFacets = [];
+    var colourBy = "";
     var wmsLayer = null;
     var currentFacets = null;
     var facetGroups = null;
@@ -165,6 +121,8 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
     var facetPageSize = 50;
     var facetOffset = 0;
     var facetForModal = null;
+    var colourByControl = null;
+    var legend = null;
 
     //
     // Public functions
@@ -191,7 +149,7 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
     self.setQueryString = function (queryString) {
         selectedFacets = [];
 
-        baseQuery = extractBaseQuery(queryString);
+        parseQueryString(queryString);
 
         update(queryString);
     };
@@ -295,14 +253,45 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
         update();
     };
 
+    self.colourByFacet = function (facet) {
+        colourBy = facet;
+
+        update();
+    };
+
     //
     // Private functions
     //
 
     function initialiseMap() {
-        self.map = new ALA.Map(id, options.mapOptions);
+        self.map = new ALA.Map(id, _.clone(options.mapOptions));
 
-        baseQuery = extractBaseQuery(queryString);
+        if (options.allowColourBy) {
+            colourByControl = new L.Control.Select({
+                id: "colourByControl",
+                position: "topright",
+                label: "Colour by",
+                collapse: false,
+                placeholder: "Default",
+                selectionAction: self.colourByFacet
+            });
+            self.map.addControl(colourByControl);
+        }
+
+        // make sure the layers control appears below the colour control
+        self.map.addLayersControl();
+
+        if (options.showLegend) {
+            legend = new L.Control.Legend({
+                id: "legend",
+                position: "bottomright",
+                items: [],
+                collapse: true
+            });
+            self.map.addControl(legend);
+        }
+
+        parseQueryString(queryString);
 
         update(queryString);
 
@@ -310,17 +299,12 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
     }
 
     function update(queryString) {
-        self.map.startLoading();
-
         populateFacetGroups(queryString);
         if (options.wms) {
-
             updateWMS(queryString);
         } else {
             console.error("WMS is the only option supported at the moment.");
         }
-
-        self.map.finishLoading();
     }
 
     function updateWMS(queryString) {
@@ -332,8 +316,19 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
             queryString = constructBiocacheQuery();
         }
 
+        var queryParams = URI.parseQuery(queryString);
+
         var wmsLayerUrl = WMS_LAYER_URL + queryString;
         var boundsUrl = WMS_BOUNDS_URL + queryString;
+
+        var envProperty = "color:" + options.point.colour
+            + ";name:" + options.point.name
+            + ";size:" + options.point.size
+            + ";opacity:" + options.point.opacity;
+
+        if (!_.isUndefined(queryParams.colourBy) && !_.isEmpty(queryParams.colourBy)) {
+            envProperty += ";colormode:" + queryParams.colourBy
+        }
 
         self.map.addWmsLayer(undefined, {
             wmsLayerUrl: wmsLayerUrl,
@@ -343,9 +338,8 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
             outline: "true",
             transparent: false,
             opacity: 1,
-            ENV: "color:" + options.point.colour + ";name:" + options.point.name + ";size:" + options.point.size + ";opacity:" + options.point.opacity,
-            boundsUrl: boundsUrl,
-            callback: self.setBounds
+            ENV: envProperty,
+            boundsUrl: boundsUrl
         });
     }
 
@@ -356,6 +350,10 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
         selectedFacets.forEach(function (facet) {
             newQuery += "&fq=" + encodeURIComponent(facet.fq);
         });
+
+        if (!_.isUndefined(colourBy) && !_.isEmpty(colourBy) && colourBy != null) {
+            newQuery += "&colourBy=" + colourBy;
+        }
 
         return newQuery;
     }
@@ -386,11 +384,66 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
             if (facetsForQuery) {
                 currentFacets = constructFacetList(fieldsToGroups, facetsForQuery);
 
+                updateColourBy();
+
                 updateSelectedFacets(facetsForQuery);
 
                 updateFacetDOM();
             }
         });
+    }
+
+    function updateColourBy() {
+        if (options.allowColourBy) {
+            if (!_.isUndefined(currentFacets) && currentFacets) {
+                var items = [];
+                for (var group in currentFacets) {
+                    if (currentFacets.hasOwnProperty(group)) {
+                        currentFacets[group].forEach (function (facet) {
+                            items.push({key: facet.facetId, value: facet.fieldName});
+                        });
+                    }
+                }
+                items = _.sortBy(items, function (item) {
+                    return item.value
+                });
+
+                var queryParams = URI.parseQuery(constructBiocacheQuery());
+
+                colourByControl.setItems(items, queryParams.colourBy);
+
+                updateLegend();
+            } else {
+                colourByControl.clearItems();
+            }
+        }
+    }
+
+    function updateLegend() {
+        if (options.showLegend) {
+            if (!_.isUndefined(colourBy) && !_.isEmpty(colourBy)) {
+                self.map.startLoading();
+                $.ajax({
+                    url: LEGEND_URL + constructBiocacheQuery() + "&cm=" + colourBy,
+                    dataType: "json"
+                }).done(function (legendItems) {
+                    if (!_.isUndefined(legendItems)) {
+                        legendItems.forEach (function (item) {
+                            item.name = ALA.OccurrenceMapUtils.formatFacetName(item.name);
+                        });
+                        legend.setItems(legendItems);
+                    } else {
+                        legend.clearItems();
+                        legend.hide();
+                    }
+                }).always(function() {
+                    self.map.finishLoading();
+                });
+            } else {
+                legend.clearItems([]);
+                legend.hide();
+            }
+        }
     }
 
     function updateSelectedFacets(facetsForQuery) {
@@ -410,7 +463,7 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
             }
 
             var selectedFacet = {
-                label: formatFacetName(facet.name) + ": " + formatFacetName(facet.value),
+                label: ALA.OccurrenceMapUtils.formatFacetName(facet.name) + ": " + ALA.OccurrenceMapUtils.formatFacetName(facet.value),
                 fq: fq
             };
 
@@ -430,7 +483,7 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
             if (includeFacet(group.title)) {
                 group.facets.forEach(function (facet) {
                     if (includeFacet(group.field)) {
-                        fieldsToGroups[facet.field] = formatFacetName(group.title);
+                        fieldsToGroups[facet.field] = ALA.OccurrenceMapUtils.formatFacetName(group.title);
                     }
                 });
             }
@@ -447,7 +500,7 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
 
             facet.fieldResult.forEach (function (result) {
                 if (result.count > 0 && includeFacet(result.label)) {
-                    result.label = formatFacetName(result.label);
+                    result.label = ALA.OccurrenceMapUtils.formatFacetName(result.label);
 
                     fieldResults.push(result);
                 }
@@ -463,7 +516,7 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
 
                     facets[title].push({
                         facetId: facet.fieldName,
-                        fieldName: formatFacetName(facet.fieldName),
+                        fieldName: ALA.OccurrenceMapUtils.formatFacetName(facet.fieldName),
                         fieldResult: fieldResults
                     });
                 }
@@ -635,14 +688,105 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
     }
 
     function constructFacetFromElement(elem) {
-        var fieldName = formatFacetName(elem.data("field-name"));
+        var fieldName = ALA.OccurrenceMapUtils.formatFacetName(elem.data("field-name"));
         var fq = elem.data("fq");
-        var label = formatFacetName(elem.data("label"));
+        var label = ALA.OccurrenceMapUtils.formatFacetName(elem.data("label"));
 
         return {label: fieldName + ": " + label, fq: fq}
     }
 
-    function formatFacetName(name) {
+    // Populate any missing configuration items with the default values
+    function populateDefaultOptions(options) {
+        _.defaults(options, DEFAULT_OPTIONS);
+        _.defaults(options.point, DEFAULT_OPTIONS.point);
+        _.defaults(options.mapOptions, DEFAULT_OPTIONS.mapOptions);
+        _.defaults(options.facetNameMapping, DEFAULT_OPTIONS.facetNameMapping);
+    }
+
+    function parseQueryString(queryString) {
+        var queryParams = URI.parseQuery(queryString);
+        baseQuery = "q=" + queryParams.q;
+        colourBy = queryParams.colourBy;
+    }
+
+    initialiseMap();
+};
+
+ALA.OccurrenceMapUtils = {
+    DEFAULT_FACET_NAME_MAPPINGS: {
+        taxon_name: "Scientific name",
+        raw_taxon_name: "Scientific name (unprocessed)",
+        "": "Unknown",
+        " ": "Unknown",
+        "state": "State or Territory",
+        "synonym.decade": "occurrence_year",
+        "location_id": "Location ID",
+        "event_id": "Event ID",
+        "elevation_d_rng": "Elevation (in metres)",
+        "min_elevation_d_rng": "Minimum elevation (in metres)",
+        "cl1048": "IBRA 7 Regions",
+        "cl21": "IMCRA Regions",
+        "raw_identification_qualifier": "Raw identification qualifier",
+        "original_name_usage": "Original name usage",
+        "cl2079": "capad 2014 terrestrial",
+        "cl2078": "capad 2014 marine",
+        "cl925": "Estuary habitat mapping",
+        "cl901": "Directory of Important Wetlands",
+        "cl958": "Commonwealth Electoral Boundaries",
+        "cl959": "ASGS Australian States and Territories",
+        "cl1918": "National Dynamic Land Cover",
+        "cl617": "Vegetation types - native",
+        "cl620": "Vegetation types - present",
+        "cl966": "IMCRA Meso-scale Bioregions",
+        "cl1049": "IBRA 7 Subregions",
+        "cl1085": "Koppen Climate Classification (All Classes)",
+        "cl678": "Land use",
+        "cl991": "Geomorphology of the Australian Margin and adjacent seafloor",
+        "cl916": "NRM Regions",
+        "cl935": "RAMSAR wetland regions",
+        "cl1057": "River Regions",
+        "cl2013": "ASGS Australian States and Territories",
+        "cl927": "States including coastal waters",
+        "cl923": "Surface Geology of Australia",
+        "cl619": "Vegetation - condition",
+        "cl1076": "IGBP Land Cover vegetation classification scheme (2011)",
+        "cl918": "National Dynamic Land Cover",
+        "occurrence_decade_i": "Year (by decade)",
+        "data_resource_uid": "Data resource",
+        "data_resource": "Data resource",
+        "dataset_name": "Dataset name",
+        "species_list_uid": "Species lists",
+        "Taxonomic ": " Taxonomic",
+        "Taxon ": " Taxon",
+        "Geospatial ": " Geospatial",
+        "Temporal ": " Temporal",
+        "Record\ details ": " Record details",
+        "Attribution ": " Attribution",
+        "Record\ assertions ": " Record assertions",
+        "Ungrouped ": " Miscellaneous",
+        "Identification": "Identification",
+        "Occurrence": "Occurrence",
+        "Location": "Location",
+        "Assertions": "Assertions",
+        "Record": "Record"
+    },
+
+    /**
+     * Format the name of any part of a query facet (i.e. group, facet, individual items).
+     *
+     * It first tries to find a mapping in the <code>fcetNameMappingOverrides</code> object, and then in the
+     * <code>ALA.OccurrenceMapUtils.OccurrenceMapUtils</code> object.
+     *
+     * If there is no mapping, then the value will be formatted by replacing camel-case with spaces, and replacing any
+     * character other than numbers, letters, and some punctuation and special characters with spaces.
+     *
+     * The final value will be capatilised.
+     *
+     * @param name The name to format. If empty, null or undefined then "Unknown" will be returned.
+     * @param facetNameMappingOverrides Optional object containing mappings from raw value to formatted value, in the form {raw: formatted, ...}
+     * @returns {String} the formatted string
+     */
+    formatFacetName: function (name, facetNameMappingOverrides) {
         if (_.isUndefined(name) || _.isEmpty(name)) {
             name = "Unknown";
         } else {
@@ -650,7 +794,12 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
                 name = name.substring(1);
             }
 
-            var mappedDisplayName = options.facetNameMapping[name];
+            var mappedDisplayName;
+            if (!_.isUndefined(facetNameMappingOverrides) && !_.isUndefined(facetNameMappingOverrides[name])) {
+                mappedDisplayName = facetNameMappingOverrides[name];
+            } else {
+                mappedDisplayName = this.DEFAULT_FACET_NAME_MAPPINGS[name];
+            }
 
             if (_.isUndefined(mappedDisplayName)) {
                 if (name && !_.isUndefined(name)) {
@@ -670,18 +819,4 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
         return name;
     }
 
-    // Populate any missing configuration items with the default values
-    function populateDefaultOptions(options) {
-        _.defaults(options, DEFAULT_OPTIONS);
-        _.defaults(options.point, DEFAULT_OPTIONS.point);
-        _.defaults(options.mapOptions, DEFAULT_OPTIONS.mapOptions);
-        _.defaults(options.facetNameMapping, DEFAULT_OPTIONS.facetNameMapping);
-    }
-
-    function extractBaseQuery(queryString) {
-        var queryParams = URI.parseQuery(queryString);
-        return "q=" + queryParams.q;
-    }
-
-    initialiseMap();
 };
