@@ -787,9 +787,10 @@ ALA.OccurrenceMapUtils = {
      * @returns {String} the formatted string
      */
     formatFacetName: function (name, facetNameMappingOverrides) {
-        if (_.isUndefined(name) || _.isEmpty(name)) {
+        if (_.isUndefined(name) || _.isEmpty("" + name)) {
             name = "Unknown";
         } else {
+            name = "" + name; // only dealing with string values
             if (name.charAt(0) == "-" && name.length > 1) {
                 name = name.substring(1);
             }

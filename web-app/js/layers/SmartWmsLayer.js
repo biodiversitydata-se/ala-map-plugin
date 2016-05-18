@@ -100,7 +100,7 @@ L.TileLayer.SmartWMS = L.TileLayer.WMS.extend({
 /**
  * Construct a new smart WMS layer.
  *
- * @param wmsUrl The WMS url for the layer
+ * @param url The WMS url for the layer
  * @param options The options to pass to the wms server. Must include a pid and wmsFeatureUrl. Can include an optional boundsUrl (to retrieve the bounds for the layer, as an array of coordinates in the form [lng, lat, lng, lat, ...])
  * @returns {L.TileLayer.SmartWMS} the new layer
  */
