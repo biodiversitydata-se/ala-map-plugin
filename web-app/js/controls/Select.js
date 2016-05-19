@@ -45,17 +45,26 @@ L.Control.Select = L.Control.extend({
         container.id = self.options.id;
         var selectContainer = null;
 
+        var createSelectContainer = function() {
+            selectContainer = L.DomUtil.create("div", "selector-container " + (self.options.collapse ? "hide" : ""), container);
+        };
+        var createIcon = function() {
+            self.icon = L.DomUtil.create("button", self.options.iconClass + " leaflet-bar-part", container);
+        };
+
         if (self.options.collapse) {
+            // The order is necessary - if the control is on the left side of the map then we need to show the button
+            // before the select. If the control is on the right, then the button should be after the select.
             if (self.options.position.indexOf("right") > -1) {
-                selectContainer = L.DomUtil.create("div", "selector-container " + (self.options.collapse ? "hide" : ""), container);
-                self.icon = L.DomUtil.create("button", self.options.iconClass + " leaflet-bar-part", container);
+                createSelectContainer();
+                createIcon();
             } else {
-                self.icon = L.DomUtil.create("button", self.options.iconClass + " leaflet-bar-part", container);
-                selectContainer = L.DomUtil.create("div", "selector-container " + (self.options.collapse ? "hide" : ""), container);
+                createIcon();
+                createSelectContainer();
             }
             self.icon.title = self.options.label;
         } else {
-            selectContainer = L.DomUtil.create("div", "selector-container " + (self.options.collapse ? "hide" : ""), container);
+            createSelectContainer();
             var label = L.DomUtil.create("label", "", selectContainer);
             label.innerHTML = self.options.label;
         }
