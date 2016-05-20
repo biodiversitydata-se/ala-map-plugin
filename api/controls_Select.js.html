@@ -1245,154 +1245,139 @@
               
 
 
-
-<section>
-
-<header>
-    <h1 class="page-header">
-      SmartWMS
-    </h1>
-
     
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>/**
+ * Custom Leaflet control which will display a select box. Selecing an item in the first box will populate the second.
+ * Selecting an item in the second box will update the map.
+ *
+ * &lt;p/>
+ * &lt;b>Options:&lt;/b>
+ * &lt;ul>
+ *     &lt;li>&lt;code>id&lt;/code> Unique id for the control&lt;/li>
+ *     &lt;li>&lt;code>position&lt;/code> The location on the map (using leaflet's standard control positions). Default: topleft&lt;/li>
+ *     &lt;li>&lt;code>collapse&lt;/code> True to show a button until clicked, then show the select box; false to just show the select box. Default: false&lt;/li>
+ *     &lt;li>&lt;code>label&lt;/code> The label for the select box (and the title the button when collapse=true). Default: 'Select...'&lt;/li>
+ *     &lt;li>&lt;code>items&lt;/code> array of items (key/value) to be displayed in the dropdown&lt;/li>
+ *     &lt;li>&lt;code>selectionAction&lt;/code> Function callback to invoke when the selection changes&lt;/li>
+ *     &lt;li>&lt;code>iconClass&lt;/code> The CSS class(es) for the button icon (if collapse=true). Default: 'fa fa-list'&lt;/li>
+ *     &lt;li>&lt;code>selectClass&lt;/code> The CSS class(es) for the select box. Default: 'leaflet-select'&lt;/li>
+ * &lt;/ul>
+ *
+ * @class
+ */
+L.Control.Select = L.Control.extend({
+    options: {
+        id: "replaceMe",
+        position: "topleft",
+        collapse: false,
+        title: "Select...",
+        items: [],
+        selectionAction: null,
+        iconClass: "fa fa-list",
+        selectClass: ""
+    },
 
-    <!-- dat inline script LOOKN REAL NASTY -->
-    <script>
-      jQuery('[data-module-name=""]').removeClass('collapsed');
-    </script>
+    select: null,
 
-    
-</header>
+    initialize: function (options) {
+        L.setOptions(this, options)
+    },
 
-<article>
-    <div class="container-overview hero-unit">
-    
+    onAdd: function (map) {
+        var self = this;
+        self.map = map;
 
-    
+        self.id = self.options.id;
+        var containerClassName = "select leaflet-bar leaflet-control";
+        var container = L.DomUtil.create("div", containerClassName);
+        container.id = self.options.id;
+        var selectContainer = null;
 
-    
+        var createSelectContainer = function() {
+            selectContainer = L.DomUtil.create("div", "selector-container " + (self.options.collapse ? "hide" : ""), container);
+        };
+        var createIcon = function() {
+            self.icon = L.DomUtil.create("button", self.options.iconClass + " leaflet-bar-part", container);
+        };
 
-    
-        
+        if (self.options.collapse) {
+            // The order is necessary - if the control is on the left side of the map then we need to show the button
+            // before the select. If the control is on the right, then the button should be after the select.
+            if (self.options.position.indexOf("right") > -1) {
+                createSelectContainer();
+                createIcon();
+            } else {
+                createIcon();
+                createSelectContainer();
+            }
+            self.icon.title = self.options.label;
+        } else {
+            createSelectContainer();
+            var label = L.DomUtil.create("label", "", selectContainer);
+            label.innerHTML = self.options.label;
+        }
 
+        self.select = L.DomUtil.create("select", "selector", selectContainer);
+        self.select.title = self.options.label;
 
+        self.setItems(self.options.items);
 
-    <h3 class="
-        subsection-title name
-        
-      " id="SmartWMS">
+        if (self.options.collapse) {
+            L.DomEvent.addListener(self.icon, 'click', function (e) {
+                e.preventDefault();
+                $("#" + self.id + " .selector-container").toggleClass("hide inline-block")
+            });
+        }
 
-      
-        
-        Constructor
-      
+        L.DomEvent.addListener(self.select, "change", function () {
+            self.selectionChanged(self);
+        }, self);
 
-      
+        L.DomEvent.disableClickPropagation(container);
 
-      
+        return container;
+    },
 
-    </h3>
+    setItems: function(items, selectedItem, placeholder) {
+        var self = this;
+        self.clearItems();
 
-    
-      <h4>new SmartWMS<span class="signature">()</span><span class="type-signature"></span></h4>
-    
+        var placeholderItem = L.DomUtil.create("option", "", self.select);
+        placeholderItem.value = "";
+        placeholderItem.innerHTML = placeholder || "Select one...";
 
-    
+        if (items &amp;&amp; items.length > 0) {
+            items.forEach(function (item) {
+                var option = L.DomUtil.create("option", "", self.select);
+                if (item.key == selectedItem) {
+                    option.selected = true;
+                }
+                option.value = item.key;
+                option.innerHTML = item.value;
+            });
+        }
+    },
 
+    clearItems: function() {
+        var self = this;
 
+        while (self.select.firstChild) {
+            self.select.removeChild(self.select.firstChild);
+        }
+    },
 
-    
-
-
-
-
-    
-    <div class="description">
-        <p>
-        Extension to the standard Leaflet WMS layer to add the ability for the layer class to lookup the bounding box
-from the WMS server, and to construct a polygon geoJSON object, with the pid of the layer in the properties object.</p><p>For this to work, the options object passed to the initialise method must include a property called wmsFeatureUrl,
-which contains the FULL url to lookup the features of the associated pid.
-        </p>
-    </div>
-    
-
-    
-
-    
-
-    
-
-    
-<dl class="details">
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-
-
-    
-    </div>
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <hr>
-
-    <div class="large-listing">
-      
-    </div>
-
-</article>
-
-</section>
+    selectionChanged: function (self) {
+        var selection = $("#" + self.id + " .selector").val();
+        self.options.selectionAction(selection, self.map);
+        if (self.options.collapse) {
+            $("#" + self.id + " .selectors").toggleClass("hide inline-block")
+        }
+    }
+});</code></pre>
+        </article>
+    </section>
 
 
 

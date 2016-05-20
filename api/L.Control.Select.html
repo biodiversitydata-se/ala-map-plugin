@@ -1250,7 +1250,7 @@
 
 <header>
     <h1 class="page-header">
-      SmartWMS
+      Select
     </h1>
 
     
@@ -1279,7 +1279,7 @@
     <h3 class="
         subsection-title name
         
-      " id="SmartWMS">
+      " id="Select">
 
       
         
@@ -1293,7 +1293,7 @@
     </h3>
 
     
-      <h4>new SmartWMS<span class="signature">()</span><span class="type-signature"></span></h4>
+      <h4>new Select<span class="signature">()</span><span class="type-signature"></span></h4>
     
 
     
@@ -1308,9 +1308,19 @@
     
     <div class="description">
         <p>
-        Extension to the standard Leaflet WMS layer to add the ability for the layer class to lookup the bounding box
-from the WMS server, and to construct a polygon geoJSON object, with the pid of the layer in the properties object.</p><p>For this to work, the options object passed to the initialise method must include a property called wmsFeatureUrl,
-which contains the FULL url to lookup the features of the associated pid.
+        Custom Leaflet control which will display a select box. Selecing an item in the first box will populate the second.
+Selecting an item in the second box will update the map.</p><p><p/>
+<b>Options:</b>
+<ul>
+    <li><code>id</code> Unique id for the control</li>
+    <li><code>position</code> The location on the map (using leaflet's standard control positions). Default: topleft</li>
+    <li><code>collapse</code> True to show a button until clicked, then show the select box; false to just show the select box. Default: false</li>
+    <li><code>label</code> The label for the select box (and the title the button when collapse=true). Default: 'Select...'</li>
+    <li><code>items</code> array of items (key/value) to be displayed in the dropdown</li>
+    <li><code>selectionAction</code> Function callback to invoke when the selection changes</li>
+    <li><code>iconClass</code> The CSS class(es) for the button icon (if collapse=true). Default: 'fa fa-list'</li>
+    <li><code>selectClass</code> The CSS class(es) for the select box. Default: 'leaflet-select'</li>
+</ul>
         </p>
     </div>
     

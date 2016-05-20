@@ -92,6 +92,31 @@
 
     
 
+    <a href="L.Control.Legend.html">Legend</a>
+  </li>
+
+
+
+          <ul class="thing-list">
+            
+          </ul>
+
+        
+
+          
+
+  <li class="thing">
+
+    
+      <i class="fa fa-cube"></i>
+    
+
+    
+
+    
+
+    
+
     <a href="ALA.Map.html">Map</a>
   </li>
 
@@ -171,6 +196,25 @@
     
 
     <a href="ALA.Map.html#.addLayer">addLayer</a>
+  </li>
+
+
+            
+              
+
+  <li class="thing">
+
+    
+
+    
+
+    
+
+    
+      <i class="fa fa-cog"></i>
+    
+
+    <a href="ALA.Map.html#.addLayersControl">addLayersControl</a>
   </li>
 
 
@@ -285,6 +329,25 @@
     
 
     <a href="ALA.Map.html#.countFeatures">countFeatures</a>
+  </li>
+
+
+            
+              
+
+  <li class="thing">
+
+    
+
+    
+
+    
+
+    
+      <i class="fa fa-cog"></i>
+    
+
+    <a href="ALA.Map.html#.destroy">destroy</a>
   </li>
 
 
@@ -702,7 +765,45 @@
       <i class="fa fa-cog"></i>
     
 
+    <a href="ALA.Map.html#.toggleFitBounds">toggleFitBounds</a>
+  </li>
+
+
+            
+              
+
+  <li class="thing">
+
+    
+
+    
+
+    
+
+    
+      <i class="fa fa-cog"></i>
+    
+
     <a href="ALA.Map.html#.unsubscribe">unsubscribe</a>
+  </li>
+
+
+            
+              
+
+  <li class="thing">
+
+    
+
+    
+
+    
+
+    
+      <i class="fa fa-cog"></i>
+    
+
+    <a href="ALA.Map.html#.zoom">zoom</a>
   </li>
 
 
@@ -908,6 +1009,170 @@
 
     
 
+    <a href="ALA.OccurrenceMap.html">OccurrenceMap</a>
+  </li>
+
+
+
+          <ul class="thing-list">
+            
+              
+
+  <li class="thing">
+
+    
+
+    
+
+    
+
+    
+      <i class="fa fa-cog"></i>
+    
+
+    <a href="ALA.OccurrenceMap.html#.clearAllFacets">clearAllFacets</a>
+  </li>
+
+
+            
+              
+
+  <li class="thing">
+
+    
+
+    
+
+    
+
+    
+      <i class="fa fa-cog"></i>
+    
+
+    <a href="ALA.OccurrenceMap.html#.clearFacet">clearFacet</a>
+  </li>
+
+
+            
+              
+
+  <li class="thing">
+
+    
+
+    
+
+    
+
+    
+      <i class="fa fa-cog"></i>
+    
+
+    <a href="ALA.OccurrenceMap.html#.getQueryString">getQueryString</a>
+  </li>
+
+
+            
+              
+
+  <li class="thing">
+
+    
+
+    
+
+    
+
+    
+      <i class="fa fa-cog"></i>
+    
+
+    <a href="ALA.OccurrenceMap.html#.selectFacet">selectFacet</a>
+  </li>
+
+
+            
+              
+
+  <li class="thing">
+
+    
+
+    
+
+    
+
+    
+      <i class="fa fa-cog"></i>
+    
+
+    <a href="ALA.OccurrenceMap.html#.self.selectMultipleFacets">self.selectMultipleFacets</a>
+  </li>
+
+
+            
+              
+
+  <li class="thing">
+
+    
+
+    
+
+    
+
+    
+      <i class="fa fa-cog"></i>
+    
+
+    <a href="ALA.OccurrenceMap.html#.setQueryString">setQueryString</a>
+  </li>
+
+
+            
+          </ul>
+
+        
+
+          
+
+  <li class="thing">
+
+    
+      <i class="fa fa-cube"></i>
+    
+
+    
+
+    
+
+    
+
+    <a href="L.Control.Select.html">Select</a>
+  </li>
+
+
+
+          <ul class="thing-list">
+            
+          </ul>
+
+        
+
+          
+
+  <li class="thing">
+
+    
+      <i class="fa fa-cube"></i>
+    
+
+    
+
+    
+
+    
+
     <a href="L.Control.Slider.html">Slider</a>
   </li>
 
@@ -1055,6 +1320,9 @@
         
             <dt><a href="ALA.MapUtils.html">MapUtils</a></dt>
             <dd></dd>
+        
+            <dt><a href="ALA.OccurrenceMap.html">OccurrenceMap</a></dt>
+            <dd></dd>
         </dl>
     
 
@@ -1113,12 +1381,15 @@
     
     <div class="description">
         <p>
-        Object for interacting with the map.</p><p><p/>
+        Object for interacting with a generic map.</p><p><p/>
 <b>Options</b>
 <ul>
  <li><code>baseLayer</code> Either a Leaflet.Layer, or the name of one of the supported base layers (currently 'Minimal' and 'WorldImagery'. Default: Minimal</li>
  <li><code>center</code> Centre position of the map. Default: -28, 134</li>
  <li><code>zoom</code> the initial zoom level. Default: 4</li>
+ <li><code>maxZoom</code> the maximum allowed zoom level. Default: 20</li>
+ <li><code>maxAutoZoom</code> the maximum zoom level to automatically zoom to (when zoomToObject = true). Default: 15</li>
+ <li><code>defaultLayersControl</code> true to use the default layers control, false to use your own. Default: true</li>
  <li><code>scrollWheelZoom</code> whether to enable zooming in/out by scrolling the mouse. Default: false</li>
  <li><code>fullscreenControl</code> whether to include a full-screen option. Default: true</li>
  <li><code>fullscreenControlOptions:</code>
@@ -1129,6 +1400,7 @@
  <li><code>singleDraw</code> whether to allow more than 1 shape or region to be drawn at a time. This does NOT apply to markers - only layers and other shapes. See also singleMarker and markerOrShapeNotBoth. Default: true</li>
  <li><code>singleMarker</code> whether to allow more than 1 marker to be drawn at a time.. Default: true</li>
  <li><code>markerOrShapeNotBoth</code> whether to allow users to draw both markers and regions/shapes at the same time. Default: true</li>
+ <li><code>showFitBoundsToggle</code> whether to include a button to toggle between the initial map zoom and the bounds of the data. Default: false</li>
  <li><code>useMyLocation</code> whether to include a "Use My Location" button to place a marker on the map at the user's location. Default: true</li>
  <li><code>allowSearchLocationByAddress</code> whether to allow the user to search by address to place a marker on the map. Default: true</li>
  <li><code>allowSearchRegionByAddress</code> whether to allow the user to search by address to draw a polygon on the map. Default: true</li>
@@ -1396,6 +1668,952 @@ Object
     
 
     
+
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+
+
+        
+            
+
+
+
+    <h3 class="
+        subsection-title name
+        
+      " id="OccurrenceMap">
+
+      
+        
+        Constructor
+      
+
+      
+
+      
+
+    </h3>
+
+    
+      <h4>new OccurrenceMap<span class="signature">(id, biocacheBaseUrl, queryString, options)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+    
+
+
+
+
+    
+    <div class="description">
+        <p>
+        Object for interacting with an ALA Occurrence map. This map is designed for displaying ALA occurrence records, with the ability for users to control the query facets behind the data.
+<p/></p><p>The resulting query can be extracted and saved for later re-use.
+</p></p><p>The query is used to interact with a biocache instance (the client must provide the base URL for the biocache). Some additional parameters are stored in the query string and used to control the appearance of the map (e.g. colour by options, which are not part of the query itself but are used to colour the results).
+<p/></p><p><b>Options</b>
+<ul>
+ <li><code>mapOptions</code> Object containing configuration options for the underlying map. See ALA.Map for details. If not provided, the defaults from ALA.Map will be used.</li>
+ <li><code>showFacets</code> True to allow the user to change the facets used for the query. Default: true</li>
+ <li><code>facetNameMapping</code> Object containing a mapping from the default facet field names to display labels to be used. The format must be <code>{fieldName: "label", ...}</code>. All values displayed in the facet list can be mapped using this construct, regardless of the display level. If not provided then the ALA.OccurrenceMapUtils.DEFAULT_FACET_NAME object will be used, or field names will be formatted into human-readable form (capitalised, camel-case changed to sentence case, underscores replaced with spaces, etc). </li>
+ <li><code>excludeFacets</code> List of facet names to exclude from dislay. This list can contain items from any level in the facet list. If not provided, all available facets will be displayed.</li>
+ <li><code>excludeSingles</code> True to hide any facet group which only contains a single option. Default: true</li>
+ <li><code>maximumFacets</code> The maximum number of facets that can be selected via the 'choose more' dialog. Default: 15</li>
+ <li><code>wms</code> True to use a WMS layer to display occurrences, false to render individual points as circles on a clustered map. Default: true</li>
+ <li><code>mapAttribution</code> Attribution text to be displayed on the map. Default: blank</li>
+ <li><code>allowColourBy</code> True to include a colour-by control. Default: true</li>
+ <li><code>showLegend</code> True to include a legend for coloured maps. Default: true</li>
+ <li><code>points</code>Config options for the points on the map:
+   <ul>
+     <li><code>colour</code> The initial colour (in hex, without the #) to use for rendering occurrence points on the map. Default: #FF9900</li>
+     <li><code>name</code> The point type (circle, etc). Default: circle</li>
+     <li><code>size</code> The point radius in px. Default: 4px</li>
+     <li><code>opacity</code> The point opacity (0 - 1). Default: 1</li>
+   </ul>
+ </li>
+</ul>
+        </p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h4>Parameters</h4>
+        
+
+<table class="params table table-bordered table-condensed">
+    <thead>
+        <tr>
+                
+                <th>Name</th>
+                
+
+                <th>Type</th>
+
+                
+
+                <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+        <tr>
+            
+                <td class="name">id
+                  
+                </td>
+            
+
+            <td class="type">
+            
+                
+String
+
+
+
+            
+            </td>
+
+            
+
+            <td class="description last">Unique id of the map container div. Mandatory.</td>
+        </tr>
+
+        
+
+        <tr>
+            
+                <td class="name">biocacheBaseUrl
+                  
+                </td>
+            
+
+            <td class="type">
+            
+                
+String
+
+
+
+            
+            </td>
+
+            
+
+            <td class="description last">The base URL of the Biocache instance that will be used as the source for all data. Mandatory.</td>
+        </tr>
+
+        
+
+        <tr>
+            
+                <td class="name">queryString
+                  
+                </td>
+            
+
+            <td class="type">
+            
+                
+String
+
+
+
+            
+            </td>
+
+            
+
+            <td class="description last">The initial query string to use to populate map (it will be passed to the Biocache's search service). This property must include the <code>q=</code> parameter at a minimum. Mandatory.</td>
+        </tr>
+
+        
+
+        <tr>
+            
+                <td class="name">options
+                  
+                </td>
+            
+
+            <td class="type">
+            
+                
+Object
+
+
+
+            
+            </td>
+
+            
+
+            <td class="description last">Configuration options for the map. Optional - sensible defaults will be used if not provided. See the list above.</td>
+        </tr>
+
+        
+        </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+
+
+        
+      
+    </div>
+
+</article>
+
+</section>
+
+
+
+
+
+
+<section>
+
+<header>
+    <h1 class="page-header">
+      ALA
+    </h1>
+
+    
+
+    <!-- dat inline script LOOKN REAL NASTY -->
+    <script>
+      jQuery('[data-module-name=""]').removeClass('collapsed');
+    </script>
+
+    
+</header>
+
+<article>
+    <div class="container-overview hero-unit">
+    
+
+    
+
+    
+
+    
+        
+
+        
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+        <h3 class="subsection-title">Classes</h3>
+
+        <dl>
+            <dt><a href="ALA.Map.html">Map</a></dt>
+            <dd></dd>
+        
+            <dt><a href="ALA.MapConstants.html">MapConstants</a></dt>
+            <dd></dd>
+        
+            <dt><a href="ALA.MapUtils.html">MapUtils</a></dt>
+            <dd></dd>
+        
+            <dt><a href="ALA.OccurrenceMap.html">OccurrenceMap</a></dt>
+            <dd></dd>
+        </dl>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <hr>
+
+    <div class="large-listing">
+      
+        
+            
+
+
+
+    <h3 class="
+        subsection-title name
+        
+      " id="Map">
+
+      
+        
+        Constructor
+      
+
+      
+
+      
+
+    </h3>
+
+    
+      <h4>new Map<span class="signature">(id, options)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+    
+
+
+
+
+    
+    <div class="description">
+        <p>
+        Object for interacting with a generic map.</p><p><p/>
+<b>Options</b>
+<ul>
+ <li><code>baseLayer</code> Either a Leaflet.Layer, or the name of one of the supported base layers (currently 'Minimal' and 'WorldImagery'. Default: Minimal</li>
+ <li><code>center</code> Centre position of the map. Default: -28, 134</li>
+ <li><code>zoom</code> the initial zoom level. Default: 4</li>
+ <li><code>maxZoom</code> the maximum allowed zoom level. Default: 20</li>
+ <li><code>maxAutoZoom</code> the maximum zoom level to automatically zoom to (when zoomToObject = true). Default: 15</li>
+ <li><code>defaultLayersControl</code> true to use the default layers control, false to use your own. Default: true</li>
+ <li><code>scrollWheelZoom</code> whether to enable zooming in/out by scrolling the mouse. Default: false</li>
+ <li><code>fullscreenControl</code> whether to include a full-screen option. Default: true</li>
+ <li><code>fullscreenControlOptions:</code>
+     <ul>
+         <li><code>position</code> position of the button on the map. Default: topleft</li>
+     </ul>
+ <li><code>drawControl</code> whether to include drawing controls or not. Default: true</li>
+ <li><code>singleDraw</code> whether to allow more than 1 shape or region to be drawn at a time. This does NOT apply to markers - only layers and other shapes. See also singleMarker and markerOrShapeNotBoth. Default: true</li>
+ <li><code>singleMarker</code> whether to allow more than 1 marker to be drawn at a time.. Default: true</li>
+ <li><code>markerOrShapeNotBoth</code> whether to allow users to draw both markers and regions/shapes at the same time. Default: true</li>
+ <li><code>showFitBoundsToggle</code> whether to include a button to toggle between the initial map zoom and the bounds of the data. Default: false</li>
+ <li><code>useMyLocation</code> whether to include a "Use My Location" button to place a marker on the map at the user's location. Default: true</li>
+ <li><code>allowSearchLocationByAddress</code> whether to allow the user to search by address to place a marker on the map. Default: true</li>
+ <li><code>allowSearchRegionByAddress</code> whether to allow the user to search by address to draw a polygon on the map. Default: true</li>
+ <li><code>geocodeRegionOptions</code> additional configuration options when using the allowSearchRegionByAddress control. Only relevant when allowSearchRegionByAddress = true:</li>
+     <ul>
+         <li><code>pointToCircle</code> true to render any point locations returned by the geocode service as circles. Default: true</li>
+         <li><code>pointRadiusMeters</code> The radius of the circle to use when pointToCircle = true. Units are in meters. Default: 500</li>
+     </ul>
+ <li><code>zoomToObject</code> whether to automatically fit the map to the bounds of a new object when added. Default: true</li>
+ <li><code>draggableMarkers</code> whether to allow point markers to be draggable by default. Default: true</li>
+ <li><code>wmsFeatureUrl</code> the URL to call to fetch features of a WMS layer (e.g. http://spatial-dev.ala.org.au/geoserver/wms/reflect?). The PID will be appended to this URL. Default: </li>
+ <li><code>wmsLayerUrl</code> the URL to call to retrieve a WMS layer. The PID will be appended to this URL. Default: </li>
+ <li><code>sleep</code> True to disable mouse wheel zooming once the mouse has been out of the map for a certain time. Clicking in the map re-enables it. Overrides scrollWheelZoom. Default: true</li>
+ <li><code>sleepTime</code> Time (milliseconds) until the map 'sleeps' up after the mouse moves away from the map. Only relevant if sleep = true. Default: 750</li>
+ <li><code>hoverToWake</code> True to wake the map up after the mouse has been held over the map for a certain time (wakeTime). Only relevant if sleep = true. Default: true</li>
+ <li><code>wakeTime</code> Time (milliseconds) until the map wakes up after mouse over. Only relevant if sleep = true and hoverToWake = true. Default: 750</li>
+ <li><code>sleepNote</code> True to display text over the map when it is sleeping. Only relevant if sleep = true. Default: false</li>
+ <li><code>sleepOpacity</code> Opacity of the sleep text. Only relevant if sleep = true and sleepNote = true. Default: 0.7</li>
+ <li><code>wakeMessage</code> Text to display over the map when it is sleeping. Only relevant if sleep = true and sleepNote = true. Default: 'Click or hover to wake'.</li>
+</ul>
+        </p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h4>Parameters</h4>
+        
+
+<table class="params table table-bordered table-condensed">
+    <thead>
+        <tr>
+                
+                <th>Name</th>
+                
+
+                <th>Type</th>
+
+                
+
+                <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+        <tr>
+            
+                <td class="name">id
+                  
+                </td>
+            
+
+            <td class="type">
+            
+                
+String
+
+
+
+            
+            </td>
+
+            
+
+            <td class="description last">Unique id of the map container div. Mandatory.</td>
+        </tr>
+
+        
+
+        <tr>
+            
+                <td class="name">options
+                  
+                </td>
+            
+
+            <td class="type">
+            
+                
+Object
+
+
+
+            
+            </td>
+
+            
+
+            <td class="description last">Configuration options for the map. Optional - sensible defaults will be used if not provided. See the list above.</td>
+        </tr>
+
+        
+        </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+
+
+        
+            
+
+
+
+    <h3 class="
+        subsection-title name
+        
+      " id="MapConstants">
+
+      
+        
+        Constructor
+      
+
+      
+
+      
+
+    </h3>
+
+    
+      <h4>new MapConstants<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+    
+
+
+
+
+    
+
+    
+
+    
+
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+
+
+        
+            
+
+
+
+    <h3 class="
+        subsection-title name
+        
+      " id="MapUtils">
+
+      
+        
+        Constructor
+      
+
+      
+
+      
+
+    </h3>
+
+    
+      <h4>new MapUtils<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+    
+
+
+
+
+    
+
+    
+
+    
+
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+
+
+        
+            
+
+
+
+    <h3 class="
+        subsection-title name
+        
+      " id="OccurrenceMap">
+
+      
+        
+        Constructor
+      
+
+      
+
+      
+
+    </h3>
+
+    
+      <h4>new OccurrenceMap<span class="signature">(id, biocacheBaseUrl, queryString, options)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+    
+
+
+
+
+    
+    <div class="description">
+        <p>
+        Object for interacting with an ALA Occurrence map. This map is designed for displaying ALA occurrence records, with the ability for users to control the query facets behind the data.
+<p/></p><p>The resulting query can be extracted and saved for later re-use.
+</p></p><p>The query is used to interact with a biocache instance (the client must provide the base URL for the biocache). Some additional parameters are stored in the query string and used to control the appearance of the map (e.g. colour by options, which are not part of the query itself but are used to colour the results).
+<p/></p><p><b>Options</b>
+<ul>
+ <li><code>mapOptions</code> Object containing configuration options for the underlying map. See ALA.Map for details. If not provided, the defaults from ALA.Map will be used.</li>
+ <li><code>showFacets</code> True to allow the user to change the facets used for the query. Default: true</li>
+ <li><code>facetNameMapping</code> Object containing a mapping from the default facet field names to display labels to be used. The format must be <code>{fieldName: "label", ...}</code>. All values displayed in the facet list can be mapped using this construct, regardless of the display level. If not provided then the ALA.OccurrenceMapUtils.DEFAULT_FACET_NAME object will be used, or field names will be formatted into human-readable form (capitalised, camel-case changed to sentence case, underscores replaced with spaces, etc). </li>
+ <li><code>excludeFacets</code> List of facet names to exclude from dislay. This list can contain items from any level in the facet list. If not provided, all available facets will be displayed.</li>
+ <li><code>excludeSingles</code> True to hide any facet group which only contains a single option. Default: true</li>
+ <li><code>maximumFacets</code> The maximum number of facets that can be selected via the 'choose more' dialog. Default: 15</li>
+ <li><code>wms</code> True to use a WMS layer to display occurrences, false to render individual points as circles on a clustered map. Default: true</li>
+ <li><code>mapAttribution</code> Attribution text to be displayed on the map. Default: blank</li>
+ <li><code>allowColourBy</code> True to include a colour-by control. Default: true</li>
+ <li><code>showLegend</code> True to include a legend for coloured maps. Default: true</li>
+ <li><code>points</code>Config options for the points on the map:
+   <ul>
+     <li><code>colour</code> The initial colour (in hex, without the #) to use for rendering occurrence points on the map. Default: #FF9900</li>
+     <li><code>name</code> The point type (circle, etc). Default: circle</li>
+     <li><code>size</code> The point radius in px. Default: 4px</li>
+     <li><code>opacity</code> The point opacity (0 - 1). Default: 1</li>
+   </ul>
+ </li>
+</ul>
+        </p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h4>Parameters</h4>
+        
+
+<table class="params table table-bordered table-condensed">
+    <thead>
+        <tr>
+                
+                <th>Name</th>
+                
+
+                <th>Type</th>
+
+                
+
+                <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+        <tr>
+            
+                <td class="name">id
+                  
+                </td>
+            
+
+            <td class="type">
+            
+                
+String
+
+
+
+            
+            </td>
+
+            
+
+            <td class="description last">Unique id of the map container div. Mandatory.</td>
+        </tr>
+
+        
+
+        <tr>
+            
+                <td class="name">biocacheBaseUrl
+                  
+                </td>
+            
+
+            <td class="type">
+            
+                
+String
+
+
+
+            
+            </td>
+
+            
+
+            <td class="description last">The base URL of the Biocache instance that will be used as the source for all data. Mandatory.</td>
+        </tr>
+
+        
+
+        <tr>
+            
+                <td class="name">queryString
+                  
+                </td>
+            
+
+            <td class="type">
+            
+                
+String
+
+
+
+            
+            </td>
+
+            
+
+            <td class="description last">The initial query string to use to populate map (it will be passed to the Biocache's search service). This property must include the <code>q=</code> parameter at a minimum. Mandatory.</td>
+        </tr>
+
+        
+
+        <tr>
+            
+                <td class="name">options
+                  
+                </td>
+            
+
+            <td class="type">
+            
+                
+Object
+
+
+
+            
+            </td>
+
+            
+
+            <td class="description last">Configuration options for the map. Optional - sensible defaults will be used if not provided. See the list above.</td>
+        </tr>
+
+        
+        </tbody>
+</table>
 
     
 

@@ -1,286 +1,481 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <script type="text/javascript" src="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/jquery-2.1.4/jquery-2.1.4.min.js"></script>
-  <script type="text/javascript" src="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/underscore-1.8.3/underscore.min.js"></script>
-  <script type="text/javascript" src="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/leaflet-0.7.7/leaflet.js"></script>
-  <script type="text/javascript" src="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/Leaflet.Coordinates-0.1.5/Leaflet.Coordinates-0.1.5.min.js"></script>
-  <script type="text/javascript" src="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/Leaflet.EasyButton-1.2.0/easy-button.js"></script>
-  <script type="text/javascript" src="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/Leaflet.draw-0.2.4/leaflet.draw.js"></script>
-  <script type="text/javascript" src="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/Leaflet.loading-0.1.16/Control.Loading.js"></script>
-  <script type="text/javascript" src="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/Leaflet.markercluster-0.4.0-hotfix.1/leaflet.markercluster.js"></script>
-  <script type="text/javascript" src="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/leaflet-control-geocoder-1.3.2/Control.Geocoder.js"></script>
-  <script type="text/javascript" src="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/onImpressions/jquery.onimpression.js"></script>
-  <script type="text/javascript" src="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/turf-2.0.2/turf.min.js"></script>
-  <script type="text/javascript" src="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/js/layers/SmartWmsLayer.js"></script>
-  <script type="text/javascript" src="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/js/controls/TwoStepSelector.js"></script>
-  <script type="text/javascript" src="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/js/Map.js"></script>
+    <script type="text/javascript" src="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/jquery-2.1.4/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/underscore-1.8.3/underscore.min.js"></script>
+    <script type="text/javascript" src="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/leaflet-0.7.7/leaflet.js"></script>
+    <script type="text/javascript" src="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/Leaflet.Coordinates-0.1.5/Leaflet.Coordinates-0.1.5.min.js"></script>
+    <script type="text/javascript" src="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/Leaflet.EasyButton-1.2.0/easy-button.js"></script>
+    <script type="text/javascript" src="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/Leaflet.draw-0.2.4/leaflet.draw.js"></script>
+    <script type="text/javascript" src="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/Leaflet.loading-0.1.16/Control.Loading.js"></script>
+    <script type="text/javascript" src="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/Leaflet.markercluster-0.4.0-hotfix.1/leaflet.markercluster.js"></script>
+    <script type="text/javascript" src="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/leaflet-control-geocoder-1.3.2/Control.Geocoder.js"></script>
+    <script type="text/javascript" src="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/onImpressions/jquery.onimpression.js"></script>
+    <script type="text/javascript" src="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/handlebars-4.0.5/handlebars.js"></script>
+    <script type="text/javascript" src="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/turf-2.0.2/turf.min.js"></script>
+    <script type="text/javascript" src="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/urijs-1.18.0/URI.js"></script>
+    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/js/layers/SmartWmsLayer.js"></script>
+    <script type="text/javascript" src="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/js/controls/TwoStepSelector.js"></script>
+    <script type="text/javascript" src="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/js/controls/Select.js"></script>
+    <script type="text/javascript" src="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/js/controls/Legend.js"></script>
+    <script type="text/javascript" src="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/js/Map.js"></script>
+    <script type="text/javascript" src="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/js/OccurrenceMap.js"></script>
 
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/font-awesome-4.5.0/css/font-awesome.min.css"></link>
-  <link rel="stylesheet" href="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/Leaflet.Coordinates-0.1.5/Leaflet.Coordinates-0.1.5.css"></link>
-  <link rel="stylesheet" href="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/leaflet-0.7.7/leaflet.css"></link>
-  <link rel="stylesheet" href="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/Leaflet.EasyButton-1.2.0/easy-button.css"></link>
-  <link rel="stylesheet" href="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/Leaflet.draw-0.2.4/leaflet.draw.css"></link>
-  <link rel="stylesheet" href="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/Leaflet.loading-0.1.16/Control.Loading.css"></link>
-  <link rel="stylesheet" href="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/Leaflet.markercluster-0.4.0-hotfix.1/MarkerCluster.css"></link>
-  <link rel="stylesheet" href="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/Leaflet.markercluster-0.4.0-hotfix.1/MarkerCluster.Default.css"></link>
-  <link rel="stylesheet" href="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/leaflet-control-geocoder-1.3.2/Control.Geocoder.css"></link>
-  <link rel="stylesheet" href="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/css/map.css"></link>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/font-awesome-4.5.0/css/font-awesome.min.css"></link>
+    <link rel="stylesheet" href="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/Leaflet.Coordinates-0.1.5/Leaflet.Coordinates-0.1.5.css"></link>
+    <link rel="stylesheet" href="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/leaflet-0.7.7/leaflet.css"></link>
+    <link rel="stylesheet" href="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/Leaflet.EasyButton-1.2.0/easy-button.css"></link>
+    <link rel="stylesheet" href="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/Leaflet.draw-0.2.4/leaflet.draw.css"></link>
+    <link rel="stylesheet" href="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/Leaflet.loading-0.1.16/Control.Loading.css"></link>
+    <link rel="stylesheet" href="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/Leaflet.markercluster-0.4.0-hotfix.1/MarkerCluster.css"></link>
+    <link rel="stylesheet" href="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/Leaflet.markercluster-0.4.0-hotfix.1/MarkerCluster.Default.css"></link>
+    <link rel="stylesheet" href="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/leaflet-control-geocoder-1.3.2/Control.Geocoder.css"></link>
+    <link rel="stylesheet" href="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/css/map.css"></link>
 
-  <style>
-    .code {
-      font-family: monospace;
-      font-size: 12px;
-      white-space: pre;
-    }
-  </style>
+    <style>
+        .code {
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
+<div class="container">
     <div class="row">
-      <h1>Default Map</h1>
-      <div class="col-md-6">
-        <div id="defaultMap" data-leaflet-img="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/leaflet-0.7.7/images" style="width:550px; height:450px"></div>
-      </div>
-      <div class="col-md-6">
-        <div class="code">
-          new ALA.Map("defaultMap", {});
+        <h1>Default Map</h1>
+        <div class="col-md-6">
+            <div id="defaultMap"
+                 data-leaflet-img="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/leaflet-0.7.7/images"
+                 style="width:550px; height:450px"></div>
         </div>
-      </div>
-      <script type="text/javascript">
-        new ALA.Map("defaultMap", {});
-      </script>
+        <div class="col-md-6">
+            <div class="code">
+                new ALA.Map("defaultMap", {});
+            </div>
+        </div>
+        <script type="text/javascript">
+            new ALA.Map("defaultMap", {});
+        </script>
     </div>
 
 
     <div class="row">
-      <h1>Read-only Map</h1>
-      <div class="col-md-6">
-        <div id="readonlyMap" data-leaflet-img="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/leaflet-0.7.7/images" style="width:550px; height:450px"></div>
-      </div>
-      <div class="col-md-6">
-        <div class="code">
-          new ALA.Map("readonlyMap", {
-            drawControl: false,
-            singleMarker: false,
-            useMyLocation: false,
-            allowSearchLocationByAddress: false,
-            allowSearchRegionByAddress: false,
-            draggableMarkers: false,
-            showReset: false});
+        <h1>Read-only Map</h1>
+        <div class="col-md-6">
+            <div id="readonlyMap"
+                 data-leaflet-img="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/leaflet-0.7.7/images"
+                 style="width:550px; height:450px"></div>
         </div>
-      </div>
-      <script type="text/javascript">
-        new ALA.Map("readonlyMap", {drawControl: false,
-            singleMarker: false,
-            useMyLocation: false,
-            allowSearchLocationByAddress: false,
-            allowSearchRegionByAddress: false,
-            draggableMarkers: false,
-            showReset: false});
-      </script>
+        <div class="col-md-6">
+            <div class="code">
+                new ALA.Map("readonlyMap", {
+                drawControl: false,
+                singleMarker: false,
+                useMyLocation: false,
+                allowSearchLocationByAddress: false,
+                allowSearchRegionByAddress: false,
+                draggableMarkers: false,
+                showReset: false});
+            </div>
+        </div>
+        <script type="text/javascript">
+            new ALA.Map("readonlyMap", {
+                drawControl: false,
+                singleMarker: false,
+                useMyLocation: false,
+                allowSearchLocationByAddress: false,
+                allowSearchRegionByAddress: false,
+                draggableMarkers: false,
+                showReset: false
+            });
+        </script>
     </div>
 
 
     <div class="row">
-      <h1>Two-step selector</h1>
-      <div class="col-md-6">
-        <div id="twoStepMap" data-leaflet-img="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/leaflet-0.7.7/images" style="width:550px; height:450px"></div>
-      </div>
-      <div class="col-md-6">
-        <div class="code">
-          var map = new ALA.Map("twoStepMap", {
-              drawControl: false,
-              singleMarker: false,
-              useMyLocation: false,
-              allowSearchLocationByAddress: false,
-              allowSearchRegionByAddress: false,
-              draggableMarkers: false,
-              showReset: false,
-          });
-          var twoStep = {
-            id: "twoStepDemo",
-            title: "Select something",
-            firstStepPlaceholder: "Choose an option...",
-            secondStepPlaceholder: "Choose another option...",
-            firstStepItems: [{key: "1", value:"1"}, {key: "2", value: "2"}],
-            secondStepItemLookup: function (selectedKey, populateStep2Callback) {
+        <h1>Two-step selector</h1>
+        <div class="col-md-6">
+            <div id="twoStepMap"
+                 data-leaflet-img="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/leaflet-0.7.7/images"
+                 style="width:550px; height:450px"></div>
+        </div>
+        <div class="col-md-6">
+            <div class="code">
+                var map = new ALA.Map("twoStepMap", {
+                drawControl: false,
+                singleMarker: false,
+                useMyLocation: false,
+                allowSearchLocationByAddress: false,
+                allowSearchRegionByAddress: false,
+                draggableMarkers: false,
+                showReset: false,
+                });
+                var twoStep = {
+                id: "twoStepDemo",
+                title: "Select something",
+                firstStepPlaceholder: "Choose an option...",
+                secondStepPlaceholder: "Choose another option...",
+                firstStepItems: [{key: "1", value:"1"}, {key: "2", value: "2"}],
+                secondStepItemLookup: function (selectedKey, populateStep2Callback) {
                 var step2 = selectedKey == "1" ?
-                    [{key: "1.1", value:"1.1"}, {key: "1.2", value: "1.2"}] :
-                    [{key: "2.1", value:"2.1"}, {key: "2.2", value: "2.2"}]
+                [{key: "1.1", value:"1.1"}, {key: "1.2", value: "1.2"}] :
+                [{key: "2.1", value:"2.1"}, {key: "2.2", value: "2.2"}]
                 populateStep2Callback(step2);
-            },
-            selectionAction: function (selectedValue) {
+                },
+                selectionAction: function (selectedValue) {
                 map.addMarker(-28, 134).bindPopup(selectedValue);
-            }
-          };
-          var selector = new L.Control.TwoStepSelector(twoStep);
-          map.addControl(selector);
+                }
+                };
+                var selector = new L.Control.TwoStepSelector(twoStep);
+                map.addControl(selector);
+            </div>
         </div>
-      </div>
-      <script type="text/javascript">
-        var map1 = new ALA.Map("twoStepMap", {
-            drawControl: false,
-            singleMarker: false,
-            useMyLocation: false,
-            allowSearchLocationByAddress: false,
-            allowSearchRegionByAddress: false,
-            draggableMarkers: false,
-            showReset: false,
-        });
-        var twoStep = {
-          id: "twoStepDemo",
-          title: "Select something",
-          firstStepPlaceholder: "Choose an option...",
-          secondStepPlaceholder: "Choose another option...",
-          firstStepItems: [{key: "1", value:"1"}, {key: "2", value: "2"}],
-          secondStepItemLookup: function (selectedKey, populateStep2Callback) {
-              var step2 = selectedKey == "1" ?
-                  [{key: "1.1", value:"1.1"}, {key: "1.2", value: "1.2"}] :
-                  [{key: "2.1", value:"2.1"}, {key: "2.2", value: "2.2"}]
-              populateStep2Callback(step2);
-          },
-          selectionAction: function (selectedValue) {
-              map1.addMarker(-28, 134).bindPopup(selectedValue);
-          }
-        };
-        var selector = new L.Control.TwoStepSelector(twoStep);
-        map1.addControl(selector);
-      </script>
+        <script type="text/javascript">
+            var map1 = new ALA.Map("twoStepMap", {
+                drawControl: false,
+                singleMarker: false,
+                useMyLocation: false,
+                allowSearchLocationByAddress: false,
+                allowSearchRegionByAddress: false,
+                draggableMarkers: false,
+                showReset: false,
+            });
+            var twoStep = {
+                id: "twoStepDemo",
+                title: "Select something",
+                firstStepPlaceholder: "Choose an option...",
+                secondStepPlaceholder: "Choose another option...",
+                firstStepItems: [{key: "1", value: "1"}, {key: "2", value: "2"}],
+                secondStepItemLookup: function (selectedKey, populateStep2Callback) {
+                    var step2 = selectedKey == "1" ?
+                            [{key: "1.1", value: "1.1"}, {key: "1.2", value: "1.2"}] :
+                            [{key: "2.1", value: "2.1"}, {key: "2.2", value: "2.2"}]
+                    populateStep2Callback(step2);
+                },
+                selectionAction: function (selectedValue) {
+                    map1.addMarker(-28, 134).bindPopup(selectedValue);
+                }
+            };
+            var selector = new L.Control.TwoStepSelector(twoStep);
+            map1.addControl(selector);
+        </script>
     </div>
 
     <div class="row">
-      <h1>Clustered Points</h1>
-      <div class="col-md-6">
-        <div id="clusterMap" data-leaflet-img="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/leaflet-0.7.7/images" style="width:550px; height:450px"></div>
-      </div>
-      <div class="col-md-6">
-        <div class="code">
-          var map = new ALA.Map("clusterMap", {});
-
-          var coords = [];
-          for (var i = 0; i < 100; i++) {
-            var latlng = getRandomLatLng(map.getMapImpl());
-            coords.push({lat: latlng.lat, lng: latlng.lng, popup: "Marker " + i});
-          }
-
-          map.addClusteredPoints(coords);
-
+        <h1>Clustered Points</h1>
+        <div class="col-md-6">
+            <div id="clusterMap"
+                 data-leaflet-img="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/leaflet-0.7.7/images"
+                 style="width:550px; height:450px"></div>
         </div>
-      </div>
-      <script type="text/javascript">
-        var map2 = new ALA.Map("clusterMap", {});
+        <div class="col-md-6">
+            <div class="code">
+                var map = new ALA.Map("clusterMap", {});
 
-        var coords = [];
-        for (var i = 0; i < 100; i++) {
-          var latlng = getRandomLatLng(map2.getMapImpl());
-          coords.push({lat: latlng.lat, lng: latlng.lng, popup: "Marker " + i});
-        }
+                var coords = [];
+                for (var i = 0; i < 100; i++) {
+                var latlng = getRandomLatLng(map.getMapImpl());
+                coords.push({lat: latlng.lat, lng: latlng.lng, popup: "Marker " + i});
+                }
 
-        map2.addClusteredPoints(coords);
+                map.addClusteredPoints(coords);
 
-        function getRandomLatLng(map) {
-    			var bounds = map.getBounds(),
-    				southWest = bounds.getSouthWest(),
-    				northEast = bounds.getNorthEast(),
-    				lngSpan = northEast.lng - southWest.lng,
-    				latSpan = northEast.lat - southWest.lat;
+            </div>
+        </div>
+        <script type="text/javascript">
+            var map2 = new ALA.Map("clusterMap", {});
 
-    			return new L.LatLng(
-    					southWest.lat + latSpan * Math.random(),
-    					southWest.lng + lngSpan * Math.random());
-    		}
-      </script>
-    </div>
-
-
-    <div class="row">
-      <h1>GeoJSON</h1>
-      <div class="col-md-6">
-        <div id="geoMap" data-leaflet-img="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/leaflet-0.7.7/images" style="width:550px; height:450px"></div>
-      </div>
-      <div class="col-md-6">
-        <div class="code">
-          var map = new ALA.Map("geoMap", {});
-          var geoJson = {
-            type: "Feature",
-            properties: {},
-            geometry: {
-              type: "Polygon",
-              coordinates: [[[133.06640625, -22.10599879975055],
-              [124.8046875,  -28.998531814051795],
-              [144.580078125, -30.06909396443886],
-              [133.06640625,  -22.10599879975055]]]
+            var coords = [];
+            for (var i = 0; i < 100; i++) {
+                var latlng = getRandomLatLng(map2.getMapImpl());
+                coords.push({lat: latlng.lat, lng: latlng.lng, popup: "Marker " + i});
             }
-          }
-          map.setGeoJSON(geoJson);
-        </div>
-      </div>
-      <script type="text/javascript">
-        var map3 = new ALA.Map("geoMap", {});
-        var geoJson = {
-          type: "Feature",
-          properties: {},
-          geometry: {
-            type: "Polygon",
-            coordinates: [[[133.06640625, -22.10599879975055],
-            [124.8046875,  -28.998531814051795],
-            [144.580078125, -30.06909396443886],
-            [133.06640625,  -22.10599879975055]]]
-          }
-        }
-        map3.setGeoJSON(geoJson);
-      </script>
+
+            map2.addClusteredPoints(coords);
+
+            function getRandomLatLng(map) {
+                var bounds = map.getBounds(),
+                        southWest = bounds.getSouthWest(),
+                        northEast = bounds.getNorthEast(),
+                        lngSpan = northEast.lng - southWest.lng,
+                        latSpan = northEast.lat - southWest.lat;
+
+                return new L.LatLng(
+                        southWest.lat + latSpan * Math.random(),
+                        southWest.lng + lngSpan * Math.random());
+            }
+        </script>
     </div>
 
 
     <div class="row">
-      <h1>Hidden Polygon with marker and mouseover</h1>
-      <div class="col-md-6">
-        <div id="mouseoverMap" data-leaflet-img="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/leaflet-0.7.7/images" style="width:550px; height:450px"></div>
-      </div>
-      <div class="col-md-6">
-        <div class="code">
-          var map = new ALA.Map("mouseoverMap", {});
-          var geoJson = {
-            type: "Feature",
-            properties: {},
-            geometry: {
-              type: "Polygon",
-              coordinates: [[[133.06640625, -22.10599879975055],
-              [124.8046875,  -28.998531814051795],
-              [144.580078125, -30.06909396443886],
-              [133.06640625,  -22.10599879975055]]]
-            }
-          };
-          map.setGeoJSON(geoJson, {
-            markerWithMouseOver: true
-          });
+        <h1>GeoJSON</h1>
+        <div class="col-md-6">
+            <div id="geoMap"
+                 data-leaflet-img="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/leaflet-0.7.7/images"
+                 style="width:550px; height:450px"></div>
         </div>
-      </div>
-      <script type="text/javascript">
-        var map4 = new ALA.Map("mouseoverMap", {});
-        var geoJson = {
-          type: "Feature",
-          properties: {},
-          geometry: {
-            type: "Polygon",
-            coordinates: [[[133.06640625, -22.10599879975055],
-            [124.8046875,  -28.998531814051795],
-            [144.580078125, -30.06909396443886],
-            [133.06640625,  -22.10599879975055]]]
-          }
-        };
-        map4.setGeoJSON(geoJson, {
-          markerWithMouseOver: true
-        });
-      </script>
+        <div class="col-md-6">
+            <div class="code">
+                var map = new ALA.Map("geoMap", {});
+                var geoJson = {
+                type: "Feature",
+                properties: {},
+                geometry: {
+                type: "Polygon",
+                coordinates: [[[133.06640625, -22.105998],
+                [124.8046875, -28.998531814051795],
+                [144.580078125, -30.06909396443886],
+                [133.06640625, -22.10599879975055]]]
+                }
+                }
+                map.setGeoJSON(geoJson);
+            </div>
+        </div>
+        <script type="text/javascript">
+            var map3 = new ALA.Map("geoMap", {});
+            var geoJson = {
+                type: "Feature",
+                properties: {},
+                geometry: {
+                    type: "Polygon",
+                    coordinates: [[[133.06640625, -22],
+                        [124.8046875, -28.998531814051795],
+                        [144.580078125, -30.06909396443886],
+                        [133.06640625, -22.10599879975055]]]
+                }
+            }
+            map3.setGeoJSON(geoJson);
+        </script>
     </div>
 
-  </div>
+
+    <div class="row">
+        <h1>Hidden Polygon with marker and mouseover</h1>
+        <div class="col-md-6">
+            <div id="mouseoverMap"
+                 data-leaflet-img="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/leaflet-0.7.7/images"
+                 style="width:550px; height:450px"></div>
+        </div>
+        <div class="col-md-6">
+            <div class="code">
+                var map = new ALA.Map("mouseoverMap", {});
+                var geoJson = {
+                type: "Feature",
+                properties: {},
+                geometry: {
+                type: "Polygon",
+                coordinates: [[[133.06640625, -22.10599879975055],
+                [124.8046875, -28.998531814051795],
+                [144.580078125, -30.06909396443886],
+                [133.06640625, -22.10599879975055]]]
+                }
+                };
+                map.setGeoJSON(geoJson, {
+                markerWithMouseOver: true
+                });
+            </div>
+        </div>
+        <script type="text/javascript">
+            var map4 = new ALA.Map("mouseoverMap", {});
+            var geoJson = {
+                type: "Feature",
+                properties: {},
+                geometry: {
+                    type: "Point",
+                    coordinates: [[133.06640625, -22.10599879975055]]
+                },
+                properties: {
+                    radius: "2000"
+                }
+            };
+            map4.setGeoJSON(geoJson, {
+                markerWithMouseOver: true
+            });
+        </script>
+    </div>
+
+    <div class="row">
+        <h1>ALA Occurrence Map</h1>
+        <div class="col-md-12">
+            <div class="code">
+                var map = new ALA.OccurrenceMap("occurrenceMap", "http://biocache.ala.org.au", "q=Acacia+dealbata&colourBy=life_stage", {});
+            </div>
+        </div>
+
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-3">
+                    <div id="occurrenceMapFacets" class="facet-list">
+                        <div><span class="fa fa-spinner fa-spin">&nbsp;</span>Loading facets...</div>
+                    </div>
+                </div>
+
+                <div class="col-md-9">
+                    <div id="occurrenceMap" style="width: 100%; height: 600px;"
+                         data-leaflet-img="https://rawgit.com/AtlasOfLivingAustralia/ala-map-plugin/master/web-app/vendor/leaflet-0.7.7/images"></div>
+                </div>
+            </div>
+
+            <script type="text/javascript">
+                var map5 = new ALA.OccurrenceMap("occurrenceMap", "http://biocache.ala.org.au", "q=Acacia+dealbata&colourBy=life_stage", {});
+            </script>
+
+            <div class="modal fade" id="chooseMoreModal" tabindex="-1" role="dialog"
+                 aria-labelledby="Choose more facets modal">
+                <div class="modal-dialog" role="document">
+                    <div id="chooseMoreModalBody" class="modal-content">
+                        <!-- populated by Handlebars: chooseMoreModalBodyTemplate -->
+                    </div>
+                </div>
+            </div>
+
+            <script id="facetsTemplate" type="text/x-handlebars-template">
+                {{#if selectedFacets}}
+                <h4>Selected filters</h4>
+                <ul>
+                    {{#each selectedFacets}}
+                    <li>
+                        <a class="selected-facet-item" data-fq="{{fq}}" data-label="{{label}}" data-count="{{count}}">
+                            <span class="fa fa-check-square-o">&nbsp;&nbsp;</span>{{label}}
+                        </a>
+                    </li>
+                    {{/each}}
+                </ul>
+                <a class="remove-all-facets pull-right"><span class="fa fa-times">&nbsp;&nbsp;</span>Clear all
+                    filters</a>
+
+                <div class="clearfix"></div>
+                {{/if}}
+
+                {{#each facets}}
+                <div class="facet-group">
+                    <div class="facet-group-header">
+                        <h4 class="facet-group-name">
+                            <a data-toggle="collapse" data-group="{{@key}}" data-target="#group{{@key}}" target="_self"
+                               class="collapsed">{{@key}}</a>
+                        </h4>
+                    </div>
+
+                    <div id="group{{@key}}" class="panel-collapse collapse">
+                        <ul class="facet-group-content">
+                            {{#each this}}
+                            <li>
+                                <h5 class="facet-group-item-name">{{fieldName}}</h5>
+                                <ul class="facet-group-items">
+                                    {{#each fieldResult}}
+                                    <li>
+                                        <a class="facet-item" data-fq="{{fq}}" data-label="{{label}}"
+                                           data-count="{{count}}"
+                                           data-field-name="{{../fieldName}}">
+                                            <span class="fa fa-square-o">&nbsp;&nbsp;</span>{{label}} ({{count}})
+                                        </a>
+                                    </li>
+                                    {{/each}}
+                                </ul>
+                                <a class="facet-choose-more" data-toggle="modal" data-target="#chooseMoreModal"
+                                   data-facet-id="{{facetId}}" data-facet-group="{{@../key}}">
+                                    <span class="fa fa-hand-o-right">&nbsp;&nbsp;</span>Choose more...
+                                </a>
+                            </li>
+                            {{/each}}
+                        </ul>
+                    </div>
+                </div>
+                {{/each}}
+            </script>
+
+            <script id="chooseMoreTableTemplate" type="text/x-handlebars-template">
+                {{#each fieldResult}}
+                <tr>
+                    <td>
+                        <input type="checkbox" name="fqs" class="facet-item-select" value="{{fq}}"
+                               data-fq="{{fq}}" data-label="{{label}}" data-field-name="{{../facetId}}"
+                               title="Add {{label}} to the list of selected facets">
+                    </td>
+                    <td>
+                        <a class="facet-item" data-fq="{{fq}}" data-label="{{label}}" data-count="{{count}}"
+                           data-field-name="{{../fieldName}}">
+                            {{label}}
+                        </a>
+                    </td>
+                    <td>
+                        {{count}}
+                    </td>
+                </tr>
+                {{#if @last}}
+                <tr id="infiniscrollMarker">
+                    <td colspan="3"><span class="fa fa-spin fa-spinner">&nbsp;&nbsp;</span>Loading more options...</td>
+                </tr>
+                {{/if}}
+
+                {{/each}}
+                <tr></tr>
+            </script>
+
+            <script id="chooseMoreModalBodyTemplate" type="text/x-handlebars-template">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Refine your search</h4>
+                </div>
+
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table class="facet-table table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Select</th>
+                                <th>{{fieldName}}</th>
+                                <th>Count</th>
+                            </tr>
+                            </thead>
+                            <tbody id="facetTableBody">
+                            <!-- populated by Handlebars: chooseMoreTableTemplate -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <div class="btn-group">
+                        <a id="include" class="submit btn btn-default btn-sm" target="_self" data-label="{{fieldName}}"
+                           data-field-name="{{facetId}}">INCLUDE selected items</a>
+                        <a class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" target="_self">
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a id="includeAll" class="wildcard" target="_self" data-label="{{fieldName}}"
+                                   data-field-name="{{facetId}}">INCLUDE all values (wildcard include)</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="btn-group">
+                        <a id="exclude" class="submit btn btn-default btn-sm" target="_self" data-label="{{fieldName}}"
+                           data-field-name="{{facetId}}">EXCLUDE selected items</a>
+                        <a class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" target="_self">
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a id="excludeAll" target="_self" class="wildcard" data-label="{{fieldName}}"
+                                   data-field-name="{{facetId}}">EXCLUDE all values (wildcard exclude)</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Close</button>
+                </div>
+
+            </script>
+        </div>
+
+    </div>
 </body>
-
 
 
 </html>

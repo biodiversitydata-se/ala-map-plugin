@@ -1250,7 +1250,7 @@
 
 <header>
     <h1 class="page-header">
-      SmartWMS
+      Legend
     </h1>
 
     
@@ -1279,7 +1279,7 @@
     <h3 class="
         subsection-title name
         
-      " id="SmartWMS">
+      " id="Legend">
 
       
         
@@ -1293,7 +1293,7 @@
     </h3>
 
     
-      <h4>new SmartWMS<span class="signature">()</span><span class="type-signature"></span></h4>
+      <h4>new Legend<span class="signature">()</span><span class="type-signature"></span></h4>
     
 
     
@@ -1308,9 +1308,23 @@
     
     <div class="description">
         <p>
-        Extension to the standard Leaflet WMS layer to add the ability for the layer class to lookup the bounding box
-from the WMS server, and to construct a polygon geoJSON object, with the pid of the layer in the properties object.</p><p>For this to work, the options object passed to the initialise method must include a property called wmsFeatureUrl,
-which contains the FULL url to lookup the features of the associated pid.
+        Custom Leaflet control which will display a legend for colour-coded values.</p><p><p/>
+<b>Options:</b>
+<ul>
+    <li><code>id</code> Unique id for the control</li>
+    <li><code>position</code> The location on the map (using leaflet's standard control positions). Default: bottomright</li>
+    <li><code>collapse</code> True to show a button until clicked, then show the legendbox; false to just show the expanded legend box. Default: false</li>
+    <li><code>title</code> The title the button when collapse=true. Default: 'Show legend'</li>
+    <li><code>items</code> array of items to be displayed in the legend. Each item is an object with the following properties:
+    <ul>
+        <li><code>red</code>Red value for the RGB colour indicator<li>
+        <li><code>green</code>Green value for the RGB colour indicator<li>
+        <li><code>blue</code>Blue value for the RGB colour indicator<li>
+        <li><code>name</code>The text to be displayed</li>
+    </li>
+    <li><code>iconClass</code> The CSS class(es) for the button icon (if collapse=true). Default: 'fa fa-list'</li>
+    <li><code>legendListClass</code> The CSS class(es) legend list container. Default: none</li>
+</ul>
         </p>
     </div>
     

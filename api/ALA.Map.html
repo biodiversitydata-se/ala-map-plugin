@@ -92,6 +92,31 @@
 
     
 
+    <a href="L.Control.Legend.html">Legend</a>
+  </li>
+
+
+
+          <ul class="thing-list">
+            
+          </ul>
+
+        
+
+          
+
+  <li class="thing">
+
+    
+      <i class="fa fa-cube"></i>
+    
+
+    
+
+    
+
+    
+
     <a href="ALA.Map.html">Map</a>
   </li>
 
@@ -171,6 +196,25 @@
     
 
     <a href="ALA.Map.html#.addLayer">addLayer</a>
+  </li>
+
+
+            
+              
+
+  <li class="thing">
+
+    
+
+    
+
+    
+
+    
+      <i class="fa fa-cog"></i>
+    
+
+    <a href="ALA.Map.html#.addLayersControl">addLayersControl</a>
   </li>
 
 
@@ -285,6 +329,25 @@
     
 
     <a href="ALA.Map.html#.countFeatures">countFeatures</a>
+  </li>
+
+
+            
+              
+
+  <li class="thing">
+
+    
+
+    
+
+    
+
+    
+      <i class="fa fa-cog"></i>
+    
+
+    <a href="ALA.Map.html#.destroy">destroy</a>
   </li>
 
 
@@ -702,7 +765,45 @@
       <i class="fa fa-cog"></i>
     
 
+    <a href="ALA.Map.html#.toggleFitBounds">toggleFitBounds</a>
+  </li>
+
+
+            
+              
+
+  <li class="thing">
+
+    
+
+    
+
+    
+
+    
+      <i class="fa fa-cog"></i>
+    
+
     <a href="ALA.Map.html#.unsubscribe">unsubscribe</a>
+  </li>
+
+
+            
+              
+
+  <li class="thing">
+
+    
+
+    
+
+    
+
+    
+      <i class="fa fa-cog"></i>
+    
+
+    <a href="ALA.Map.html#.zoom">zoom</a>
   </li>
 
 
@@ -908,6 +1009,170 @@
 
     
 
+    <a href="ALA.OccurrenceMap.html">OccurrenceMap</a>
+  </li>
+
+
+
+          <ul class="thing-list">
+            
+              
+
+  <li class="thing">
+
+    
+
+    
+
+    
+
+    
+      <i class="fa fa-cog"></i>
+    
+
+    <a href="ALA.OccurrenceMap.html#.clearAllFacets">clearAllFacets</a>
+  </li>
+
+
+            
+              
+
+  <li class="thing">
+
+    
+
+    
+
+    
+
+    
+      <i class="fa fa-cog"></i>
+    
+
+    <a href="ALA.OccurrenceMap.html#.clearFacet">clearFacet</a>
+  </li>
+
+
+            
+              
+
+  <li class="thing">
+
+    
+
+    
+
+    
+
+    
+      <i class="fa fa-cog"></i>
+    
+
+    <a href="ALA.OccurrenceMap.html#.getQueryString">getQueryString</a>
+  </li>
+
+
+            
+              
+
+  <li class="thing">
+
+    
+
+    
+
+    
+
+    
+      <i class="fa fa-cog"></i>
+    
+
+    <a href="ALA.OccurrenceMap.html#.selectFacet">selectFacet</a>
+  </li>
+
+
+            
+              
+
+  <li class="thing">
+
+    
+
+    
+
+    
+
+    
+      <i class="fa fa-cog"></i>
+    
+
+    <a href="ALA.OccurrenceMap.html#.self.selectMultipleFacets">self.selectMultipleFacets</a>
+  </li>
+
+
+            
+              
+
+  <li class="thing">
+
+    
+
+    
+
+    
+
+    
+      <i class="fa fa-cog"></i>
+    
+
+    <a href="ALA.OccurrenceMap.html#.setQueryString">setQueryString</a>
+  </li>
+
+
+            
+          </ul>
+
+        
+
+          
+
+  <li class="thing">
+
+    
+      <i class="fa fa-cube"></i>
+    
+
+    
+
+    
+
+    
+
+    <a href="L.Control.Select.html">Select</a>
+  </li>
+
+
+
+          <ul class="thing-list">
+            
+          </ul>
+
+        
+
+          
+
+  <li class="thing">
+
+    
+      <i class="fa fa-cube"></i>
+    
+
+    
+
+    
+
+    
+
     <a href="L.Control.Slider.html">Slider</a>
   </li>
 
@@ -1043,12 +1308,15 @@
     
     <div class="description">
         <p>
-        Object for interacting with the map.</p><p><p/>
+        Object for interacting with a generic map.</p><p><p/>
 <b>Options</b>
 <ul>
  <li><code>baseLayer</code> Either a Leaflet.Layer, or the name of one of the supported base layers (currently 'Minimal' and 'WorldImagery'. Default: Minimal</li>
  <li><code>center</code> Centre position of the map. Default: -28, 134</li>
  <li><code>zoom</code> the initial zoom level. Default: 4</li>
+ <li><code>maxZoom</code> the maximum allowed zoom level. Default: 20</li>
+ <li><code>maxAutoZoom</code> the maximum zoom level to automatically zoom to (when zoomToObject = true). Default: 15</li>
+ <li><code>defaultLayersControl</code> true to use the default layers control, false to use your own. Default: true</li>
  <li><code>scrollWheelZoom</code> whether to enable zooming in/out by scrolling the mouse. Default: false</li>
  <li><code>fullscreenControl</code> whether to include a full-screen option. Default: true</li>
  <li><code>fullscreenControlOptions:</code>
@@ -1059,6 +1327,7 @@
  <li><code>singleDraw</code> whether to allow more than 1 shape or region to be drawn at a time. This does NOT apply to markers - only layers and other shapes. See also singleMarker and markerOrShapeNotBoth. Default: true</li>
  <li><code>singleMarker</code> whether to allow more than 1 marker to be drawn at a time.. Default: true</li>
  <li><code>markerOrShapeNotBoth</code> whether to allow users to draw both markers and regions/shapes at the same time. Default: true</li>
+ <li><code>showFitBoundsToggle</code> whether to include a button to toggle between the initial map zoom and the bounds of the data. Default: false</li>
  <li><code>useMyLocation</code> whether to include a "Use My Location" button to place a marker on the map at the user's location. Default: true</li>
  <li><code>allowSearchLocationByAddress</code> whether to allow the user to search by address to place a marker on the map. Default: true</li>
  <li><code>allowSearchRegionByAddress</code> whether to allow the user to search by address to draw a polygon on the map. Default: true</li>
@@ -1445,6 +1714,31 @@ Will notify all subscribers.
         <tr>
             <td class="name">
               
+              <a href="ALA.Map.html#.addLayersControl">addLayersControl</a>
+
+              
+              
+              
+            </td>
+            <td class="description">
+                
+                    Add a layer selection control to the map. If options#defaultLayersControl = false, then this function can be used
+to place the layers control in a position other than the default (top right).
+
+See http://leafletjs.com/reference.html#control-layers for details.
+                
+
+                
+
+
+            </td>
+        </tr>
+
+        
+
+        <tr>
+            <td class="name">
+              
               <a href="ALA.Map.html#.addMarker">addMarker</a>
 
               
@@ -1574,6 +1868,28 @@ Will notify all subscribers.
             <td class="description">
                 
                     Retrieve a count of all features (shapes, layers, markers, etc) on the map
+                
+
+                
+
+
+            </td>
+        </tr>
+
+        
+
+        <tr>
+            <td class="name">
+              
+              <a href="ALA.Map.html#.destroy">destroy</a>
+
+              
+              
+              
+            </td>
+            <td class="description">
+                
+                    Destroy the map and clear all related event listeners
                 
 
                 
@@ -2089,6 +2405,28 @@ To listen for specific events, use ALA.Map#registerListener instead.
         <tr>
             <td class="name">
               
+              <a href="ALA.Map.html#.toggleFitBounds">toggleFitBounds</a>
+
+              
+              
+              
+            </td>
+            <td class="description">
+                
+                    Toggle the view between fitting the bounds of the data and the initial centre and zoom
+                
+
+                
+
+
+            </td>
+        </tr>
+
+        
+
+        <tr>
+            <td class="name">
+              
               <a href="ALA.Map.html#.unsubscribe">unsubscribe</a>
 
               
@@ -2098,6 +2436,28 @@ To listen for specific events, use ALA.Map#registerListener instead.
             <td class="description">
                 
                     Stop listening to map update events.
+                
+
+                
+
+
+            </td>
+        </tr>
+
+        
+
+        <tr>
+            <td class="name">
+              
+              <a href="ALA.Map.html#.zoom">zoom</a>
+
+              
+              
+              
+            </td>
+            <td class="description">
+                
+                    Zoom to the specified level and centre the map at the specified coordinates
                 
 
                 
@@ -2720,7 +3080,7 @@ Object
             <td class="type">
             
                 
-ILayer
+Object
 
 
 
@@ -2729,7 +3089,7 @@ ILayer
 
             
 
-            <td class="description last">The Leaflet Layer to add</td>
+            <td class="description last">The Leaflet ILayer to add</td>
         </tr>
 
         
@@ -2754,6 +3114,199 @@ Object
             
 
             <td class="description last">Configuration options for the layer. See LAYER_OPTIONS for details of supported options. Optional.</td>
+        </tr>
+
+        
+        </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+
+  </dd>
+</dl>
+
+
+        
+            
+
+
+<dl class="bs-docs-example bs-members">
+  <dt>
+
+
+    <h3 class="
+        subsection-title name
+        
+      " id=".addLayersControl">
+
+      
+        addLayersControl<span class="signature">(baseLayers, overlays, controlOptions)</span><span class="type-signature"></span><span class="label label-info">static</span> 
+      
+
+      
+
+      
+
+    </h3>
+
+    
+
+    
+
+
+
+    
+
+
+
+  </dt>
+<dd>
+
+
+    
+    <div class="description">
+        <p>
+        Add a layer selection control to the map. If options#defaultLayersControl = false, then this function can be used
+to place the layers control in a position other than the default (top right).</p><p>See http://leafletjs.com/reference.html#control-layers for details.
+        </p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h4>Parameters</h4>
+        
+
+<table class="params table table-bordered table-condensed">
+    <thead>
+        <tr>
+                
+                <th>Name</th>
+                
+
+                <th>Type</th>
+
+                
+
+                <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+        <tr>
+            
+                <td class="name">baseLayers
+                  
+                </td>
+            
+
+            <td class="type">
+            
+                
+Object
+
+
+
+            
+            </td>
+
+            
+
+            <td class="description last">Collection of base layers to add to the control</td>
+        </tr>
+
+        
+
+        <tr>
+            
+                <td class="name">overlays
+                  
+                </td>
+            
+
+            <td class="type">
+            
+                
+Object
+
+
+
+            
+            </td>
+
+            
+
+            <td class="description last">Collection of overlay layers to add to the control</td>
+        </tr>
+
+        
+
+        <tr>
+            
+                <td class="name">controlOptions
+                  
+                </td>
+            
+
+            <td class="type">
+            
+                
+Object
+
+
+
+            
+            </td>
+
+            
+
+            <td class="description last">config options</td>
         </tr>
 
         
@@ -3132,7 +3685,7 @@ String
 
             
 
-            <td class="description last">the PID of the region to be displayed in the WMS layer</td>
+            <td class="description last">the PID of the region to be displayed in the WMS layer - set as undefined if you do not need to use an existing region.</td>
         </tr>
 
         
@@ -3156,7 +3709,7 @@ Object
 
             
 
-            <td class="description last">Configuration options for the layer. See LAYER_OPTIONS for details of supported options. Optional.</td>
+            <td class="description last">Configuration options for the layer. If pid is undefined, then the layerOptions object must contain the required WMS configuration parameters. See LAYER_OPTIONS for details of additional supported options. Optional.</td>
         </tr>
 
         
@@ -3772,6 +4325,102 @@ Integer
         <p>
         Default options for clustered point markers.</p><p>See http://leafletjs.com/reference.html#path-options for the options: this object overrides the standard Leaflet
 options with our default values, where they are different.
+        </p>
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+
+  </dd>
+</dl>
+
+
+        
+            
+
+
+<dl class="bs-docs-example bs-members">
+  <dt>
+
+
+    <h3 class="
+        subsection-title name
+        
+      " id=".destroy">
+
+      
+        destroy<span class="signature">()</span><span class="type-signature"></span><span class="label label-info">static</span> 
+      
+
+      
+
+      
+
+    </h3>
+
+    
+
+    
+
+
+
+    
+
+
+
+  </dt>
+<dd>
+
+
+    
+    <div class="description">
+        <p>
+        Destroy the map and clear all related event listeners
         </p>
     </div>
     
@@ -6506,6 +7155,102 @@ function
     <h3 class="
         subsection-title name
         
+      " id=".toggleFitBounds">
+
+      
+        toggleFitBounds<span class="signature">()</span><span class="type-signature"></span><span class="label label-info">static</span> 
+      
+
+      
+
+      
+
+    </h3>
+
+    
+
+    
+
+
+
+    
+
+
+
+  </dt>
+<dd>
+
+
+    
+    <div class="description">
+        <p>
+        Toggle the view between fitting the bounds of the data and the initial centre and zoom
+        </p>
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+
+  </dd>
+</dl>
+
+
+        
+            
+
+
+<dl class="bs-docs-example bs-members">
+  <dt>
+
+
+    <h3 class="
+        subsection-title name
+        
       " id=".unsubscribe">
 
       
@@ -6586,6 +7331,174 @@ function
             
 
             <td class="description last">the callback function used to subscribe to events</td>
+        </tr>
+
+        
+        </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+
+  </dd>
+</dl>
+
+
+        
+            
+
+
+<dl class="bs-docs-example bs-members">
+  <dt>
+
+
+    <h3 class="
+        subsection-title name
+        
+      " id=".zoom">
+
+      
+        zoom<span class="signature">(zoom, centre)</span><span class="type-signature"></span><span class="label label-info">static</span> 
+      
+
+      
+
+      
+
+    </h3>
+
+    
+
+    
+
+
+
+    
+
+
+
+  </dt>
+<dd>
+
+
+    
+    <div class="description">
+        <p>
+        Zoom to the specified level and centre the map at the specified coordinates
+        </p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h4>Parameters</h4>
+        
+
+<table class="params table table-bordered table-condensed">
+    <thead>
+        <tr>
+                
+                <th>Name</th>
+                
+
+                <th>Type</th>
+
+                
+
+                <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+        <tr>
+            
+                <td class="name">zoom
+                  
+                </td>
+            
+
+            <td class="type">
+            
+                
+Number
+
+
+
+            
+            </td>
+
+            
+
+            <td class="description last">The zoom level</td>
+        </tr>
+
+        
+
+        <tr>
+            
+                <td class="name">centre
+                  
+                </td>
+            
+
+            <td class="type">
+            
+                
+Object
+
+
+
+            
+            </td>
+
+            
+
+            <td class="description last">The coordinates to centre the map on. Must be an object with 'lat' and 'lng' attributes. Defaults to the map's default centre if not provided.</td>
         </tr>
 
         

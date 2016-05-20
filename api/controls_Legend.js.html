@@ -1245,154 +1245,119 @@
               
 
 
-
-<section>
-
-<header>
-    <h1 class="page-header">
-      SmartWMS
-    </h1>
-
     
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>/**
+ * Custom Leaflet control which will display a legend for colour-coded values.
+ *
+ * &lt;p/>
+ * &lt;b>Options:&lt;/b>
+ * &lt;ul>
+ *     &lt;li>&lt;code>id&lt;/code> Unique id for the control&lt;/li>
+ *     &lt;li>&lt;code>position&lt;/code> The location on the map (using leaflet's standard control positions). Default: bottomright&lt;/li>
+ *     &lt;li>&lt;code>collapse&lt;/code> True to show a button until clicked, then show the legendbox; false to just show the expanded legend box. Default: false&lt;/li>
+ *     &lt;li>&lt;code>title&lt;/code> The title the button when collapse=true. Default: 'Show legend'&lt;/li>
+ *     &lt;li>&lt;code>items&lt;/code> array of items to be displayed in the legend. Each item is an object with the following properties:
+ *     &lt;ul>
+ *         &lt;li>&lt;code>red&lt;/code>Red value for the RGB colour indicator&lt;li>
+ *         &lt;li>&lt;code>green&lt;/code>Green value for the RGB colour indicator&lt;li>
+ *         &lt;li>&lt;code>blue&lt;/code>Blue value for the RGB colour indicator&lt;li>
+ *         &lt;li>&lt;code>name&lt;/code>The text to be displayed&lt;/li>
+ *     &lt;/li>
+ *     &lt;li>&lt;code>iconClass&lt;/code> The CSS class(es) for the button icon (if collapse=true). Default: 'fa fa-list'&lt;/li>
+ *     &lt;li>&lt;code>legendListClass&lt;/code> The CSS class(es) legend list container. Default: none&lt;/li>
+ * &lt;/ul>
+ *
+ * @class
+ */
+L.Control.Legend = L.Control.extend({
+    options: {
+        id: "replaceMe",
+        position: "bottomright",
+        collapse: false,
+        title: "Show legend",
+        items: [],
+        iconClass: "fa fa-list",
+        legendListClass: ""
+    },
 
-    <!-- dat inline script LOOKN REAL NASTY -->
-    <script>
-      jQuery('[data-module-name=""]').removeClass('collapsed');
-    </script>
+    initialize: function (options) {
+        L.setOptions(this, options)
+    },
 
-    
-</header>
+    onAdd: function (map) {
+        var self = this;
+        self.map = map;
 
-<article>
-    <div class="container-overview hero-unit">
-    
+        self.id = self.options.id;
+        var container = L.DomUtil.create("div", "leaflet-bar leaflet-control");
 
-    
+        self.icon = L.DomUtil.create("button", self.options.iconClass + " leaflet-bar-part " + (self.options.collapse ? "" : "hide"), container);
+        self.icon.title = self.options.title;
 
-    
+        self.legend = L.DomUtil.create("div", "legend-container " + self.options.legendListClass + (self.options.collapse ? " hide" : ""), container);
+        self.legend.id = self.options.id;
 
-    
-        
+        self.setItems(self.options.items);
 
+        if (self.options.collapse) {
+            L.DomEvent.addListener(self.icon, 'click', function(event) {
+                $(self.legend).toggleClass("hide");
+                $(self.icon).toggleClass("hide");
+                event.preventDefault();
+            });
+        }
 
+        L.DomEvent.disableClickPropagation(container);
+        L.DomEvent.disableScrollPropagation(container);
 
-    <h3 class="
-        subsection-title name
-        
-      " id="SmartWMS">
+        return container;
+    },
 
-      
-        
-        Constructor
-      
+    setItems: function(items) {
+        var self = this;
+        self.clearItems();
 
-      
+        var close = L.DomUtil.create("button", "fa fa-times " + (self.options.position.indexOf("right") > -1 ? "pull-right" : ""), self.legend);
+        close.title = "Hide legend";
+        var list = L.DomUtil.create("ul", "legend", self.legend);
 
-      
+        L.DomEvent.addListener(close, 'click', function(event) {
+            $(self.legend).toggleClass("hide");
+            $(self.icon).toggleClass("hide");
+            event.preventDefault();
+        });
 
-    </h3>
+        items.forEach (function (item) {
+            var li = L.DomUtil.create("li", "legend-item", list);
+            var colour = L.DomUtil.create("span", "legend-colour", li);
+            var text = L.DomUtil.create("span", "legend-text", li);
+            $(colour).attr("style", "background-color: rgb(" + item.red + ", " + item.green + ", " + item.blue + ");");
+            $(text).html(item.name);
+        });
+    },
 
-    
-      <h4>new SmartWMS<span class="signature">()</span><span class="type-signature"></span></h4>
-    
+    clearItems: function() {
+        var self = this;
 
-    
+        while (self.legend.firstChild) {
+            self.legend.removeChild(self.legend.firstChild);
+        }
+    },
 
+    show: function() {
+        var self = this;
+        $(self.legend).removeClass("hide");
+    },
 
-
-    
-
-
-
-
-    
-    <div class="description">
-        <p>
-        Extension to the standard Leaflet WMS layer to add the ability for the layer class to lookup the bounding box
-from the WMS server, and to construct a polygon geoJSON object, with the pid of the layer in the properties object.</p><p>For this to work, the options object passed to the initialise method must include a property called wmsFeatureUrl,
-which contains the FULL url to lookup the features of the associated pid.
-        </p>
-    </div>
-    
-
-    
-
-    
-
-    
-
-    
-<dl class="details">
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-
-
-    
-    </div>
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <hr>
-
-    <div class="large-listing">
-      
-    </div>
-
-</article>
-
-</section>
+    hide: function() {
+        var self = this;
+        $(self.legend).addClass("hide");
+    }
+});</code></pre>
+        </article>
+    </section>
 
 
 
