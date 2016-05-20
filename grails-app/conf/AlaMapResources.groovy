@@ -3,6 +3,7 @@ modules = {
         dependsOn "underscore"
         dependsOn "jquery"
         dependsOn "jqueryScrollView"
+        dependsOn "jqueryInView"
         dependsOn "leaflet"
         dependsOn "leaflet_draw"
         dependsOn "leaflet_coords"
@@ -11,10 +12,13 @@ modules = {
         dependsOn "leaflet_cluster"
         dependsOn "leaflet_loading"
         dependsOn "turf"
+        dependsOn "handlebars"
         dependsOn "custom_controls"
         dependsOn "font-awesome"
         dependsOn "leaflet_sleep"
+        dependsOn "uri"
         resource url: [dir: "js", file: "Map.js", plugin: "ala-map"]
+        resource url: [dir: "js", file: "OccurrenceMap.js", plugin: "ala-map"]
         resource url: [dir: "js/layers", file: "SmartWmsLayer.js", plugin: "ala-map"]
         resource url: [dir: "css", file: "map.css", plugin: "ala-map"]
     }
@@ -24,6 +28,8 @@ modules = {
         resource url: [dir: "js/controls", file: "Checkbox.js", plugin: "ala-map"]
         resource url: [dir: "js/controls", file: "Slider.js", plugin: "ala-map"]
         resource url: [dir: "js/controls", file: "TwoStepSelector.js", plugin: "ala-map"]
+        resource url: [dir: "js/controls", file: "Select.js", plugin: "ala-map"]
+        resource url: [dir: "js/controls", file: "Legend.js", plugin: "ala-map"]
         resource url: [dir: "js/controls", file: "Radio.js", plugin: "ala-map"]
     }
 
@@ -90,5 +96,18 @@ modules = {
     jqueryScrollView {
         dependsOn "jquery"
         resource url: [dir: "vendor/onImpressions", file: "jquery.onimpression.js", plugin: "ala-map"]
+    }
+
+    jqueryInView {
+        dependsOn "jquery"
+        resource url: [dir: "vendor/jquery.inview-1.1.2", file: "jquery.inview.min.js", plugin: "ala-map"]
+    }
+
+    handlebars {
+        resource url: [dir: "vendor/handlebars-4.0.5", file: "handlebars.js", plugin: "ala-map"]
+    }
+
+    uri {
+        resource url: [dir: "vendor/urijs-1.18.0", file: "URI.js", plugin: "ala-map"]
     }
 }
