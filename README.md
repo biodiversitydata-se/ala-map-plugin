@@ -1,7 +1,9 @@
 # ALA Map Plugin
 
 ## Status
-[![Build Status](https://travis-ci.org/AtlasOfLivingAustralia/ala-map-plugin.svg?branch=master)](https://travis-ci.org/AtlasOfLivingAustralia/ala-map-plugin)
+Master: [![Build Status](https://travis-ci.org/AtlasOfLivingAustralia/ala-map-plugin.svg?branch=master)](https://travis-ci.org/AtlasOfLivingAustralia/ala-map-plugin)
+
+Dev: [![Build Status](https://travis-ci.org/AtlasOfLivingAustralia/ala-map-plugin.svg?branch=dev)](https://travis-ci.org/AtlasOfLivingAustralia/ala-map-plugin)
 
 
 ## API

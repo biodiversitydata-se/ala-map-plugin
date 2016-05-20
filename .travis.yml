@@ -5,7 +5,6 @@ jdk:
 branches:
   only:
   - master
-  - v2
   - dev
 before_install:
 - export TZ=Australia/Canberra
@@ -47,8 +46,8 @@ before_script:
 - echo "APP_VERSION:$APP_VERSION"
 - echo "MAVEN_REPO:$MAVEN_REPO"
 script:
-- node_modules/karma/bin/karma start karma.conf.js --single-run --browsers Firefox,PhantomJS
-- grails clean && grails refresh-dependencies --non-interactive && grails test-app
+- node_modules/karma/bin/karma start karma.conf.js --single-run --browsers Firefox,PhantomJS &&
+  grails clean && grails refresh-dependencies --non-interactive && grails test-app
   --non-interactive && grails prod maven-install --non-interactive && grails prod
   maven-deploy --repository=$MAVEN_REPO --non-interactive
 env:
