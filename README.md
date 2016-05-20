@@ -1,7 +1,9 @@
 # ALA Map Plugin
 
 ## Status
-[![Build Status](https://travis-ci.org/AtlasOfLivingAustralia/ala-map-plugin.svg?branch=master)](https://travis-ci.org/AtlasOfLivingAustralia/ala-map-plugin)
+Master: [![Build Status](https://travis-ci.org/AtlasOfLivingAustralia/ala-map-plugin.svg?branch=master)](https://travis-ci.org/AtlasOfLivingAustralia/ala-map-plugin)
+
+Dev: [![Build Status](https://travis-ci.org/AtlasOfLivingAustralia/ala-map-plugin.svg?branch=dev)](https://travis-ci.org/AtlasOfLivingAustralia/ala-map-plugin)
 
 
 ## API
@@ -15,7 +17,7 @@
 
 ## Why?
 
-Many ALA applications require mapping features, and to-date all of them have had their own custom implementations.
+Many ALA applications require mapping features, and to date all of them have had their own custom implementations.
 This results in a mix of implementations, inconsistent code, and inconsistent behaviour. The requirements, particularly
 around displaying maps or occurrence data, are basically the same for all apps. This plugin will encourage consistency
 across all ALA applications.
@@ -46,6 +48,26 @@ var myMap = new ALA.Map(id, {})
 * To listen to major events for the map (layers/features added/removed etc), simply call
 ```
 myMap.subscribe(function() {...})
+```
+
+### Creating an ALA Occurrence Map
+
+The occurrence map gives a map with the accompanying facet controls to allow the user to control the occurrences that are displayed on the map. This is similar to the filter panel & map tab from the biocache. 
+
+* Create a ```div``` with an ```id``` (unique id for the map container) and a ```data-leaflet-img``` (location of the leaflet images) attribute.
+  * The ```MapTagLib``` gives a tag for this:
+
+```
+  <m:occurrenceMap id="myMap"/>
+```
+* Create a new ALA.OccurrenceMap object, providing it the base URL for the biocache instance/hub you are using (e.g. https://biocache.ala.org.au), the initial query string to use to populate the map, and an optional configuration object:
+```
+var myOccurrenceMap = new ALA.OccurrenceMap(id, 'https://biocache.ala.org.au', 'q=Acacia', {})
+```
+* See the API Doco for details of the options.
+* To listen to major events for the map (facet changes, layers/features added/removed etc), simply call
+```
+myOccurrenceMap.map.subscribe(function() {...})
 ```
 
 ## Features

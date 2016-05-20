@@ -30,7 +30,7 @@ L.Control.Checkbox = L.Control.extend({
         var checkName = 'leaflet-control-checkbox leaflet-control-layers',
             container = L.DomUtil.create('div', checkName + ' leaflet-bar'),
             options = this.options;
-        this._createButton(options.text, options.title, '', container, this.onClick)
+        this._createButton(options.text, options.title, '', container, this.onClick);
         return container;
     },
 
