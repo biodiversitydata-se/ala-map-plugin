@@ -783,7 +783,7 @@ ALA.OccurrenceMapUtils = {
      * The final value will be capatilised.
      *
      * @param name The name to format. If empty, null or undefined then "Unknown" will be returned.
-     * @param facetNameMappingOverrides Optional object containing mappings from raw value to formatted value, in the form {raw: formatted, ...}
+     * @param facetNameMappingOverrides Optional object containing mappings from raw value to formatted value, in the form [raw: formatted, ...]
      * @returns {String} the formatted string
      */
     formatFacetName: function (name, facetNameMappingOverrides) {

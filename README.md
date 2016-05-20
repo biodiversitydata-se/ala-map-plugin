@@ -8,7 +8,7 @@ Dev: [![Build Status](https://travis-ci.org/AtlasOfLivingAustralia/ala-map-plugi
 
 ## API
 
-### [Click here for the full API documentation](http://atlasoflivingaustralia.github.io/ala-map-plugin/api/ALA.Map.html)
+### [Click here for the full API documentation](http://atlasoflivingaustralia.github.io/ala-map-plugin/api/ALA.html)
 
 ## Demo
 
@@ -71,6 +71,15 @@ myOccurrenceMap.map.subscribe(function() {...})
 ```
 
 ## Features
+
+### Version 2
+
+* Occurrence Map support
+  * JQuery client with facet & colour-by support for controlling the content of an occurrence map
+  * Pulls data from the specified Biocache instance
+* Custom controls:
+  * Select box
+  * Legend
 
 ### Version 1.1
 * Built in options to:
