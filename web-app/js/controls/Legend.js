@@ -7,6 +7,7 @@
  *     <li><code>id</code> Unique id for the control</li>
  *     <li><code>position</code> The location on the map (using leaflet's standard control positions). Default: bottomright</li>
  *     <li><code>collapse</code> True to show a button until clicked, then show the legendbox; false to just show the expanded legend box. Default: false</li>
+ *     <li><code>label</code> The label to give to the list of legend colours, set to null for no label. Default: null</li>
  *     <li><code>title</code> The title the button when collapse=true. Default: 'Show legend'</li>
  *     <li><code>items</code> array of items to be displayed in the legend. Each item is an object with the following properties:
  *     <ul>
@@ -26,6 +27,7 @@ L.Control.Legend = L.Control.extend({
         id: "replaceMe",
         position: "bottomright",
         collapse: false,
+        label: null,
         title: "Show legend",
         items: [],
         iconClass: "fa fa-list",
@@ -71,6 +73,10 @@ L.Control.Legend = L.Control.extend({
 
         var close = L.DomUtil.create("button", "fa fa-times " + (self.options.position.indexOf("right") > -1 ? "pull-right" : ""), self.legend);
         close.title = "Hide legend";
+        if (self.options.label) {
+            var label = L.DomUtil.create("div", "legend-label", self.legend);
+            label.textContent = self.options.label;
+        }
         var list = L.DomUtil.create("ul", "legend", self.legend);
 
         L.DomEvent.addListener(close, 'click', function(event) {
