@@ -59,8 +59,8 @@ modules = {
 
     leaflet_geocoder {
         dependsOn "leaflet"
-        resource url: [dir: "vendor/leaflet-control-geocoder-1.3.2", file: "Control.Geocoder.js", plugin: "ala-map"]
-        resource url: [dir: "vendor/leaflet-control-geocoder-1.3.2", file: "Control.Geocoder.css", plugin: "ala-map"]
+        resource url: [dir: "vendor/leaflet-control-geocoder-1.5.1", file: "Control.Geocoder.js", plugin: "ala-map"]
+        resource url: [dir: "vendor/leaflet-control-geocoder-1.5.1", file: "Control.Geocoder.css", plugin: "ala-map"]
     }
 
     leaflet_cluster {
