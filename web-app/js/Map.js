@@ -262,9 +262,15 @@ ALA.Map = function (id, options) {
      * @memberOf ALA.Map
      * @function subscribe
      * @param callback {function} the callback function to be invoked when the map is updated
+     * @returns {Object} An object with a 'cancel' method that you can use remove this subscription.
      */
     self.subscribe = function (callback) {
         subscribers.push(callback);
+        return {
+            cancel: function() {
+                self.unsubscribe(callback);
+            }
+        }
     };
 
     /**
@@ -275,7 +281,10 @@ ALA.Map = function (id, options) {
      * @param callback {function} the callback function used to subscribe to events
      */
     self.unsubscribe = function (callback) {
-        subscribers.removeItem(callback);
+        var index = subscribers.indexOf(callback);
+        if (index != -1) {
+            subscribers.splice(index,1);
+        }
     };
 
     /**
