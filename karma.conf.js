@@ -13,8 +13,7 @@ module.exports = function (config) {
             'karma-jasmine',
             'karma-jasmine-jquery',
             'karma-coverage',
-            'karma-firefox-launcher',
-            'karma-phantomjs2-launcher'
+            'karma-firefox-launcher'
         ],
 
 
