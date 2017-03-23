@@ -43,6 +43,7 @@ ALA.MapConstants = {
  *  <li><code>drawControl</code> whether to include drawing controls or not. Default: true</li>
  *  <li><code>singleDraw</code> whether to allow more than 1 shape or region to be drawn at a time. This does NOT apply to markers - only layers and other shapes. See also singleMarker and markerOrShapeNotBoth. Default: true</li>
  *  <li><code>singleMarker</code> whether to allow more than 1 marker to be drawn at a time.. Default: true</li>
+ *  <li><code>markerZoomToMax</code> whether to allow zoom to maximum permitted level of current base layer</li>
  *  <li><code>markerOrShapeNotBoth</code> whether to allow users to draw both markers and regions/shapes at the same time. Default: true</li>
  *  <li><code>useMyLocation</code> whether to include a "Use My Location" button to place a marker on the map at the user's location. Default: true</li>
  *  <li><code>allowSearchLocationByAddress</code> whether to allow the user to search by address to place a marker on the map. Default: true</li>
@@ -225,6 +226,7 @@ ALA.Map = function (id, options) {
     var drawnItems = new L.FeatureGroup();
     var markers = [];
     var subscribers = [];
+    var currentBaseLayer;
 
     /**
      * Subscribe to all update events on the map.
@@ -895,6 +897,7 @@ ALA.Map = function (id, options) {
         L.Icon.Default.imagePath = getLeafletImageLocation();
 
         mapImpl.addLayer(options.baseLayer);
+        currentBaseLayer = options.baseLayer;
         L.control.layers(options.otherLayers).addTo(mapImpl);
 
         addLoadingControl();
@@ -932,6 +935,17 @@ ALA.Map = function (id, options) {
 
         // make sure the base layers never sit on top of other layers when the base layer is changed
         mapImpl.on('baselayerchange', function (event) {
+            currentBaseLayer = event.layer;
+
+            if(currentBaseLayer && currentBaseLayer.options.maxZoom){
+                if(mapImpl.setMaxZoom){
+                    mapImpl.setMaxZoom(currentBaseLayer.options.maxZoom);
+                } else if(mapImpl.options.maxZoom){
+                    mapImpl.setZoom(currentBaseLayer.options.maxZoom);
+                    mapImpl.options.maxZoom = currentBaseLayer.options.maxZoom;
+                }
+            }
+
             if (event.layer.setZIndex) {
                 event.layer.setZIndex(-1);
             }
@@ -1182,6 +1196,7 @@ ALA.Map = function (id, options) {
     // Internal method to add a Marker to the map, to fit the map bounds if configured to do so, and optionally to notify
     // all subscribers that the map has changed.
     function addMarker(marker, notify) {
+        var zoomLevel = SINGLE_POINT_ZOOM;
         self.startLoading();
 
         drawingStarted(ALA.MapConstants.LAYER_TYPE.MARKER);
@@ -1194,8 +1209,12 @@ ALA.Map = function (id, options) {
         markers.push(marker);
 
         if (options.zoomToObject) {
+            if(options.markerZoomToMax){
+                zoomLevel = currentBaseLayer && currentBaseLayer.options.maxZoom || zoomLevel;
+            }
+
             mapImpl.panTo(marker.getLatLng(), {animate: ANIMATE});
-            mapImpl.fitBounds(new L.LatLngBounds(marker.getLatLng(), marker.getLatLng()), {maxZoom: SINGLE_POINT_ZOOM});
+            mapImpl.fitBounds(new L.LatLngBounds(marker.getLatLng(), marker.getLatLng()), {maxZoom: zoomLevel});
         }
 
         if (notify) {
