@@ -5,6 +5,7 @@ jdk:
 branches:
   only:
   - master
+  - hot-fix
 before_install:
 - export TZ=Australia/Canberra
 - date
