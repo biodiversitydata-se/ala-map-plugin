@@ -920,7 +920,7 @@ ALA.Map = function (id, options) {
         }
 
         if (options.showReset) {
-            self.addButton("<span class='ala-map-reset fa fa-refresh reset-map' title='Reset map'></span>", self.resetMap, "bottomleft");
+            self.addButton("<span class='ala-map-reset fa fa-refresh reset-map' title='Reset map'></span>", self.resetMap, "bottomright");
         }
 
         // If the map container is not visible, add a listener to trigger a redraw once it becomes visible.
@@ -1104,7 +1104,7 @@ ALA.Map = function (id, options) {
     // Adds the lat/lng coordinates to the bottom of the map panel
     function addCoordinates() {
         L.control.coordinates({
-            position: "bottomleft",
+            position: "bottomright",
             decimals: 2,
             enableUserInput: false,
             useLatLngOrder: true
