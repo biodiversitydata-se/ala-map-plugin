@@ -79,7 +79,7 @@ ALA.Map = function (id, options) {
     };
 
     var DEFAULT_ZOOM = 4;
-    var SINGLE_POINT_ZOOM = 10;
+    var SINGLE_POINT_ZOOM = 16;
     var MAX_AUTO_ZOOM = 15;
     var DEFAULT_MAX_ZOOM = 20;
     var DEFAULT_OPACITY = 0.1;
@@ -937,15 +937,6 @@ ALA.Map = function (id, options) {
         mapImpl.on('baselayerchange', function (event) {
             currentBaseLayer = event.layer;
 
-            if(currentBaseLayer && currentBaseLayer.options.maxZoom){
-                if(mapImpl.setMaxZoom){
-                    mapImpl.setMaxZoom(currentBaseLayer.options.maxZoom);
-                } else if(mapImpl.options.maxZoom){
-                    mapImpl.setZoom(currentBaseLayer.options.maxZoom);
-                    mapImpl.options.maxZoom = currentBaseLayer.options.maxZoom;
-                }
-            }
-
             if (event.layer.setZIndex) {
                 event.layer.setZIndex(-1);
             }
@@ -959,7 +950,8 @@ ALA.Map = function (id, options) {
         var minimalLayer = L.tileLayer(DEFAULT_BASE_LAYER.url, {
             attribution: DEFAULT_BASE_LAYER.attribution,
             subdomains: DEFAULT_BASE_LAYER.subdomains,
-            maxZoom: 21
+            maxZoom: 21,
+            maxNativeZoom: 21
         });
 
         if (_.isEmpty(options.otherLayers)) {
@@ -967,7 +959,8 @@ ALA.Map = function (id, options) {
                 Minimal: minimalLayer,
                 WorldImagery: L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
                     attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
-                    maxZoom: 17
+                    maxZoom: 17,
+                    maxNativeZoom: 17
                 })
             };
         }
@@ -1196,7 +1189,6 @@ ALA.Map = function (id, options) {
     // Internal method to add a Marker to the map, to fit the map bounds if configured to do so, and optionally to notify
     // all subscribers that the map has changed.
     function addMarker(marker, notify) {
-        var zoomLevel = SINGLE_POINT_ZOOM;
         self.startLoading();
 
         drawingStarted(ALA.MapConstants.LAYER_TYPE.MARKER);
@@ -1209,12 +1201,8 @@ ALA.Map = function (id, options) {
         markers.push(marker);
 
         if (options.zoomToObject) {
-            if(options.markerZoomToMax){
-                zoomLevel = currentBaseLayer && currentBaseLayer.options.maxZoom || zoomLevel;
-            }
-
             mapImpl.panTo(marker.getLatLng(), {animate: ANIMATE});
-            mapImpl.fitBounds(new L.LatLngBounds(marker.getLatLng(), marker.getLatLng()), {maxZoom: zoomLevel});
+            mapImpl.fitBounds(new L.LatLngBounds(marker.getLatLng(), marker.getLatLng()), {maxZoom: SINGLE_POINT_ZOOM});
         }
 
         if (notify) {
