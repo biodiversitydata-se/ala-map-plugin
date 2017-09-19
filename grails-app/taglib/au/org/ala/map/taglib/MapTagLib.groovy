@@ -19,7 +19,7 @@ class MapTagLib {
      */
     def map = { attrs ->
         // add file to work around an asset-pipeline crash
-        String leafletImageLocation = attrs.imageLocation ?: "${resource(dir: '/vendor/leaflet-0.7.7/images', file: '.', plugin: 'ala-map')}"
+        String leafletImageLocation = attrs.imageLocation ?: "${resource(dir: '/vendor/leaflet-0.7.7/images', file: '', plugin: 'ala-map')}"
         String style = "width: ${attrs.width ?: DEFAULT_MAP_WIDTH}; height: ${attrs.height ?: DEFAULT_MAP_HEIGHT}"
 
         out << "<div id='${attrs.id}' style='${style}' data-leaflet-img='${leafletImageLocation}'></div>"

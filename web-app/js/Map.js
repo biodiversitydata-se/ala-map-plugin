@@ -595,6 +595,66 @@ ALA.Map = function (id, options) {
     };
 
     /**
+     * Adds a layer of points or icons to map. Icons gives the flexibility of adding shape to map.
+     *
+     * Each point object in the points array must have the following structure:
+     * <ul>
+     *     <li><code>lat</code> - the latitude for the point. Mandatory.</li>
+     *     <li><code>lng</code> - the longitude for the point. Mandatory.</li>
+     *     <li><code>type</code> - supported values 'point' or 'icon'. point draws a circle and icon renders the provided image. Default 'point'. </li>
+     *     <li><code>popup</code> - Text or HTML to be used as the popup when the marker is clicked. Optional.</li>
+     *     <li><code>options</code> - options object to override specified options for the individual point. Optional.</li>
+     * </ul>
+     *
+     * Will notify all subscribers.
+     *
+     * @memberOf ALA.Map
+     * @function addPointsOrIcons
+     * @param points {Array} Mandatory array of objects with mandatory properties 'lat' and 'lng', and optionally an 'options' object.
+     * @param pointOptions {Object} Optional object containing configuration options to be applied to ALL points.
+     * @param iconUrl {String} Optional image URL
+     * @param iconOptions {Object} Optional object describing the icon metadata like size, anchor point, popup location.
+     */
+    self.addPointsOrIcons = function (points, pointOptions, iconUrl, iconOptions) {
+        self.startLoading();
+
+        if (options.singleDraw) {
+            drawnItems.clearLayers();
+        }
+        if (options.markerOrShapeNotBoth) {
+            clearMarkers();
+        }
+
+        _.defaults(pointOptions, DEFAULT_POINT_MARKER_OPTIONS);
+
+        var icon = ALA.MapUtils.createIcon(iconUrl, iconOptions);
+        points.forEach(function (point) {
+            var options = _.clone(pointOptions);
+            if (point.options) {
+                _.defaults(options, pointOptions);
+            }
+
+            var layer;
+            switch (point.type){
+                case 'icon':
+                    options.icon = icon;
+                    layer = L.marker([point.lat, point.lng], options);
+                    break;
+                case 'circle':
+                default:
+                    layer = L.circleMarker(new L.LatLng(point.lat, point.lng), options);
+                    break;
+            }
+
+            if (point.popup) {
+                layer.bindPopup(point.popup);
+            }
+
+            drawnItems.addLayer(layer)
+        });
+    };
+
+    /**
      * Adds a marker at the user's current location.
      *
      * Will notify all subscribers.
@@ -1307,6 +1367,7 @@ ALA.Map = function (id, options) {
 
     // Internal function to create a new WMS layer, but not to add it to the map, or trigger any notifications
     function createWmsLayer(pid, wmsOptions) {
+        wmsOptions = wmsOptions || {};
         if (!_.isUndefined(pid) && pid != null) {
             wmsOptions.pid = pid;
             wmsOptions.viewparams = "s:" + pid;
