@@ -23,14 +23,7 @@ before_install:
 before_script:
 - export DISPLAY=:99.0
 - sh -e /etc/init.d/xvfb start
-- npm install karma
-- npm install karma-jquery
-- npm install karma-jasmine
-- npm install karma-jasmine-jquery
-- npm install karma-coverage
-- npm install karma-phantomjs2-launcher --save-dev
-- npm install karma-chrome-launcher --save-dev
-- npm install karma-firefox-launcher --save-dev
+- npm install
 - GRAILS_VERSION_NUMBER=`echo $GRAILS_VERSION | sed -e 's/\.[0-9]*$//g' -e 's/\.//g'
   | tr -d "\r"`
 - echo "GRAILS_VERSION_NUMBER:$GRAILS_VERSION_NUMBER"
