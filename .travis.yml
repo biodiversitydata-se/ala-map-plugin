@@ -2,8 +2,6 @@ language: groovy
 sudo: false
 jdk:
 - openjdk7
-node_js:
-  - 4.8.4
 branches:
   only:
   - master
@@ -12,7 +10,7 @@ branches:
 before_install:
 - export TZ=Australia/Canberra
 - date
-- nvm install 6.10
+- nvm install 4.8.4
 - rm -rf ~/.sdkman
 - curl -s get.sdkman.io > ~/install_gvm.sh
 - chmod 775 ~/install_gvm.sh
