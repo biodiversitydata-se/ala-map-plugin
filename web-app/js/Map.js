@@ -578,7 +578,7 @@ ALA.Map = function (id, options) {
         points.forEach(function (point) {
             var options = _.clone(pointOptions);
             if (point.options) {
-                _.defaults(options, pointOptions);
+                _.defaults(options, point.options);
             }
 
             var layer = L.circleMarker(new L.LatLng(point.lat, point.lng), options);
@@ -631,7 +631,7 @@ ALA.Map = function (id, options) {
         points.forEach(function (point) {
             var options = _.clone(pointOptions);
             if (point.options) {
-                _.defaults(options, pointOptions);
+                _.defaults(options, point.options);
             }
 
             var layer;
