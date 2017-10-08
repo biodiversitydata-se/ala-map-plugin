@@ -11,48 +11,54 @@ module.exports = {
 			expand: 'click',
 			position: 'topright',
 			placeholder: 'Search...',
-			errorMessage: 'Nothing found.'
+			errorMessage: 'Nothing found.',
+			suggestMinLength: 3,
+			suggestTimeout: 250,
+			defaultMarkGeocode: true
 		},
 
-		_callbackId: 0,
+		includes: L.Mixin.Events,
 
 		initialize: function (options) {
 			L.Util.setOptions(this, options);
 			if (!this.options.geocoder) {
 				this.options.geocoder = new Nominatim();
 			}
+
+			this._requestCount = 0;
 		},
 
 		onAdd: function (map) {
 			var className = 'leaflet-control-geocoder',
 			    container = L.DomUtil.create('div', className + ' leaflet-bar'),
-			    icon = L.DomUtil.create('a', 'leaflet-control-geocoder-icon', container),
-			    form = this._form = L.DomUtil.create('form', className + '-form', container),
+			    icon = L.DomUtil.create('button', className + '-icon', container),
+			    form = this._form = L.DomUtil.create('div', className + '-form', container),
 			    input;
 
-			icon.innerHTML = '&nbsp;';
-			icon.href = 'javascript:void(0);';
 			this._map = map;
 			this._container = container;
-			input = this._input = L.DomUtil.create('input');
+
+			icon.innerHTML = '&nbsp;';
+			icon.type = 'button';
+
+			input = this._input = L.DomUtil.create('input', '', form);
 			input.type = 'text';
 			input.placeholder = this.options.placeholder;
 
-			L.DomEvent.addListener(input, 'keydown', this._keydown, this);
-			//L.DomEvent.addListener(input, 'onpaste', this._clearResults, this);
-			//L.DomEvent.addListener(input, 'oninput', this._clearResults, this);
-
-			this._errorElement = document.createElement('div');
-			this._errorElement.className = className + '-form-no-error';
+			this._errorElement = L.DomUtil.create('div', className + '-form-no-error', container);
 			this._errorElement.innerHTML = this.options.errorMessage;
 
-			this._alts = L.DomUtil.create('ul', className + '-alternatives leaflet-control-geocoder-alternatives-minimized');
+			this._alts = L.DomUtil.create('ul',
+				className + '-alternatives leaflet-control-geocoder-alternatives-minimized',
+				container);
 
-			form.appendChild(input);
-			this._container.appendChild(this._errorElement);
-			container.appendChild(this._alts);
+			L.DomEvent.addListener(input, 'keydown', this._keydown, this);
+			L.DomEvent.addListener(input, 'blur', function() {
+				if (this.options.collapsed) {
+					this._collapse();
+				}
+			}, this);
 
-			L.DomEvent.addListener(form, 'submit', this._geocode, this);
 
 			if (this.options.collapsed) {
 				if (this.options.expand === 'click') {
@@ -74,14 +80,24 @@ module.exports = {
 				this._expand();
 			}
 
+			if (this.options.defaultMarkGeocode) {
+				this.on('markgeocode', this.markGeocode, this);
+			}
+
+			this.on('startgeocode', function() {
+				L.DomUtil.addClass(this._container, 'leaflet-control-geocoder-throbber');
+			}, this);
+			this.on('finishgeocode', function() {
+				L.DomUtil.removeClass(this._container, 'leaflet-control-geocoder-throbber');
+			}, this);
+
 			L.DomEvent.disableClickPropagation(container);
 
 			return container;
 		},
 
-		_geocodeResult: function (results) {
-			L.DomUtil.removeClass(this._container, 'leaflet-control-geocoder-throbber');
-			if (results.length === 1) {
+		_geocodeResult: function (results, suggest) {
+			if (!suggest && results.length === 1) {
 				this._geocodeResultSelected(results[0]);
 			} else if (results.length > 0) {
 				this._alts.innerHTML = '';
@@ -96,6 +112,8 @@ module.exports = {
 		},
 
 		markGeocode: function(result) {
+			result = result.geocode || result;
+
 			this._map.fitBounds(result.bbox);
 
 			if (this._geocodeMarker) {
@@ -110,14 +128,22 @@ module.exports = {
 			return this;
 		},
 
-		_geocode: function(event) {
-			L.DomEvent.preventDefault(event);
+		_geocode: function(suggest) {
+			var requestCount = ++this._requestCount,
+				mode = suggest ? 'suggest' : 'geocode';
 
-			L.DomUtil.addClass(this._container, 'leaflet-control-geocoder-throbber');
-			this._clearResults();
-			this.options.geocoder.geocode(this._input.value, this._geocodeResult, this);
+			this._lastGeocode = this._input.value;
+			if (!suggest) {
+				this._clearResults();
+			}
 
-			return false;
+			this.fire('start' + mode);
+			this.options.geocoder[mode](this._input.value, function(results) {
+				if (requestCount === this._requestCount) {
+					this.fire('finish' + mode);
+					this._geocodeResult(results, suggest);
+				}
+			}, this);
 		},
 
 		_geocodeResultSelected: function(result) {
@@ -126,7 +152,8 @@ module.exports = {
 			} else {
 				this._clearResults();
 			}
-			this.markGeocode(result);
+
+			this.fire('markgeocode', {geocode: result});
 		},
 
 		_toggle: function() {
@@ -140,12 +167,14 @@ module.exports = {
 		_expand: function () {
 			L.DomUtil.addClass(this._container, 'leaflet-control-geocoder-expanded');
 			this._input.select();
+			this.fire('expand');
 		},
 
 		_collapse: function () {
 			this._container.className = this._container.className.replace(' leaflet-control-geocoder-expanded', '');
 			L.DomUtil.addClass(this._alts, 'leaflet-control-geocoder-alternatives-minimized');
 			L.DomUtil.removeClass(this._errorElement, 'leaflet-control-geocoder-error');
+			this.fire('collapse');
 		},
 
 		_clearResults: function () {
@@ -171,12 +200,12 @@ module.exports = {
 			li.setAttribute('data-result-index', index);
 
 			if (result.html) {
-				a.innerHTML = result.html;
+				a.innerHTML = a.innerHTML + result.html;
 			} else {
 				a.appendChild(text);
 			}
 
-			L.DomEvent.addListener(li, 'click', clickHandler, this);
+			L.DomEvent.addListener(li, 'mousedown', clickHandler, this);
 
 			return li;
 		},
@@ -220,10 +249,24 @@ module.exports = {
 					var index = parseInt(this._selection.getAttribute('data-result-index'), 10);
 					this._geocodeResultSelected(this._results[index]);
 					this._clearResults();
-					L.DomEvent.preventDefault(e);
+				} else {
+					this._geocode();
+				}
+				L.DomEvent.preventDefault(e);
+				break;
+			default:
+				var v = this._input.value;
+				if (this.options.geocoder.suggest && v !== this._lastGeocode) {
+					clearTimeout(this._suggestTimeout);
+					if (v.length >= this.options.suggestMinLength) {
+						this._suggestTimeout = setTimeout(L.bind(function() {
+							this._geocode(true);
+						}, this), this.options.suggestTimeout);
+					} else {
+						this._clearResults();
+					}
 				}
 			}
-			return true;
 		}
 	}),
 	factory: function(options) {
@@ -232,7 +275,94 @@ module.exports = {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./geocoders/nominatim":7}],2:[function(require,module,exports){
+},{"./geocoders/nominatim":9}],2:[function(require,module,exports){
+(function (global){
+var L = (typeof window !== "undefined" ? window['L'] : typeof global !== "undefined" ? global['L'] : null),
+	Util = require('../util');
+
+module.exports = {
+	"class": L.Class.extend({
+		options: {
+			service_url: 'http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer'
+		},
+
+		initialize: function(accessToken, options) {
+			L.setOptions(this, options);
+			this._accessToken = accessToken;
+		},
+
+		geocode: function(query, cb, context) {
+			var params = {
+				SingleLine: query,
+				outFields: 'Addr_Type',
+				forStorage: false,
+				maxLocations: 10,
+				f: 'json'
+			};
+
+			if (this._key && this._key.length) {
+				params.token = this._key;
+			}
+
+			Util.getJSON(this.options.service_url + '/findAddressCandidates', params, function(data) {
+				var results = [],
+					loc,
+					latLng,
+					latLngBounds;
+
+				if (data.candidates && data.candidates.length) {
+					for (var i = 0; i <= data.candidates.length - 1; i++) {
+						loc = data.candidates[i];
+						latLng = L.latLng(loc.location.y, loc.location.x);
+						latLngBounds = L.latLngBounds(L.latLng(loc.extent.ymax, loc.extent.xmax), L.latLng(loc.extent.ymin, loc.extent.xmin));
+						results[i] = {
+								name: loc.address,
+								bbox: latLngBounds,
+								center: latLng
+						};
+					}
+				}
+
+				cb.call(context, results);
+			});
+		},
+
+		suggest: function(query, cb, context) {
+			return this.geocode(query, cb, context);
+		},
+
+		reverse: function(location, scale, cb, context) {
+			var params = {
+				location: encodeURIComponent(location.lng) + ',' + encodeURIComponent(location.lat),
+				distance: 100,
+				f: 'json'
+			};
+
+			Util.getJSON(this.options.service_url + '/reverseGeocode', params, function(data) {
+				var result = [],
+					loc;
+
+				if (data && !data.error) {
+					loc = L.latLng(data.location.y, data.location.x);
+					result.push({
+						name: data.address.Match_addr,
+						center: loc,
+						bounds: L.latLngBounds(loc, loc)
+					});
+				}
+
+				cb.call(context, result);
+			});
+		}
+	}),
+
+	factory: function(accessToken, options) {
+		return new L.Control.Geocoder.ArcGis(accessToken, options);
+	}
+};
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"../util":13}],3:[function(require,module,exports){
 (function (global){
 var L = (typeof window !== "undefined" ? window['L'] : typeof global !== "undefined" ? global['L'] : null),
 	Util = require('../util');
@@ -244,7 +374,7 @@ module.exports = {
 		},
 
 		geocode : function (query, cb, context) {
-			Util.jsonp('//dev.virtualearth.net/REST/v1/Locations', {
+			Util.jsonp('https://dev.virtualearth.net/REST/v1/Locations', {
 				query: query,
 				key : this.key
 			}, function(data) {
@@ -289,7 +419,7 @@ module.exports = {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../util":11}],3:[function(require,module,exports){
+},{"../util":13}],4:[function(require,module,exports){
 (function (global){
 var L = (typeof window !== "undefined" ? window['L'] : typeof global !== "undefined" ? global['L'] : null),
 	Util = require('../util');
@@ -382,7 +512,81 @@ module.exports = {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../util":11}],4:[function(require,module,exports){
+},{"../util":13}],5:[function(require,module,exports){
+(function (global){
+var L = (typeof window !== "undefined" ? window['L'] : typeof global !== "undefined" ? global['L'] : null),
+    Util = require('../util');
+
+module.exports = {
+    "class": L.Class.extend({
+        options: {
+            geocodeUrl: 'http://geocoder.api.here.com/6.2/geocode.json',
+            reverseGeocodeUrl: 'http://reverse.geocoder.api.here.com/6.2/reversegeocode.json',
+            app_id: '<insert your app_id here>',
+            app_code: '<insert your app_code here>',
+            geocodingQueryParams: {},
+            reverseQueryParams: {}
+        },
+
+        initialize: function(options) {
+            L.setOptions(this, options);
+        },
+
+        geocode: function(query, cb, context) {
+            var params = {
+                searchtext: query,
+                gen: 9,
+                app_id: this.options.app_id,
+                app_code: this.options.app_code,
+                jsonattributes: 1
+            };
+            params = L.Util.extend(params, this.options.geocodingQueryParams);
+            this.getJSON(this.options.geocodeUrl, params, cb, context);
+        },
+
+        reverse: function(location, scale, cb, context) {
+            var params = {
+                prox: encodeURIComponent(location.lat) + ',' + encodeURIComponent(location.lng),
+                mode: 'retrieveAddresses',
+                app_id: this.options.app_id,
+                app_code: this.options.app_code,
+                gen: 9,
+                jsonattributes: 1
+            };
+            params = L.Util.extend(params, this.options.reverseQueryParams);
+            this.getJSON(this.options.reverseGeocodeUrl, params, cb, context);
+        },
+
+        getJSON: function(url, params, cb, context) {
+            Util.getJSON(url, params, function(data) {
+                var results = [],
+                    loc,
+                    latLng,
+                    latLngBounds;
+                if (data.response.view && data.response.view.length) {
+                    for (var i = 0; i <= data.response.view[0].result.length - 1; i++) {
+                        loc = data.response.view[0].result[i].location;
+                        latLng = L.latLng(loc.displayPosition.latitude, loc.displayPosition.longitude);
+                        latLngBounds = L.latLngBounds(L.latLng(loc.mapView.topLeft.latitude, loc.mapView.topLeft.longitude), L.latLng(loc.mapView.bottomRight.latitude, loc.mapView.bottomRight.longitude));
+                        results[i] = {
+                            name: loc.address.label,
+                            bbox: latLngBounds,
+                            center: latLng
+                        };
+                    }
+                }
+                cb.call(context, results);
+            })
+        }
+    }),
+
+    factory: function(options) {
+        return new L.Control.Geocoder.HERE(options);
+    }
+};
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"../util":13}],6:[function(require,module,exports){
 (function (global){
 var L = (typeof window !== "undefined" ? window['L'] : typeof global !== "undefined" ? global['L'] : null),
 	Util = require('../util');
@@ -474,7 +678,7 @@ module.exports = {
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../util":11}],5:[function(require,module,exports){
+},{"../util":13}],7:[function(require,module,exports){
 (function (global){
 var L = (typeof window !== "undefined" ? window['L'] : typeof global !== "undefined" ? global['L'] : null),
 	Util = require('../util');
@@ -482,7 +686,7 @@ var L = (typeof window !== "undefined" ? window['L'] : typeof global !== "undefi
 module.exports = {
 	"class": L.Class.extend({
 		options: {
-			serviceUrl: '//www.mapquestapi.com/geocoding/v1'
+			serviceUrl: 'https://www.mapquestapi.com/geocoding/v1'
 		},
 
 		initialize: function(key, options) {
@@ -563,7 +767,7 @@ module.exports = {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../util":11}],6:[function(require,module,exports){
+},{"../util":13}],8:[function(require,module,exports){
 (function (global){
 var L = (typeof window !== "undefined" ? window['L'] : typeof global !== "undefined" ? global['L'] : null),
 	Util = require('../util');
@@ -571,7 +775,7 @@ var L = (typeof window !== "undefined" ? window['L'] : typeof global !== "undefi
 module.exports = {
 	"class": L.Class.extend({
 		options: {
-			serviceUrl: '//search.mapzen.com/v1',
+			serviceUrl: 'https://search.mapzen.com/v1',
 			geocodingQueryParams: {},
 			reverseQueryParams: {}
 		},
@@ -597,12 +801,12 @@ module.exports = {
 			Util.getJSON(this.options.serviceUrl + "/autocomplete", L.extend({
 				'api_key': this._apiKey,
 				'text': query
-			}, this.options.geocodingQueryParams), function(data) {
+			}, this.options.geocodingQueryParams), L.bind(function(data) {
 				if (data.geocoding.timestamp > this._lastSuggest) {
 					this._lastSuggest = data.geocoding.timestamp;
 					cb.call(context, _this._parseResults(data, "bbox"));
 				}
-			});
+			}, this));
 		},
 
 		reverse: function(location, scale, cb, context) {
@@ -623,11 +827,22 @@ module.exports = {
 					return L.circleMarker(latlng);
 				},
 				onEachFeature: function(feature, layer) {
-					var result = {};
-					result['name'] = layer.feature.properties.label;
-					result[bboxname] = layer.getBounds();
-					result['center'] = result[bboxname].getCenter();
-					result['properties'] = layer.feature.properties;
+					var result = {},
+						bbox,
+						center;
+
+					if (layer.getBounds) {
+						bbox = layer.getBounds();
+						center = bbox.getCenter();
+					} else {
+						center = layer.getLatLng();
+						bbox = L.latLngBounds(center, center);
+					}
+
+					result.name = layer.feature.properties.label;
+					result.center = center;
+					result[bboxname] = bbox;
+					result.properties = layer.feature.properties;
 					results.push(result);
 				}
 			});
@@ -641,7 +856,7 @@ module.exports = {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../util":11}],7:[function(require,module,exports){
+},{"../util":13}],9:[function(require,module,exports){
 (function (global){
 var L = (typeof window !== "undefined" ? window['L'] : typeof global !== "undefined" ? global['L'] : null),
 	Util = require('../util');
@@ -649,7 +864,7 @@ var L = (typeof window !== "undefined" ? window['L'] : typeof global !== "undefi
 module.exports = {
 	"class": L.Class.extend({
 		options: {
-			serviceUrl: '//nominatim.openstreetmap.org/',
+			serviceUrl: 'https://nominatim.openstreetmap.org/',
 			geocodingQueryParams: {},
 			reverseQueryParams: {},
 			htmlTemplate: function(r) {
@@ -659,9 +874,9 @@ module.exports = {
 					parts.push('{building} {road} {house_number}');
 				}
 
-				if (a.city || a.town || a.village) {
+				if (a.city || a.town || a.village || a.hamlet) {
 					parts.push('<span class="' + (parts.length > 0 ? 'leaflet-control-geocoder-address-detail' : '') +
-						'">{postcode} {city} {town} {village}</span>');
+						'">{postcode} {city} {town} {village} {hamlet}</span>');
 				}
 
 				if (a.state || a.country) {
@@ -739,7 +954,7 @@ module.exports = {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../util":11}],8:[function(require,module,exports){
+},{"../util":13}],10:[function(require,module,exports){
 (function (global){
 var L = (typeof window !== "undefined" ? window['L'] : typeof global !== "undefined" ? global['L'] : null),
 	Util = require('../util');
@@ -747,8 +962,8 @@ var L = (typeof window !== "undefined" ? window['L'] : typeof global !== "undefi
 module.exports = {
 	"class": L.Class.extend({
 		options: {
-			serviceUrl: '//photon.komoot.de/api/',
-			reverseUrl: '//photon.komoot.de/reverse/',
+			serviceUrl: 'https://photon.komoot.de/api/',
+			reverseUrl: 'https://photon.komoot.de/reverse/',
 			nameProperties: [
 				'name',
 				'street',
@@ -842,7 +1057,7 @@ module.exports = {
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../util":11}],9:[function(require,module,exports){
+},{"../util":13}],11:[function(require,module,exports){
 (function (global){
 var L = (typeof window !== "undefined" ? window['L'] : typeof global !== "undefined" ? global['L'] : null),
 	Util = require('../util');
@@ -850,7 +1065,7 @@ var L = (typeof window !== "undefined" ? window['L'] : typeof global !== "undefi
 module.exports = {
 	"class": L.Class.extend({
 		options: {
-			serviceUrl: 'http://api.what3words.com/'
+			serviceUrl: 'https://api.what3words.com/v2/'
 		},
 
 		initialize: function(accessToken) {
@@ -859,17 +1074,16 @@ module.exports = {
 
 		geocode: function(query, cb, context) {
 			//get three words and make a dot based string
-			Util.getJSON(this.options.serviceUrl +'w3w', {
+			Util.getJSON(this.options.serviceUrl +'forward', {
 				key: this._accessToken,
-				string: query.split(/\s+/).join('.')
+				addr: query.split(/\s+/).join('.')
 			}, function(data) {
 				var results = [], loc, latLng, latLngBounds;
-				if (data.position && data.position.length) {
-					loc = data.words;
-					latLng = L.latLng(data.position[0],data.position[1]);
+				if (data.hasOwnProperty('geometry')) {
+					latLng = L.latLng(data.geometry['lat'],data.geometry['lng']);
 					latLngBounds = L.latLngBounds(latLng, latLng);
 					results[0] = {
-						name: loc.join('.'),
+						name: data.words,
 						bbox: latLngBounds,
 						center: latLng
 					};
@@ -884,17 +1098,16 @@ module.exports = {
 		},
 
 		reverse: function(location, scale, cb, context) {
-			Util.getJSON(this.options.serviceUrl +'position', {
+			Util.getJSON(this.options.serviceUrl +'reverse', {
 				key: this._accessToken,
-				position: [location.lat,location.lng].join(',')
+				coords: [location.lat,location.lng].join(',')
 			}, function(data) {
 				var results = [],loc,latLng,latLngBounds;
-				if (data.position && data.position.length) {
-					loc = data.words;
-					latLng = L.latLng(data.position[0],data.position[1]);
+				if (data.status.status == 200) {
+					latLng = L.latLng(data.geometry['lat'],data.geometry['lng']);
 					latLngBounds = L.latLngBounds(latLng, latLng);
 					results[0] = {
-						name: loc.join('.'),
+						name: data.words,
 						bbox: latLngBounds,
 						center: latLng
 					};
@@ -910,7 +1123,7 @@ module.exports = {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../util":11}],10:[function(require,module,exports){
+},{"../util":13}],12:[function(require,module,exports){
 (function (global){
 var L = (typeof window !== "undefined" ? window['L'] : typeof global !== "undefined" ? global['L'] : null),
 	Control = require('./control'),
@@ -921,7 +1134,9 @@ var L = (typeof window !== "undefined" ? window['L'] : typeof global !== "undefi
 	What3Words = require('./geocoders/what3words'),
 	Google = require('./geocoders/google'),
 	Photon = require('./geocoders/photon'),
-	Mapzen = require('./geocoders/mapzen');
+	Mapzen = require('./geocoders/mapzen'),
+	ArcGis = require('./geocoders/arcgis'),
+	HERE = require('./geocoders/here');
 
 module.exports = L.Util.extend(Control["class"], {
 	Nominatim: Nominatim["class"],
@@ -939,7 +1154,11 @@ module.exports = L.Util.extend(Control["class"], {
 	Photon: Photon["class"],
 	photon: Photon.factory,
 	Mapzen: Mapzen["class"],
-	mapzen: Mapzen.factory
+	mapzen: Mapzen.factory,
+	ArcGis: ArcGis["class"],
+	arcgis: ArcGis.factory,
+	HERE: HERE["class"],
+	here: HERE.factory
 });
 
 L.Util.extend(L.Control, {
@@ -948,7 +1167,7 @@ L.Util.extend(L.Control, {
 });
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./control":1,"./geocoders/bing":2,"./geocoders/google":3,"./geocoders/mapbox":4,"./geocoders/mapquest":5,"./geocoders/mapzen":6,"./geocoders/nominatim":7,"./geocoders/photon":8,"./geocoders/what3words":9}],11:[function(require,module,exports){
+},{"./control":1,"./geocoders/arcgis":2,"./geocoders/bing":3,"./geocoders/google":4,"./geocoders/here":5,"./geocoders/mapbox":6,"./geocoders/mapquest":7,"./geocoders/mapzen":8,"./geocoders/nominatim":9,"./geocoders/photon":10,"./geocoders/what3words":11}],13:[function(require,module,exports){
 (function (global){
 var L = (typeof window !== "undefined" ? window['L'] : typeof global !== "undefined" ? global['L'] : null),
 	lastCallbackId = 0,
@@ -1034,4 +1253,4 @@ module.exports = {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}]},{},[10]);
+},{}]},{},[12]);

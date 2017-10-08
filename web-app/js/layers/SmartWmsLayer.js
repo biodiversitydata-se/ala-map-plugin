@@ -13,48 +13,73 @@ L.TileLayer.SmartWMS = L.TileLayer.WMS.extend({
     _latLngbounds: null,
     _lngLatbounds: null,
     _wmsFeatureUrl: null,
+    _boundsUrl: null,
     _callback: null,
     _pid: null,
     _properties: {},
     _map: null,
 
-    initialize: function(url, options) {
+    initialize: function (url, options) {
         this._wmsFeatureUrl = options.wmsFeatureUrl;
+        this._boundsUrl = options.boundsUrl;
         this._callback = options.callback;
         this._pid = options.pid;
 
         L.TileLayer.WMS.prototype.initialize.call(this, url, options);
     },
 
-    retrieveLayer: function() {
+    retrieveLayer: function () {
         var self = this;
 
-        $.ajax({
-            url: this._wmsFeatureUrl,
-            dataType: "json"
-        }).done(function(data) {
-            if (data) {
-                self._lngLatBounds = ALA.MapUtils.bboxToPointArray(data.bbox, false);
-                self._latLngBounds = ALA.MapUtils.bboxToPointArray(data.bbox, true);
-                self._properties = data;
+        if (!_.isUndefined(this._wmsFeatureUrl) && this._wmsFeatureUrl != null) {
+            $.ajax({
+                url: this._wmsFeatureUrl,
+                dataType: "json"
+            }).done(function (data) {
+                if (data) {
+                    self._lngLatBounds = ALA.MapUtils.bboxToPointArray(data.bbox, false);
+                    self._latLngBounds = ALA.MapUtils.bboxToPointArray(data.bbox, true);
+
+                    self._properties = data;
+
+                    self.getBounds = function () {
+                        return new L.LatLngBounds(self._latLngBounds);
+                    };
+                    self.toGeoJSON = function () {
+                        return {
+                            type: "Feature",
+                            properties: self._properties,
+                            geometry: {
+                                type: "Polygon",
+                                coordinates: [self._lngLatBounds]
+                            }
+                        };
+                    };
+
+                    self._callback();
+                }
+            });
+        } else if (!_.isUndefined(this._boundsUrl) && this._boundsUrl != null) {
+            $.ajax({
+                url: this._boundsUrl,
+                dataType: "json"
+            }).done(function (data) {
+                self._lngLatBounds = undefined;
+                self._latLngBounds = [];
+                _.each(data, function (coord, index, original) {
+                    if (index % 2 == 0) {
+                        var latLng = new L.LatLng(original[index + 1], coord);
+                        self._latLngBounds.push(latLng);
+                    }
+                });
 
                 self.getBounds = function () {
                     return new L.LatLngBounds(self._latLngBounds);
                 };
-                self.toGeoJSON = function () {
-                    return {
-                        type: "Feature",
-                        properties: self._properties,
-                        geometry: {
-                            type: "Polygon",
-                            coordinates: [self._lngLatBounds]
-                        }
-                    };
-                };
 
                 self._callback();
-            }
-        });
+            });
+        }
     },
 
     onAdd: function (map) {
@@ -67,7 +92,7 @@ L.TileLayer.SmartWMS = L.TileLayer.WMS.extend({
         self.retrieveLayer();
     },
 
-    getBounds: function() {
+    getBounds: function () {
         return self._latLngBounds ? new L.LatLngBounds(self._latLngBounds) : this._map ? this._map.getBounds() : undefined;
     }
 });
@@ -76,7 +101,7 @@ L.TileLayer.SmartWMS = L.TileLayer.WMS.extend({
  * Construct a new smart WMS layer.
  *
  * @param url The WMS url for the layer
- * @param options The options to pass to the wms server. Must include a pid and wmsFeatureUrl.
+ * @param options The options to pass to the wms server. Must include a pid and wmsFeatureUrl. Can include an optional boundsUrl (to retrieve the bounds for the layer, as an array of coordinates in the form [lng, lat, lng, lat, ...])
  * @returns {L.TileLayer.SmartWMS} the new layer
  */
 L.tileLayer.smartWms = function (url, options) {

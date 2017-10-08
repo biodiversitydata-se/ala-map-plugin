@@ -13,13 +13,14 @@ module.exports = function (config) {
             'karma-jasmine',
             'karma-jasmine-jquery',
             'karma-coverage',
-            'karma-firefox-launcher'
+            'karma-firefox-launcher',
+            'karma-phantomjs-launcher'
         ],
 
 
         // frameworks to use
         // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-        frameworks: ['jasmine-jquery','jasmine'],
+        frameworks: ['jquery-1.11.0','jasmine-jquery','jasmine'],
 
         // preprocess matching files before serving them to the browser
         // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
@@ -67,7 +68,7 @@ module.exports = function (config) {
 
         // start these browsers
         // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-        browsers: ['Chrome','Firefox'],
+        browsers: ['Chrome','Firefox','PhantomJS'],
 
 
         // Continuous Integration mode

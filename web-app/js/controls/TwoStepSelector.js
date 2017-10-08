@@ -1,5 +1,5 @@
 /**
- * Custom Leaflet control which will display two select boxes. Selecing an item in the first box will populate the second.
+ * Custom Leaflet control which will display two select boxes. Selecting an item in the first box will populate the second.
  * Selecting an item in the second box will update the map.
  *
  * <p/>
