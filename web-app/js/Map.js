@@ -1289,6 +1289,7 @@ ALA.Map = function (id, options) {
         var geocodeControl = L.Control.geocoder({
             position: "topleft",
             placeholder: prompt,
+            defaultMarkGeocode: false,
             geocoder: new L.Control.Geocoder.Nominatim({
                 geocodingQueryParams: {polygon_geojson: 1, dedupe: 1}
             })
@@ -1300,14 +1301,13 @@ ALA.Map = function (id, options) {
         if (drawType == ALA.MapConstants.DRAW_TYPE.POINT_TYPE) {
             button.addClass("geocoder-icon-override fa fa-crosshairs");
         }
-
-        geocodeControl.markGeocode = function (result) {
+        geocodeControl.on('markgeocode', function (result) {
             if (drawType == ALA.MapConstants.DRAW_TYPE.POINT_TYPE) {
-                self.addMarker(result.center.lat, result.center.lng, null);
+                self.addMarker(result.geocode.center.lat, result.geocode.center.lng, null);
             } else if (drawType == ALA.MapConstants.DRAW_TYPE.POLYGON_TYPE) {
                 var geojson = {
                     type: "Feature",
-                    geometry: result.properties.geojson,
+                    geometry: result.geocode.properties.geojson,
                     properties: {}
                 };
 
@@ -1321,9 +1321,9 @@ ALA.Map = function (id, options) {
                 }
                 self.setGeoJSON(geojson);
             } else {
-                self.addMarker(result.center.lat, result.center.lng, null);
+                self.addMarker(result.geocode.center.lat, result.geocode.center.lng, null);
             }
-        }
+        }, geocodeControl);
     }
 
     // Internal method to add a non-Marker layer to the map, to fit the map bounds if configured to do so, and optionally
