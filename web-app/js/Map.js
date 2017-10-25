@@ -1348,7 +1348,7 @@ ALA.Map = function (id, options) {
     // Internal method to add a Marker to the map, to fit the map bounds if configured to do so, and optionally to notify
     // all subscribers that the map has changed.
     function addMarker(marker, notify) {
-        self.startLoading();
+        // self.startLoading();
 
         drawingStarted(ALA.MapConstants.LAYER_TYPE.MARKER);
 
@@ -1368,7 +1368,7 @@ ALA.Map = function (id, options) {
             self.notifyAll();
         }
 
-        self.finishLoading();
+        // self.finishLoading();
     }
 
     // Internal function to create a new WMS layer, but not to add it to the map, or trigger any notifications
