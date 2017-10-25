@@ -72,6 +72,10 @@ myOccurrenceMap.map.subscribe(function() {...})
 
 ## Features
 
+### Version 2.1.0
+* Fix bugs of creating marker from search
+* Fix issue of spin icon
+
 ### Version 2
 
 * Occurrence Map support
