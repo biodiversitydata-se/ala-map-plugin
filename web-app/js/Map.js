@@ -44,6 +44,8 @@ ALA.MapConstants = {
  *          <li><code>position</code> position of the button on the map. Default: topleft</li>
  *      </ul>
  *  <li><code>drawControl</code> whether to include drawing controls or not. Default: true</li>
+ *  <li><code>drawOptions</code> if drawing control is to be included, then specify options to pass to drawing control here.</li>
+ *  <li><code>editOptions</code> if edit option in drawing control is enabled, then specify options to pass to edit control here.</li>
  *  <li><code>singleDraw</code> whether to allow more than 1 shape or region to be drawn at a time. This does NOT apply to markers - only layers and other shapes. See also singleMarker and markerOrShapeNotBoth. Default: true</li>
  *  <li><code>singleMarker</code> whether to allow more than 1 marker to be drawn at a time.. Default: true</li>
  *  <li><code>markerZoomToMax</code> whether to allow zoom to maximum permitted level of current base layer</li>
@@ -117,6 +119,7 @@ ALA.Map = function (id, options) {
     var DEFAULT_DRAW_OPTIONS = {
         polyline: false,
         polygon: {
+            allowIntersection: false,
             shapeOptions: DEFAULT_SHAPE_OPTIONS
         },
         rectangle: {
@@ -126,6 +129,13 @@ ALA.Map = function (id, options) {
             shapeOptions: DEFAULT_SHAPE_OPTIONS
         },
         edit: true
+    };
+
+    var DEFAULT_EDIT_DRAW_OPTIONS = {
+        featureGroup: undefined,
+        poly: {
+            allowIntersection: false
+        }
     };
 
     var HIDDEN_LAYER = {
@@ -186,6 +196,7 @@ ALA.Map = function (id, options) {
         wmsFeatureUrl: null,
         myLocationControlTitle: "Use my location",
         drawOptions: DEFAULT_DRAW_OPTIONS,
+        editOptions: DEFAULT_EDIT_DRAW_OPTIONS,
         sleep: true,
         sleepTime: 750,
         wakeTime: 750,
@@ -235,7 +246,7 @@ ALA.Map = function (id, options) {
     var mapImpl = null;
     var fitToBoundsOfLayer = null;
     var drawControl = null;
-    var drawnItems = new L.FeatureGroup();
+    var drawnItems = DEFAULT_EDIT_DRAW_OPTIONS.featureGroup = new L.FeatureGroup();
     var markers = [];
     var subscribers = [];
     var fitToBoundsToggle = options.zoomToObject;
@@ -1140,14 +1151,19 @@ ALA.Map = function (id, options) {
 
     // Initialise the drawing controls that appear on the left side of the map panel
     function initDrawingControls(options) {
-        var drawOptions = options.drawOptions || {};
+        var drawOptions = options.drawOptions || {},
+            editOptions;
 
         _.defaults(drawOptions, DEFAULT_DRAW_OPTIONS);
+        if(drawOptions.edit){
+            editOptions = options.editOptions || {};
+            _.defaults(editOptions, DEFAULT_EDIT_DRAW_OPTIONS);
+        } else {
+            editOptions = false;
+        }
 
         drawControl = new L.Control.Draw({
-            edit: drawOptions.edit ? {
-                featureGroup: drawnItems
-            } : false,
+            edit: editOptions,
             draw: drawOptions
         });
         mapImpl.addControl(drawControl);
