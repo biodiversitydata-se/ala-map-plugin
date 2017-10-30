@@ -252,6 +252,25 @@
       <i class="fa fa-cog"></i>
     
 
+    <a href="ALA.Map.html#.addPointsOrIcons">addPointsOrIcons</a>
+  </li>
+
+
+            
+              
+
+  <li class="thing">
+
+    
+
+    
+
+    
+
+    
+      <i class="fa fa-cog"></i>
+    
+
     <a href="ALA.Map.html#.addWmsLayer">addWmsLayer</a>
   </li>
 
@@ -1324,8 +1343,11 @@
          <li><code>position</code> position of the button on the map. Default: topleft</li>
      </ul>
  <li><code>drawControl</code> whether to include drawing controls or not. Default: true</li>
+ <li><code>drawOptions</code> if drawing control is to be included, then specify options to pass to drawing control here.</li>
+ <li><code>editOptions</code> if edit option in drawing control is enabled, then specify options to pass to edit control here.</li>
  <li><code>singleDraw</code> whether to allow more than 1 shape or region to be drawn at a time. This does NOT apply to markers - only layers and other shapes. See also singleMarker and markerOrShapeNotBoth. Default: true</li>
  <li><code>singleMarker</code> whether to allow more than 1 marker to be drawn at a time.. Default: true</li>
+ <li><code>markerZoomToMax</code> whether to allow zoom to maximum permitted level of current base layer</li>
  <li><code>markerOrShapeNotBoth</code> whether to allow users to draw both markers and regions/shapes at the same time. Default: true</li>
  <li><code>showFitBoundsToggle</code> whether to include a button to toggle between the initial map zoom and the bounds of the data. Default: false</li>
  <li><code>useMyLocation</code> whether to include a "Use My Location" button to place a marker on the map at the user's location. Default: true</li>
@@ -1748,6 +1770,39 @@ See http://leafletjs.com/reference.html#control-layers for details.
             <td class="description">
                 
                     Adds a marker at the specified point.
+
+Will notify all subscribers.
+                
+
+                
+
+
+            </td>
+        </tr>
+
+        
+
+        <tr>
+            <td class="name">
+              
+              <a href="ALA.Map.html#.addPointsOrIcons">addPointsOrIcons</a>
+
+              
+              
+              
+            </td>
+            <td class="description">
+                
+                    Adds a layer of points or icons to map. Icons gives the flexibility of adding shape to map.
+
+Each point object in the points array must have the following structure:
+<ul>
+    <li><code>lat</code> - the latitude for the point. Mandatory.</li>
+    <li><code>lng</code> - the longitude for the point. Mandatory.</li>
+    <li><code>type</code> - supported values 'point' or 'icon'. point draws a circle and icon renders the provided image. Default 'point'. </li>
+    <li><code>popup</code> - Text or HTML to be used as the popup when the marker is clicked. Optional.</li>
+    <li><code>options</code> - options object to override specified options for the individual point. Optional.</li>
+</ul>
 
 Will notify all subscribers.
                 
@@ -3587,6 +3642,229 @@ L.Marker
 </div>
 
         
+
+    
+
+
+  </dd>
+</dl>
+
+
+        
+            
+
+
+<dl class="bs-docs-example bs-members">
+  <dt>
+
+
+    <h3 class="
+        subsection-title name
+        
+      " id=".addPointsOrIcons">
+
+      
+        addPointsOrIcons<span class="signature">(points, pointOptions, iconUrl, iconOptions)</span><span class="type-signature"></span><span class="label label-info">static</span> 
+      
+
+      
+
+      
+
+    </h3>
+
+    
+
+    
+
+
+
+    
+
+
+
+  </dt>
+<dd>
+
+
+    
+    <div class="description">
+        <p>
+        Adds a layer of points or icons to map. Icons gives the flexibility of adding shape to map.</p><p>Each point object in the points array must have the following structure:
+<ul>
+    <li><code>lat</code> - the latitude for the point. Mandatory.</li>
+    <li><code>lng</code> - the longitude for the point. Mandatory.</li>
+    <li><code>type</code> - supported values 'point' or 'icon'. point draws a circle and icon renders the provided image. Default 'point'. </li>
+    <li><code>popup</code> - Text or HTML to be used as the popup when the marker is clicked. Optional.</li>
+    <li><code>options</code> - options object to override specified options for the individual point. Optional.</li>
+</ul></p><p>Will notify all subscribers.
+        </p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h4>Parameters</h4>
+        
+
+<table class="params table table-bordered table-condensed">
+    <thead>
+        <tr>
+                
+                <th>Name</th>
+                
+
+                <th>Type</th>
+
+                
+
+                <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+        <tr>
+            
+                <td class="name">points
+                  
+                </td>
+            
+
+            <td class="type">
+            
+                
+Array
+
+
+
+            
+            </td>
+
+            
+
+            <td class="description last">Mandatory array of objects with mandatory properties 'lat' and 'lng', and optionally an 'options' object.</td>
+        </tr>
+
+        
+
+        <tr>
+            
+                <td class="name">pointOptions
+                  
+                </td>
+            
+
+            <td class="type">
+            
+                
+Object
+
+
+
+            
+            </td>
+
+            
+
+            <td class="description last">Optional object containing configuration options to be applied to ALL points.</td>
+        </tr>
+
+        
+
+        <tr>
+            
+                <td class="name">iconUrl
+                  
+                </td>
+            
+
+            <td class="type">
+            
+                
+String
+
+
+
+            
+            </td>
+
+            
+
+            <td class="description last">Optional image URL</td>
+        </tr>
+
+        
+
+        <tr>
+            
+                <td class="name">iconOptions
+                  
+                </td>
+            
+
+            <td class="type">
+            
+                
+Object
+
+
+
+            
+            </td>
+
+            
+
+            <td class="description last">Optional object describing the icon metadata like size, anchor point, popup location.</td>
+        </tr>
+
+        
+        </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
 
     
 
@@ -7014,7 +7292,7 @@ LatLngBounds
       " id=".subscribe">
 
       
-        subscribe<span class="signature">(callback)</span><span class="type-signature"></span><span class="label label-info">static</span> 
+        subscribe<span class="signature">(callback)</span><span class="type-signature"> &rarr; {Object}</span><span class="label label-info">static</span> 
       
 
       
@@ -7136,6 +7414,25 @@ function
     
 
     
+    <h4>Returns</h4>
+    
+            <div class="returns">
+
+
+    
+Object
+
+
+
+
+
+<span class="param-desc">
+    An object with a 'cancel' method that you can use remove this subscription.
+</span>
+
+</div>
+
+        
 
     
 

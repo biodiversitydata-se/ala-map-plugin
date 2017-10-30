@@ -252,6 +252,25 @@
       <i class="fa fa-cog"></i>
     
 
+    <a href="ALA.Map.html#.addPointsOrIcons">addPointsOrIcons</a>
+  </li>
+
+
+            
+              
+
+  <li class="thing">
+
+    
+
+    
+
+    
+
+    
+      <i class="fa fa-cog"></i>
+    
+
     <a href="ALA.Map.html#.addWmsLayer">addWmsLayer</a>
   </li>
 
@@ -1257,6 +1276,7 @@
  *     &lt;li>&lt;code>id&lt;/code> Unique id for the control&lt;/li>
  *     &lt;li>&lt;code>position&lt;/code> The location on the map (using leaflet's standard control positions). Default: bottomright&lt;/li>
  *     &lt;li>&lt;code>collapse&lt;/code> True to show a button until clicked, then show the legendbox; false to just show the expanded legend box. Default: false&lt;/li>
+ *     &lt;li>&lt;code>label&lt;/code> The label to give to the list of legend colours, set to null for no label. Default: null&lt;/li>
  *     &lt;li>&lt;code>title&lt;/code> The title the button when collapse=true. Default: 'Show legend'&lt;/li>
  *     &lt;li>&lt;code>items&lt;/code> array of items to be displayed in the legend. Each item is an object with the following properties:
  *     &lt;ul>
@@ -1276,6 +1296,7 @@ L.Control.Legend = L.Control.extend({
         id: "replaceMe",
         position: "bottomright",
         collapse: false,
+        label: null,
         title: "Show legend",
         items: [],
         iconClass: "fa fa-list",
@@ -1321,6 +1342,10 @@ L.Control.Legend = L.Control.extend({
 
         var close = L.DomUtil.create("button", "fa fa-times " + (self.options.position.indexOf("right") > -1 ? "pull-right" : ""), self.legend);
         close.title = "Hide legend";
+        if (self.options.label) {
+            var label = L.DomUtil.create("div", "legend-label", self.legend);
+            label.textContent = self.options.label;
+        }
         var list = L.DomUtil.create("ul", "legend", self.legend);
 
         L.DomEvent.addListener(close, 'click', function(event) {
