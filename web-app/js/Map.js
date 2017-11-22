@@ -14,7 +14,8 @@ ALA.MapConstants = {
     DRAW_TYPE: {
         POINT_TYPE: "Point",
         CIRCLE_TYPE: "Circle",
-        POLYGON_TYPE: "Polygon"
+        POLYGON_TYPE: "Polygon",
+        LINE_TYPE: "LineString"
     },
 
     /**
