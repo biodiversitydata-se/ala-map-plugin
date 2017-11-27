@@ -1610,7 +1610,12 @@ ALA.MapUtils = {
         var coords = bboxString.replace(/POLYGON|LINESTRING|POINT/g, "").replace(/[\\(|\\)]/g, "");
         var coordsArray = [];
         coords.split(",").forEach(function (item) {
-            coordsArray.push(latFirst ? item.split(" ").reverse() : item.split(" "));
+            var coordinates = latFirst ? item.split(" ").reverse() : item.split(" ");
+            coordinates = coordinates || [];
+            coordinates.forEach(function (t, index) {
+                coordinates[index]  = Number.parseFloat(t);
+            });
+            coordsArray.push(coordinates);
         });
 
         return coordsArray;
