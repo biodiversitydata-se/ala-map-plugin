@@ -1165,8 +1165,7 @@ ALA.Map = function (id, options) {
 
         drawControl = new L.Control.Draw({
             edit: editOptions,
-            draw: drawOptions,
-            position: 'bottomleft'
+            draw: drawOptions
         });
         mapImpl.addControl(drawControl);
 
