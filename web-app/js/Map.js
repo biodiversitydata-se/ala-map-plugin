@@ -90,9 +90,9 @@ ALA.Map = function (id, options) {
     var SINGLE_POINT_ZOOM = 16;
     var MAX_AUTO_ZOOM = 15;
     var DEFAULT_MAX_ZOOM = 20;
-    var DEFAULT_OPACITY = 0.1;
-    var DEFAULT_LINE_WEIGHT = 1;
-    var DEFAULT_FILL_COLOUR = "#03f";
+    var DEFAULT_OPACITY = 0.5;
+    var DEFAULT_LINE_WEIGHT = 4;
+    var DEFAULT_FILL_COLOUR = "#000";
 
     // There is a bug with Leaflet prior to v1.0 which causes drawing issues with animations enabled.
     // E.g. Calling fitBounds multiple times sometimes causes the drawing of the map to fail, usually leaving some or
