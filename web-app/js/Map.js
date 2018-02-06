@@ -669,9 +669,9 @@ ALA.Map = function (id, options) {
 
     /**
      * Adds a marker at the user's current location.
-     *
      * Will notify all subscribers.
      *
+     * Fire a 'SearchEventFired' for site creation
      * @memberOf ALA.Map
      * @function markMyLocation
      */
@@ -682,6 +682,7 @@ ALA.Map = function (id, options) {
         mapImpl.on("locationfound", function (locationEvent) {
             self.addMarker(locationEvent.latlng.lat, locationEvent.latlng.lng, null);
             mapImpl.off("locationfound", arguments.callee);
+            mapImpl.fire("searchEventFired");
             self.finishLoading();
         });
     };
@@ -1318,6 +1319,8 @@ ALA.Map = function (id, options) {
         if (drawType == ALA.MapConstants.DRAW_TYPE.POINT_TYPE) {
             button.addClass("geocoder-icon-override fa fa-crosshairs");
         }
+
+
         geocodeControl.on('markgeocode', function (result) {
             if (drawType == ALA.MapConstants.DRAW_TYPE.POINT_TYPE) {
                 self.addMarker(result.geocode.center.lat, result.geocode.center.lng, null);
@@ -1340,6 +1343,9 @@ ALA.Map = function (id, options) {
             } else {
                 self.addMarker(result.geocode.center.lat, result.geocode.center.lng, null);
             }
+            //Fire a 'SearchEventFired' for site creation
+            mapImpl.fire("searchEventFired");
+
         }, geocodeControl);
     }
 
