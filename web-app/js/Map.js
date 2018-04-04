@@ -382,8 +382,14 @@ ALA.Map = function (id, options) {
         L.geoJson(geoJSON, {
             pointToLayer: pointToLayerCircleSupport,
             onEachFeature: function (feature, layer) {
+                wmsOptions = {};
                 if (feature.properties && feature.properties.pid) {
-                    layer = createWmsLayer(feature.properties.pid);
+                    if (feature.geometry.type == ALA.MapConstants.DRAW_TYPE.POINT_TYPE){
+                        wmsOptions.layers = "ALA:Points"
+                        wmsOptions.opacity = 1.0
+                      }
+
+                    layer = createWmsLayer(feature.properties.pid, wmsOptions);
                 }
 
                 if (options.singleDraw) {
@@ -1400,6 +1406,7 @@ ALA.Map = function (id, options) {
             wmsOptions.pid = pid;
             wmsOptions.viewparams = "s:" + pid;
             wmsOptions.wmsFeatureUrl = options.wmsFeatureUrl + pid;
+
         }
 
         wmsOptions.callback = function () {
