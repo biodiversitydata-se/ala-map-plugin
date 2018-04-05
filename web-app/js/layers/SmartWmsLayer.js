@@ -46,14 +46,25 @@ L.TileLayer.SmartWMS = L.TileLayer.WMS.extend({
                         return new L.LatLngBounds(self._latLngBounds);
                     };
                     self.toGeoJSON = function () {
-                        return {
-                            type: "Feature",
-                            properties: self._properties,
-                            geometry: {
-                                type: "Polygon",
-                                coordinates: [self._lngLatBounds]
+                        if (data.area_km == 0){
+                            return {
+                                type: "Feature",
+                                properties: self._properties,
+                                geometry: {
+                                    type: "Point",
+                                    coordinates: self._lngLatBounds[0]
+                                }
                             }
-                        };
+                        }else{
+                            return {
+                                type: "Feature",
+                                properties: self._properties,
+                                geometry: {
+                                    type: "Polygon",
+                                    coordinates: [self._lngLatBounds]
+                                }
+                            };
+                        }
                     };
 
                     self._callback();
