@@ -1,0 +1,64 @@
+/*
+modules = {
+    map {
+        dependsOn "leaflet"
+        dependsOn "leaflet_draw"
+        dependsOn "leaflet_coords"
+        dependsOn "leaflet_easyButton"
+        dependsOn "leaflet_geocoder"
+        dependsOn "leaflet_cluster"
+        dependsOn "leaflet_loading"
+        dependsOn "font-awesome"
+        dependsOn "leaflet_sleep"
+
+        resource url: [dir: "css", file: "map.css", plugin: "ala-map"]
+    }
+
+    leaflet {
+        resource url: [dir: "vendor/leaflet-0.7.7", file: "leaflet.css", plugin: "ala-map"]
+    }
+
+    leaflet_draw {
+        dependsOn "leaflet"
+        resource url: [dir: "vendor/Leaflet.draw-0.4.2", file: "leaflet.draw.css", plugin: "ala-map"]
+    }
+
+    leaflet_coords {
+        dependsOn "leaflet"
+        resource url: [dir: "vendor/Leaflet.Coordinates-0.1.5", file: "Leaflet.Coordinates-0.1.5.css", plugin: "ala-map"]
+        resource url: [dir: "vendor/Leaflet.Coordinates-0.1.5", file: "Leaflet.Coordinates-0.1.5.ie.css", plugin: "ala-map"]
+    }
+
+    leaflet_easyButton {
+        dependsOn "leaflet"
+        resource url: [dir: "vendor/Leaflet.EasyButton-1.2.0", file: "easy-button.css", plugin: "ala-map"]
+    }
+
+    leaflet_geocoder {
+        dependsOn "leaflet"
+        resource url: [dir: "vendor/leaflet-control-geocoder-1.5.1", file: "Control.Geocoder.css", plugin: "ala-map"]
+    }
+
+    leaflet_cluster {
+        dependsOn "leaflet"
+        resource url: [dir: "vendor/Leaflet.markercluster-0.4.0-hotfix.1", file: "MarkerCluster.css", plugin: "ala-map"]
+        resource url: [dir: "vendor/Leaflet.markercluster-0.4.0-hotfix.1", file: "MarkerCluster.Default.css", plugin: "ala-map"]
+    }
+
+    leaflet_loading {
+        dependsOn "leaflet"
+        resource url: [dir: "vendor/Leaflet.loading-0.1.16", file: "Control.Loading.css", plugin: "ala-map"]
+    }
+}
+ *= require /webjars/leaflet/0.7.7/dist/leaflet.css
+ *= require /webjars/leaflet-draw/0.4.14/dist/leaflet.draw-src.css
+ *= require /webjars/Leaflet.Coordinates/0.1.5/dist/Leaflet.Coordinates-0.1.5.css
+ *= require /webjars/Leaflet.Coordinates/0.1.5/dist/Leaflet.Coordinates-0.1.5.ie.css
+ *= require /webjars/leaflet-easybutton/1.2.0/src/easy-button.css
+ *= require /webjars/leaflet-control-geocoder/1.5.8/dist/Control.Geocoder.css
+ *= require /webjars/leaflet.markercluster/0.5.0/dist/MarkerCluster.css
+ *= require /webjars/leaflet.markercluster/0.5.0/dist/MarkerCluster.Default.css
+ *= require /webjars/leaflet-loading/0.1.24/src/Control.Loading.css
+ *= require font-awesome
+ *= require map.css
+ */
