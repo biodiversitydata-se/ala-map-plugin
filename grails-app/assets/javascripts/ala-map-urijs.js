@@ -1,0 +1,1 @@
+//= require webjars/urijs/1.18.10/src/URI.js
