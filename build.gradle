@@ -74,15 +74,18 @@ bootRun {
 bootRepackage.enabled = false
 grailsPublish {
     // TODO: Provide values here
-    user = 'user'
-    key = 'key'
+//    user = 'user'
+//    key = 'key'
+    websiteUrl = 'https://github.com/AtlasOfLivingAustralia/ala-map-plugin'
+    issueTrackerUrl = 'https://github.com/AtlasOfLivingAustralia/ala-map-plugin/issues'
+    vcsUrl = 'https://github.com/AtlasOfLivingAustralia/ala-map-plugin'
     githubSlug = 'AtlasOfLivingAustralia/ala-map-plugin'
     license {
         name = 'MPL-2.0'
     }
     title = "ALA Map Plugin"
     desc = "Provides occurence maps for ALA applications"
-    developers = [:]
+    developers = ["ALA":"support@ala.org.au"]
 }
 
 
