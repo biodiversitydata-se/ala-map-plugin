@@ -48,7 +48,7 @@ dependencies {
 
     // webjars
     compile 'org.webjars:underscorejs:1.8.3'
-    compile 'org.webjars:jquery:2.1.4'
+    compile 'org.webjars:jquery:2.2.4'
     compile 'org.webjars.bowergithub.protonet:jquery.inview:1.1.2'
     compile 'org.webjars:handlebars:4.0.11-1'
     compile 'org.webjars.npm:leaflet:0.7.7'
