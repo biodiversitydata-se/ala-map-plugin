@@ -1,1 +1,1 @@
-//= require_tree controls
+//= require_tree plugins/ala-map/controls

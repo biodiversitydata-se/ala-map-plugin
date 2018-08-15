@@ -6,7 +6,7 @@ buildscript {
     }
     dependencies {
         classpath "org.grails:grails-gradle-plugin:$grailsVersion"
-        classpath "com.bertramlabs.plugins:asset-pipeline-gradle:2.14.2"
+        classpath "com.bertramlabs.plugins:asset-pipeline-gradle:3.0.3"
     }
 }
 
@@ -40,7 +40,7 @@ dependencies {
     profile "org.grails.profiles:web-plugin"
     provided "org.grails:grails-plugin-services"
     provided "org.grails:grails-plugin-domain-class"
-    runtime "com.bertramlabs.plugins:asset-pipeline-grails:2.14.2"
+    runtime "com.bertramlabs.plugins:asset-pipeline-grails:3.0.3"
     testCompile "org.grails:grails-plugin-testing"
     testCompile "org.grails.plugins:geb"
     testRuntime "org.seleniumhq.selenium:selenium-htmlunit-driver:2.47.1"
@@ -57,7 +57,7 @@ dependencies {
         exclude group: 'org.webjars.bower', module: 'leaflet-dist' // exclude leaflet from bower as we have it from npm
     }
     compile 'org.webjars.npm:leaflet-easybutton:1.2.0'
-    compile 'org.webjars.npm:leaflet-control-geocoder:1.5.8'
+    compile 'org.webjars.npm:leaflet-control-geocoder:1.5.5'
     compile 'org.webjars.npm:leaflet.markercluster:0.5.0'
     compile 'org.webjars.npm:leaflet-loading:0.1.24'
     compile 'org.webjars.npm:leaflet-sleep:0.5.1'

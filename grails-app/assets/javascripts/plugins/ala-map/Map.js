@@ -1687,7 +1687,7 @@ ALA.MapUtils = {
      */
     calculateAreaKmSq: function (geoJson) {
         // uses Turf from MapBox. The turf.area function returns the area in square meters.
-        var areaSqKm = turf.area(geoJson) / 1000000;
+        var areaSqKm = area(geoJson) / 1000000;
 
         // Turf (and GeoJSON) doesn't support circles, so check if there are any and add them to the total
         // This will work as long as the radius has been included in the properties object of the feature
