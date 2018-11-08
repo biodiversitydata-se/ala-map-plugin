@@ -27,7 +27,7 @@ class MapTagLib {
 
     def occurrenceMap = { attrs ->
         // add file to work around an asset-pipeline crash
-        String leafletImageLocation = attrs.imageLocation ?: "${resource(dir: '/vendor/leaflet-0.7.7/images', plugin: 'ala-map', file: '.')}"
+        String leafletImageLocation = attrs.imageLocation ?: "${resource(dir: '/vendor/leaflet-0.7.7/images', plugin: 'ala-map', file: '')}"
         String style = "width: ${attrs.width ?: DEFAULT_FACETED_MAP_WIDTH}; height: ${attrs.height ?: DEFAULT_FACETED_MAP_HEIGHT}"
 
         out << render(template: "/map/occurrenceMap", model: [id: attrs.id, style: style, leafletImageLocation: leafletImageLocation], plugin: "ala-map")
