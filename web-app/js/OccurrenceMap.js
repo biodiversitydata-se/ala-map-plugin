@@ -22,6 +22,7 @@ var ALA = ALA || {};
  *  <li><code>facetNameMapping</code> Object containing a mapping from the default facet field names to display labels to be used. The format must be <code>{fieldName: "label", ...}</code>. All values displayed in the facet list can be mapped using this construct, regardless of the display level. If not provided then the ALA.OccurrenceMapUtils.DEFAULT_FACET_NAME object will be used, or field names will be formatted into human-readable form (capitalised, camel-case changed to sentence case, underscores replaced with spaces, etc). </li>
  *  <li><code>excludeFacets</code> List of facet names to exclude from dislay. This list can contain items from any level in the facet list. If not provided, all available facets will be displayed.</li>
  *  <li><code>excludeSingles</code> True to hide any facet group which only contains a single option. Default: true</li>
+ *  <li><code>facetGroups</code> If provided this structure is used instead of calling the FACET_GROUP_URL to retrieve the defaults.  Structure is <code>[{ 'title': 'Group', facets: [ { field: 'field_name', ... },... ] },...]</code></li>
  *  <li><code>maximumFacets</code> The maximum number of facets that can be selected via the 'choose more' dialog. Default: 15</li>
  *  <li><code>wms</code> True to use a WMS layer to display occurrences, false to render individual points as circles on a clustered map. Default: true</li>
  *  <li><code>mapAttribution</code> Attribution text to be displayed on the map. Default: blank</li>
@@ -84,6 +85,7 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
         excludeFacets: [],
         includeFacets: [],
         maximumFacets: 15,
+        facetGroups: [],
         wms: true,
         mapAttribution: "",
         point: {
@@ -359,15 +361,20 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
     }
 
     function populateFacetGroups(queryString) {
+        function continuation(groups) {
+            facetGroups = groups;
+            fieldsToGroups = mapFacetFieldsToGroups(facetGroups);
+            populateFacets(queryString);
+        }
+        if (options.facetGroups) {
+            continuation(options.facetGroups);
+        }
         $.ajax({
             url: FACET_GROUP_URL,
             dataType: "json"
         }).done(function (data) {
             if (data) {
-                facetGroups = data;
-                fieldsToGroups = mapFacetFieldsToGroups(facetGroups);
-
-                populateFacets(queryString);
+                continuation(data);
             }
         });
     }
@@ -377,8 +384,11 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
             queryString = constructBiocacheQuery();
         }
 
+        // TODO provide `queryString` as a map and not a string
+        var facetsQuery = generateFacetsQueryString();
+
         $.ajax({
-            url: SEARCH_URL_PREFIX + queryString,
+            url: SEARCH_URL_PREFIX + queryString + "&facets=" + facetsQuery,
             dataType: "json"
         }).done(function (facetsForQuery) {
             if (facetsForQuery) {
@@ -391,6 +401,14 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
                 updateFacetDOM();
             }
         });
+    }
+
+    function generateFacetsQueryString() {
+        return _.chain(fieldsToGroups)
+            .keys()
+            .map(function(field) { return encodeURIComponent(field) })
+            .value()
+            .join(",");
     }
 
     function updateColourBy() {
