@@ -172,6 +172,10 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
         if (!include) {
             facet.label = "[exclude] " + facet.label;
             facet.fq = "-" + facet.fq;
+        } else {
+            if (facet.fq.charAt(0) == "-") {
+                facet.label = "[exclude] " + facet.label.replace("Not supplied", "*");
+            }
         }
 
         selectedFacets.push(facet);
@@ -204,10 +208,21 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
                 selectedFacets.push(facet);
             });
         } else {
-            var fq = include ? "(" : "-(";
+            var fq = "(";
             var label = include ? "(" : "[exclude] (";
             _.each(facetsList, function (facet, index) {
-                fq += facet.fq;
+                // the fq=-facetName:* is a core Solr syntax for identifying records without a value assigned to the facet
+                if (facet.fq.charAt(0) == "-") {
+                    if (include) {
+                        fq += "(*:* " + facet.fq + ")";
+                    } else {
+                        fq += facet.fq.replace("-", "");
+                    }
+                } else {
+                    fq += include ? "" : "-";
+                    fq += facet.fq;
+                }
+
                 label += facet.label;
                 if (index < facetsList.length - 1) {
                     fq += " OR ";
@@ -470,18 +485,15 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
             // the returned activeFacetMap from the biocache does not wrap its 'value' attribute (which is the actual fq
             // value). The biocache also does not include the '-' in the value attribute when using exclusion queries.
             // It does, however put the - and () in the displayName attribute. We need it in the fq.
-            var fq = "";
+            var labelPrefix = "";
+            var fq = facet.name + ":" + facet.value;
 
             if (facet.displayName.charAt(0) == "-") {
-                fq += "-(" + facet.name + ":" + facet.value + ")";
-            } else if (facet.displayName.charAt(0) == "(") {
-                fq = "(" + facet.name + ":" + facet.value + ")";
-            } else {
-                fq = facet.name + ":" + facet.value
+                labelPrefix += "[exclude] ";
             }
 
             var selectedFacet = {
-                label: ALA.OccurrenceMapUtils.formatFacetName(facet.name) + ": " + ALA.OccurrenceMapUtils.formatFacetName(facet.value),
+                label: labelPrefix + facet.displayName,
                 fq: fq
             };
 
