@@ -5,49 +5,50 @@
  */
 var ALA = ALA || {};
 
-/**
- * Object for interacting with an ALA Occurrence map. This map is designed for displaying ALA occurrence records, with the ability for users to control the query facets behind the data.
- * <p/>
- *
- * The resulting query can be extracted and saved for later re-use.
- * </p>
- *
- * The query is used to interact with a biocache instance (the client must provide the base URL for the biocache). Some additional parameters are stored in the query string and used to control the appearance of the map (e.g. colour by options, which are not part of the query itself but are used to colour the results).
- * <p/>
- *
- * <b>Options</b>
- * <ul>
- *  <li><code>mapOptions</code> Object containing configuration options for the underlying map. See ALA.Map for details. If not provided, the defaults from ALA.Map will be used.</li>
- *  <li><code>showFacets</code> True to allow the user to change the facets used for the query. Default: true</li>
- *  <li><code>facetNameMapping</code> Object containing a mapping from the default facet field names to display labels to be used. The format must be <code>{fieldName: "label", ...}</code>. All values displayed in the facet list can be mapped using this construct, regardless of the display level. If not provided then the ALA.OccurrenceMapUtils.DEFAULT_FACET_NAME object will be used, or field names will be formatted into human-readable form (capitalised, camel-case changed to sentence case, underscores replaced with spaces, etc). </li>
- *  <li><code>excludeFacets</code> List of facet names to exclude from dislay. This list can contain items from any level in the facet list. If not provided, all available facets will be displayed.</li>
- *  <li><code>excludeSingles</code> True to hide any facet group which only contains a single option. Default: true</li>
- *  <li><code>facetGroups</code> If provided this structure is used instead of calling the FACET_GROUP_URL to retrieve the defaults.  Structure is <code>[{ 'title': 'Group', facets: [ { field: 'field_name', ... },... ] },...]</code></li>
- *  <li><code>maximumFacets</code> The maximum number of facets that can be selected via the 'choose more' dialog. Default: 15</li>
- *  <li><code>wms</code> True to use a WMS layer to display occurrences, false to render individual points as circles on a clustered map. Default: true</li>
- *  <li><code>mapAttribution</code> Attribution text to be displayed on the map. Default: blank</li>
- *  <li><code>allowColourBy</code> True to include a colour-by control. Default: true</li>
- *  <li><code>showLegend</code> True to include a legend for coloured maps. Default: true</li>
- *  <li><code>points</code>Config options for the points on the map:
- *    <ul>
- *      <li><code>colour</code> The initial colour (in hex, without the #) to use for rendering occurrence points on the map. Default: #FF9900</li>
- *      <li><code>name</code> The point type (circle, etc). Default: circle</li>
- *      <li><code>size</code> The point radius in px. Default: 4px</li>
- *      <li><code>opacity</code> The point opacity (0 - 1). Default: 1</li>
- *    </ul>
- *  </li>
- * </ul>
- *
- * @class
- * @memberOf ALA
- * @param {String} id Unique id of the map container div. Mandatory.
- * @param {String} biocacheBaseUrl The base URL of the Biocache instance that will be used as the source for all data. Mandatory.
- * @param {String} queryString The initial query string to use to populate map (it will be passed to the Biocache's search service). This property must include the <code>q=</code> parameter at a minimum. Mandatory.
- * @param {Object} options Configuration options for the map. Optional - sensible defaults will be used if not provided. See the list above.
- */
 ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
     var self = this;
 
+    /**
+     * Object for interacting with an ALA Occurrence map. This map is designed for displaying ALA occurrence records, with the ability for users to control the query facets behind the data.
+     * <p/>
+     *
+     * The resulting query can be extracted and saved for later re-use.
+     * </p>
+     *
+     * The query is used to interact with a biocache instance (the client must provide the base URL for the biocache). Some additional parameters are stored in the query string and used to control the appearance of the map (e.g. colour by options, which are not part of the query itself but are used to colour the results).
+     * <p/>
+     *
+     * <b>Options</b>
+     * <ul>
+     *  <li><code>mapOptions</code> Object containing configuration options for the underlying map. See ALA.Map for details. If not provided, the defaults from ALA.Map will be used.</li>
+     *  <li><code>showFacets</code> True to allow the user to change the facets used for the query. Default: true</li>
+     *  <li><code>facetNameMapping</code> Object containing a mapping from the default facet field names to display labels to be used. The format must be <code>{fieldName: "label", ...}</code>. All values displayed in the facet list can be mapped using this construct, regardless of the display level. If not provided then the ALA.OccurrenceMapUtils.DEFAULT_FACET_NAME object will be used, or field names will be formatted into human-readable form (capitalised, camel-case changed to sentence case, underscores replaced with spaces, etc). </li>
+     *  <li><code>excludeFacets</code> List of facet names to exclude from dislay. This list can contain items from any level in the facet list. If not provided, all available facets will be displayed.</li>
+     *  <li><code>excludeSingles</code> True to hide any facet group which only contains a single option. Default: true</li>
+     *  <li><code>facetGroups</code> If provided this structure is used instead of calling the FACET_GROUP_URL to retrieve the defaults.  Structure is <code>[{ 'title': 'Group', facets: [ { field: 'field_name', ... },... ] },...]</code></li>
+     *  <li><code>facetGroupUrl</code> Facet groups URL to use instead of the default <biocachews>/search/grouped/facets</li>
+     *  <li><code>maximumFacets</code> The maximum number of facets that can be selected via the 'choose more' dialog. Default: 15</li>
+     *  <li><code>wms</code> True to use a WMS layer to display occurrences, false to render individual points as circles on a clustered map. Default: true</li>
+     *  <li><code>mapAttribution</code> Attribution text to be displayed on the map. Default: blank</li>
+     *  <li><code>allowColourBy</code> True to include a colour-by control. Default: true</li>
+     *  <li><code>showLegend</code> True to include a legend for coloured maps. Default: true</li>
+     *  <li><code>points</code>Config options for the points on the map:
+     *    <ul>
+     *      <li><code>colour</code> The initial colour (in hex, without the #) to use for rendering occurrence points on the map. Default: #FF9900</li>
+     *      <li><code>name</code> The point type (circle, etc). Default: circle</li>
+     *      <li><code>size</code> The point radius in px. Default: 4px</li>
+     *      <li><code>opacity</code> The point opacity (0 - 1). Default: 1</li>
+     *    </ul>
+     *  </li>
+     * </ul>
+     *
+     * @class
+     * @memberOf ALA
+     * @param {String} id Unique id of the map container div. Mandatory.
+     * @param {String} biocacheBaseUrl The base URL of the Biocache instance that will be used as the source for all data. Mandatory.
+     * @param {String} queryString The initial query string to use to populate map (it will be passed to the Biocache's search service). This property must include the <code>q=</code> parameter at a minimum. Mandatory.
+     * @param {Object} options Configuration options for the map. Optional - sensible defaults will be used if not provided. See the list above.
+     */
     if (!biocacheBaseUrl || _.isUndefined(biocacheBaseUrl) || _.isEmpty(biocacheBaseUrl)) {
         console.error("You must define the base URL for the Biocache instance you wish to use.");
     }
@@ -86,6 +87,7 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
         includeFacets: [],
         maximumFacets: 15,
         facetGroups: [],
+        facetGroupUrl: null,
         wms: true,
         mapAttribution: "",
         point: {
@@ -385,7 +387,7 @@ ALA.OccurrenceMap = function (id, biocacheBaseUrl, queryString, options) {
             continuation(options.facetGroups);
         }
         $.ajax({
-            url: FACET_GROUP_URL,
+            url: options.facetGroupUrl || FACET_GROUP_URL,
             dataType: "json"
         }).done(function (data) {
             if (data) {
