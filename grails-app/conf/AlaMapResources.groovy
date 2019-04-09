@@ -11,7 +11,7 @@ modules = {
         dependsOn "leaflet_geocoder"
         dependsOn "leaflet_cluster"
         dependsOn "leaflet_loading"
-        dependsOn "turf"
+//        dependsOn "turf"
         dependsOn "handlebars"
         dependsOn "custom_controls"
         dependsOn "font-awesome"
@@ -81,9 +81,9 @@ modules = {
         resource url: [dir: "vendor/Leaflet.Sleep", file: "Leaflet.Sleep.js", plugin: "ala-map"]
     }
 
-    turf {
-        resource url: [dir: "vendor/turf-2.0.2", file: "turf.min.js", plugin: "ala-map"]
-    }
+//    turf {
+//        resource url: [dir: "vendor/turf-2.0.2", file: "turf.min.js", plugin: "ala-map"]
+//    }
 
     underscore {
         resource url: [dir: "vendor/underscore-1.8.3", file: "underscore.min.js", plugin: "ala-map"]

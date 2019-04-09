@@ -61,9 +61,10 @@ dependencies {
     compile 'org.webjars.npm:leaflet.markercluster:0.5.0'
     compile 'org.webjars.npm:leaflet-loading:0.1.24'
     compile 'org.webjars.npm:leaflet-sleep:0.5.1'
-    compile 'org.webjars.bowergithub.turfjs:turf:2.0.2'
     compile 'org.webjars:font-awesome:4.7.0'
     compile 'org.webjars.npm:urijs:1.18.10'
+
+    compile 'org.grails.plugins:grails-google-visualization:2.2.1'
 }
 
 bootRun {
@@ -91,6 +92,7 @@ grailsPublish {
 
 assets {
     packagePlugin = true
+    minifyJs = true
 }
 
 publishing {
