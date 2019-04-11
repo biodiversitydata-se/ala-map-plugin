@@ -1,4 +1,4 @@
-//= require underscore-1.8.3/underscore.min.js
+//= require webjars/underscorejs/1.8.3/underscore.js
 //= require ala-map-jquery-plugins
 //= require ala-map-leaflet
 //= require ala-map-leaflet-deps
