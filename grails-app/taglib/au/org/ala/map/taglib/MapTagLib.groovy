@@ -17,9 +17,9 @@ class MapTagLib {
      * @attr height The height for the map div. Optional - defaults to {@link #DEFAULT_MAP_HEIGHT}
      * @attr imageLocation The leaflet image location - defaults to resource(dir: /vendor/leaflet/images, plugin: ala-map)
      */
-    def c = { attrs ->
+    def map = { attrs ->
         // add file to work around an asset-pipeline crash
-        String leafletImageLocation = attrs.imageLocation ?: "${resource(dir: 'webjars/leaflet/0.7.7/dist/images', plugin: 'ala-map', file: '.')}"
+        String leafletImageLocation = attrs.imageLocation ?: "${assetPath(src: 'webjars/leaflet/0.7.7/dist/images')}"
         String style = "width: ${attrs.width ?: DEFAULT_MAP_WIDTH}; height: ${attrs.height ?: DEFAULT_MAP_HEIGHT}"
 
         out << "<div id='${attrs.id}' style='${style}' data-leaflet-img='${leafletImageLocation}'></div>"
@@ -27,7 +27,7 @@ class MapTagLib {
 
     def occurrenceMap = { attrs ->
         // add file to work around an asset-pipeline crash
-        String leafletImageLocation = attrs.imageLocation ?: "${resource(dir: 'webjars/leaflet/0.7.7/dist/images', plugin: 'ala-map', file: '.')}"
+        String leafletImageLocation = attrs.imageLocation ?: "${assetPath(src: 'webjars/leaflet/0.7.7/dist/images')}"
         String style = "width: ${attrs.width ?: DEFAULT_FACETED_MAP_WIDTH}; height: ${attrs.height ?: DEFAULT_FACETED_MAP_HEIGHT}"
 
         out << render(template: "/map/occurrenceMap", model: [id: attrs.id, style: style, leafletImageLocation: leafletImageLocation], plugin: "ala-map")

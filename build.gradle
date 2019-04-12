@@ -51,8 +51,7 @@ dependencies {
     compile 'org.webjars:jquery:2.2.4'
     compile 'org.webjars.bowergithub.protonet:jquery.inview:1.1.2'
     compile 'org.webjars:handlebars:4.0.11-1'
-    //compile 'org.webjars.npm:leaflet:0.7.7'
-    compile 'org.webjars:leaflet:0.7.7'
+    compile 'org.webjars.npm:leaflet:0.7.7'
     compile 'org.webjars.npm:leaflet-draw:0.4.14'
     compile('org.webjars.bower:Leaflet.Coordinates:0.1.5') { // TODO get this NPM package into a webjar
         exclude group: 'org.webjars.bower', module: 'leaflet-dist' // exclude leaflet from bower as we have it from npm
@@ -65,7 +64,7 @@ dependencies {
     compile 'org.webjars:font-awesome:4.7.0'
     compile 'org.webjars.npm:urijs:1.18.10'
 
-    compile 'org.grails.plugins:grails-google-visualization:2.2.1'
+//    compile 'org.grails.plugins:grails-google-visualization:2.2.1'
 }
 
 bootRun {

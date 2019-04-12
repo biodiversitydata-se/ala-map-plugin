@@ -1,5 +1,10 @@
 # ALA Map Plugin
 
+
+## Migration to Grails 3.3.9
+    * If leflet version or resource is changed, the images path in MapTagLib.groovy also need update, 
+    otherwise leaflet marker may not be shown  
+
 ## Status
 Master: [![Build Status](https://travis-ci.org/AtlasOfLivingAustralia/ala-map-plugin.svg?branch=master)](https://travis-ci.org/AtlasOfLivingAustralia/ala-map-plugin)
 
