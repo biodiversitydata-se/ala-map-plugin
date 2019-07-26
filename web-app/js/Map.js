@@ -383,6 +383,10 @@ ALA.Map = function (id, options) {
             pointToLayer: pointToLayerCircleSupport,
             onEachFeature: function (feature, layer) {
                 wmsOptions = {};
+                //Create a popup content
+                if(feature.properties && feature.properties.popupContent)
+                    layer.bindPopup(feature.properties.popupContent);
+
                 if (feature.properties && feature.properties.pid) {
                     if (feature.geometry.type == ALA.MapConstants.DRAW_TYPE.POINT_TYPE){
                         wmsOptions.layers = "ALA:Points"
