@@ -72,6 +72,14 @@ myOccurrenceMap.map.subscribe(function() {...})
 
 ## Features
 
+### Version 2.1.1
+* Added a new option called editOptions. This is passed to edit control in Leaflet Draw.
+* Polygon self intersection is disabled by default.
+
+### Version 2.1.0
+* Fix bugs of creating marker from search
+* Fix issue of spin icon
+
 ### Version 2
 
 * Occurrence Map support

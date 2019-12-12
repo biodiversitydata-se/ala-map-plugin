@@ -14,7 +14,8 @@ ALA.MapConstants = {
     DRAW_TYPE: {
         POINT_TYPE: "Point",
         CIRCLE_TYPE: "Circle",
-        POLYGON_TYPE: "Polygon"
+        POLYGON_TYPE: "Polygon",
+        LINE_TYPE: "LineString"
     },
 
     /**
@@ -44,8 +45,11 @@ ALA.MapConstants = {
  *          <li><code>position</code> position of the button on the map. Default: topleft</li>
  *      </ul>
  *  <li><code>drawControl</code> whether to include drawing controls or not. Default: true</li>
+ *  <li><code>drawOptions</code> if drawing control is to be included, then specify options to pass to drawing control here.</li>
+ *  <li><code>editOptions</code> if edit option in drawing control is enabled, then specify options to pass to edit control here.</li>
  *  <li><code>singleDraw</code> whether to allow more than 1 shape or region to be drawn at a time. This does NOT apply to markers - only layers and other shapes. See also singleMarker and markerOrShapeNotBoth. Default: true</li>
  *  <li><code>singleMarker</code> whether to allow more than 1 marker to be drawn at a time.. Default: true</li>
+ *  <li><code>markerZoomToMax</code> whether to allow zoom to maximum permitted level of current base layer</li>
  *  <li><code>markerOrShapeNotBoth</code> whether to allow users to draw both markers and regions/shapes at the same time. Default: true</li>
  *  <li><code>showFitBoundsToggle</code> whether to include a button to toggle between the initial map zoom and the bounds of the data. Default: false</li>
  *  <li><code>useMyLocation</code> whether to include a "Use My Location" button to place a marker on the map at the user's location. Default: true</li>
@@ -83,12 +87,12 @@ ALA.Map = function (id, options) {
     };
 
     var DEFAULT_ZOOM = 4;
-    var SINGLE_POINT_ZOOM = 10;
+    var SINGLE_POINT_ZOOM = 16;
     var MAX_AUTO_ZOOM = 15;
     var DEFAULT_MAX_ZOOM = 20;
-    var DEFAULT_OPACITY = 0.1;
-    var DEFAULT_LINE_WEIGHT = 1;
-    var DEFAULT_FILL_COLOUR = "#03f";
+    var DEFAULT_OPACITY = 0.5;
+    var DEFAULT_LINE_WEIGHT = 4;
+    var DEFAULT_FILL_COLOUR = "#000";
 
     // There is a bug with Leaflet prior to v1.0 which causes drawing issues with animations enabled.
     // E.g. Calling fitBounds multiple times sometimes causes the drawing of the map to fail, usually leaving some or
@@ -116,6 +120,7 @@ ALA.Map = function (id, options) {
     var DEFAULT_DRAW_OPTIONS = {
         polyline: false,
         polygon: {
+            allowIntersection: false,
             shapeOptions: DEFAULT_SHAPE_OPTIONS
         },
         rectangle: {
@@ -125,6 +130,13 @@ ALA.Map = function (id, options) {
             shapeOptions: DEFAULT_SHAPE_OPTIONS
         },
         edit: true
+    };
+
+    var DEFAULT_EDIT_DRAW_OPTIONS = {
+        featureGroup: undefined,
+        poly: {
+            allowIntersection: false
+        }
     };
 
     var HIDDEN_LAYER = {
@@ -185,6 +197,7 @@ ALA.Map = function (id, options) {
         wmsFeatureUrl: null,
         myLocationControlTitle: "Use my location",
         drawOptions: DEFAULT_DRAW_OPTIONS,
+        editOptions: DEFAULT_EDIT_DRAW_OPTIONS,
         sleep: true,
         sleepTime: 750,
         wakeTime: 750,
@@ -234,7 +247,7 @@ ALA.Map = function (id, options) {
     var mapImpl = null;
     var fitToBoundsOfLayer = null;
     var drawControl = null;
-    var drawnItems = new L.FeatureGroup();
+    var drawnItems = DEFAULT_EDIT_DRAW_OPTIONS.featureGroup = new L.FeatureGroup();
     var markers = [];
     var subscribers = [];
     var fitToBoundsToggle = options.zoomToObject;
@@ -369,8 +382,17 @@ ALA.Map = function (id, options) {
         L.geoJson(geoJSON, {
             pointToLayer: pointToLayerCircleSupport,
             onEachFeature: function (feature, layer) {
+                wmsOptions = {};
+                //Create a popup content
+                if(feature.properties && feature.properties.popupContent)
+                    layer.bindPopup(feature.properties.popupContent);
+
                 if (feature.properties && feature.properties.pid) {
-                    layer = createWmsLayer(feature.properties.pid);
+                    if (feature.geometry.type == ALA.MapConstants.DRAW_TYPE.POINT_TYPE){
+                        wmsOptions.layers = "ALA:Points"
+                        wmsOptions.opacity = 1.0
+                      }
+                    layer = createWmsLayer(feature.properties.pid, wmsOptions);
                 }
 
                 if (options.singleDraw) {
@@ -578,7 +600,7 @@ ALA.Map = function (id, options) {
         points.forEach(function (point) {
             var options = _.clone(pointOptions);
             if (point.options) {
-                _.defaults(options, pointOptions);
+                _.defaults(options, point.options);
             }
 
             var layer = L.circleMarker(new L.LatLng(point.lat, point.lng), options);
@@ -595,10 +617,70 @@ ALA.Map = function (id, options) {
     };
 
     /**
-     * Adds a marker at the user's current location.
+     * Adds a layer of points or icons to map. Icons gives the flexibility of adding shape to map.
+     *
+     * Each point object in the points array must have the following structure:
+     * <ul>
+     *     <li><code>lat</code> - the latitude for the point. Mandatory.</li>
+     *     <li><code>lng</code> - the longitude for the point. Mandatory.</li>
+     *     <li><code>type</code> - supported values 'point' or 'icon'. point draws a circle and icon renders the provided image. Default 'point'. </li>
+     *     <li><code>popup</code> - Text or HTML to be used as the popup when the marker is clicked. Optional.</li>
+     *     <li><code>options</code> - options object to override specified options for the individual point. Optional.</li>
+     * </ul>
      *
      * Will notify all subscribers.
      *
+     * @memberOf ALA.Map
+     * @function addPointsOrIcons
+     * @param points {Array} Mandatory array of objects with mandatory properties 'lat' and 'lng', and optionally an 'options' object.
+     * @param pointOptions {Object} Optional object containing configuration options to be applied to ALL points.
+     * @param iconUrl {String} Optional image URL
+     * @param iconOptions {Object} Optional object describing the icon metadata like size, anchor point, popup location.
+     */
+    self.addPointsOrIcons = function (points, pointOptions, iconUrl, iconOptions) {
+        self.startLoading();
+
+        if (options.singleDraw) {
+            drawnItems.clearLayers();
+        }
+        if (options.markerOrShapeNotBoth) {
+            clearMarkers();
+        }
+
+        _.defaults(pointOptions, DEFAULT_POINT_MARKER_OPTIONS);
+
+        var icon = ALA.MapUtils.createIcon(iconUrl, iconOptions);
+        points.forEach(function (point) {
+            var options = _.clone(pointOptions);
+            if (point.options) {
+                _.defaults(options, point.options);
+            }
+
+            var layer;
+            switch (point.type){
+                case 'icon':
+                    options.icon = icon;
+                    layer = L.marker([point.lat, point.lng], options);
+                    break;
+                case 'circle':
+                default:
+                    layer = L.circleMarker(new L.LatLng(point.lat, point.lng), options);
+                    break;
+            }
+
+            if (point.popup) {
+                layer.bindPopup(point.popup);
+            }
+
+            drawnItems.addLayer(layer)
+        });
+    };
+
+    /**
+     * Adds a marker at the user's current location.
+     * Will notify all subscribers.
+     *
+     * Fire a 'SearchEventFired' for site creation
      * @memberOf ALA.Map
      * @function markMyLocation
      */
@@ -609,6 +691,7 @@ ALA.Map = function (id, options) {
         mapImpl.on("locationfound", function (locationEvent) {
             self.addMarker(locationEvent.latlng.lat, locationEvent.latlng.lng, null);
             mapImpl.off("locationfound", arguments.callee);
+            mapImpl.fire("searchEventFired");
             self.finishLoading();
         });
     };
@@ -994,6 +1077,7 @@ ALA.Map = function (id, options) {
             self.addLayersControl(options.otherLayers);
         }
 
+
         if (options.showFitBoundsToggle) {
             var css = "ala-map-fit-bounds fa " + (options.zoomToObject ? "fa-search-minus" : "fa-search-plus");
             self.addButton("<span class='" + css + "' title='Toggle between the full map and the bounds of the data'></span>", self.toggleFitBounds, "topleft");
@@ -1017,7 +1101,7 @@ ALA.Map = function (id, options) {
         }
 
         if (options.showReset) {
-            self.addButton("<span class='ala-map-reset fa fa-refresh reset-map' title='Reset map'></span>", self.resetMap, "bottomleft");
+            self.addButton("<span class='ala-map-reset fa fa-refresh reset-map' title='Reset map'></span>", self.resetMap, "bottomright");
         }
 
         // If the map container is not visible, add a listener to trigger a redraw once it becomes visible.
@@ -1032,6 +1116,8 @@ ALA.Map = function (id, options) {
 
         // make sure the base layers never sit on top of other layers when the base layer is changed
         mapImpl.on('baselayerchange', function (event) {
+            currentBaseLayer = event.layer;
+
             if (event.layer.setZIndex) {
                 event.layer.setZIndex(-1);
             }
@@ -1045,7 +1131,8 @@ ALA.Map = function (id, options) {
         var minimalLayer = L.tileLayer(DEFAULT_BASE_LAYER.url, {
             attribution: DEFAULT_BASE_LAYER.attribution,
             subdomains: DEFAULT_BASE_LAYER.subdomains,
-            maxZoom: 21
+            maxZoom: 21,
+            maxNativeZoom: 21
         });
 
         if (_.isEmpty(options.otherLayers)) {
@@ -1053,7 +1140,8 @@ ALA.Map = function (id, options) {
                 Minimal: minimalLayer,
                 WorldImagery: L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
                     attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
-                    maxZoom: 17
+                    maxZoom: 17,
+                    maxNativeZoom: 17
                 })
             };
         }
@@ -1074,14 +1162,19 @@ ALA.Map = function (id, options) {
 
     // Initialise the drawing controls that appear on the left side of the map panel
     function initDrawingControls(options) {
-        var drawOptions = options.drawOptions || {};
+        var drawOptions = options.drawOptions || {},
+            editOptions;
 
         _.defaults(drawOptions, DEFAULT_DRAW_OPTIONS);
+        if(drawOptions.edit){
+            editOptions = options.editOptions || {};
+            _.defaults(editOptions, DEFAULT_EDIT_DRAW_OPTIONS);
+        } else {
+            editOptions = false;
+        }
 
         drawControl = new L.Control.Draw({
-            edit: drawOptions.edit ? {
-                featureGroup: drawnItems
-            } : false,
+            edit: editOptions,
             draw: drawOptions
         });
         mapImpl.addControl(drawControl);
@@ -1176,7 +1269,10 @@ ALA.Map = function (id, options) {
     // as a circle instead of a point. This is because GeoJSON does not support Circle types.
     function pointToLayerCircleSupport(feature, latlng) {
         if (feature.properties && feature.properties.point_type === ALA.MapConstants.DRAW_TYPE.CIRCLE_TYPE) {
-            return L.circle(latlng, feature.properties.radius, {});
+            if (feature.properties.circleOptions)
+                return L.circle(latlng, feature.properties.radius, feature.properties.circleOptions);
+            else
+                return L.circle(latlng, feature.properties.radius, {});
         } else {
             var marker = L.marker(latlng, {draggable: options.draggableMarkers});
             if (options.draggableMarkers) {
@@ -1190,7 +1286,7 @@ ALA.Map = function (id, options) {
     // Adds the lat/lng coordinates to the bottom of the map panel
     function addCoordinates() {
         L.control.coordinates({
-            position: "bottomleft",
+            position: "bottomright",
             decimals: 2,
             enableUserInput: false,
             useLatLngOrder: true
@@ -1223,6 +1319,7 @@ ALA.Map = function (id, options) {
         var geocodeControl = L.Control.geocoder({
             position: "topleft",
             placeholder: prompt,
+            defaultMarkGeocode: false,
             geocoder: new L.Control.Geocoder.Nominatim({
                 geocodingQueryParams: {polygon_geojson: 1, dedupe: 1}
             })
@@ -1235,13 +1332,14 @@ ALA.Map = function (id, options) {
             button.addClass("geocoder-icon-override fa fa-crosshairs");
         }
 
-        geocodeControl.markGeocode = function (result) {
+
+        geocodeControl.on('markgeocode', function (result) {
             if (drawType == ALA.MapConstants.DRAW_TYPE.POINT_TYPE) {
-                self.addMarker(result.center.lat, result.center.lng, null);
+                self.addMarker(result.geocode.center.lat, result.geocode.center.lng, null);
             } else if (drawType == ALA.MapConstants.DRAW_TYPE.POLYGON_TYPE) {
                 var geojson = {
                     type: "Feature",
-                    geometry: result.properties.geojson,
+                    geometry: result.geocode.properties.geojson,
                     properties: {}
                 };
 
@@ -1255,9 +1353,12 @@ ALA.Map = function (id, options) {
                 }
                 self.setGeoJSON(geojson);
             } else {
-                self.addMarker(result.center.lat, result.center.lng, null);
+                self.addMarker(result.geocode.center.lat, result.geocode.center.lng, null);
             }
-        }
+            //Fire a 'SearchEventFired' for site creation
+            mapImpl.fire("searchEventFired");
+
+        }, geocodeControl);
     }
 
     // Internal method to add a non-Marker layer to the map, to fit the map bounds if configured to do so, and optionally
@@ -1292,7 +1393,7 @@ ALA.Map = function (id, options) {
 
         marker.addTo(drawnItems);
         markers.push(marker);
-
+        self.finishLoading();
         if (options.zoomToObject) {
             mapImpl.panTo(marker.getLatLng(), {animate: ANIMATE});
             mapImpl.fitBounds(new L.LatLngBounds(marker.getLatLng(), marker.getLatLng()), {maxZoom: SINGLE_POINT_ZOOM});
@@ -1302,15 +1403,16 @@ ALA.Map = function (id, options) {
             self.notifyAll();
         }
 
-        self.finishLoading();
     }
 
     // Internal function to create a new WMS layer, but not to add it to the map, or trigger any notifications
     function createWmsLayer(pid, wmsOptions) {
+        wmsOptions = wmsOptions || {};
         if (!_.isUndefined(pid) && pid != null) {
             wmsOptions.pid = pid;
             wmsOptions.viewparams = "s:" + pid;
             wmsOptions.wmsFeatureUrl = options.wmsFeatureUrl + pid;
+
         }
 
         wmsOptions.callback = function () {
@@ -1527,7 +1629,12 @@ ALA.MapUtils = {
         var coords = bboxString.replace(/POLYGON|LINESTRING|POINT/g, "").replace(/[\\(|\\)]/g, "");
         var coordsArray = [];
         coords.split(",").forEach(function (item) {
-            coordsArray.push(latFirst ? item.split(" ").reverse() : item.split(" "));
+            var coordinates = latFirst ? item.split(" ").reverse() : item.split(" ");
+            coordinates = coordinates || [];
+            coordinates.forEach(function (t, index) {
+                coordinates[index]  = Number.parseFloat(t);
+            });
+            coordsArray.push(coordinates);
         });
 
         return coordsArray;
