@@ -1425,7 +1425,7 @@ ALA.Map = function (id, options) {
 
         _.defaults(wmsOptions, DEFAULT_WMS_PROPERTIES);
 
-        if ((_.isUndefined(options.wmsLayerUrl) || options.wmsLayer == null) && (_.isUndefined(wmsOptions.wmsLayerUrl) || wmsOptions.wmsLayerUrl == null)) {
+        if ((_.isUndefined(options.wmsLayerUrl) || options.wmsLayerUrl == null) && (_.isUndefined(wmsOptions.wmsLayerUrl) || wmsOptions.wmsLayerUrl == null)) {
             console.error("You must specify the wmsLayerUrl option for this map or for the layer.")
         }
 
