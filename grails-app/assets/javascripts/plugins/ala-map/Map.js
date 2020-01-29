@@ -45,6 +45,16 @@ ALA.MapConstants = {
  *  - the name of one of the built-in base layers.
  *  Default: {'Minimal': 'Minimal', 'World Imagery': 'WorldImagery'}.
  *  </li>
+ *  <li><code>overlays</code> Specify the overlays that should be added to map. The expected format is
+ *   {
+ *      'Australian Corals': L.tileLayer.wms
+ *   }
+ *  </li>
+ *  <li>
+ *  <code>overlayLayersSelectedByDefault</code> List of overlays to be shown on map by default. This works in conjunction
+ *  with 'overlays' option. Overlays not on this list will have a checkbox to show on map. The expected format is
+ *  ['Australian Corals']
+ *  </li>
  *  <li><code>center</code> Centre position of the map. Default: -28, 134</li>
  *  <li><code>zoom</code> the initial zoom level. Default: 4</li>
  *  <li><code>maxZoom</code> the maximum allowed zoom level. Default: 20</li>
@@ -834,7 +844,8 @@ ALA.Map = function (id, options) {
      * @param {string} filter Which layers to include: 'all': all layers; 'selected': only selected layers. Default 'all'.
      * @return
      */
-    self.getOverlayLayers = function (filter = 'all') {
+    self.getOverlayLayers = function (filter) {
+        filter = filter || 'all';
         switch (filter) {
             case 'selected':
                 return overlayLayersSelected;
@@ -1176,7 +1187,7 @@ ALA.Map = function (id, options) {
         if (layerControl) {
             if (baseLayers) {
                 for (var baseLayerName in baseLayers) {
-                    layerControl.addBaseLayer(baseLayers[baseLayers], baseLayerName);
+                    layerControl.addBaseLayer(baseLayers[baseLayerName], baseLayerName);
                 }
             }
 
@@ -1238,7 +1249,7 @@ ALA.Map = function (id, options) {
 
         mapImpl.addLayer(options.baseLayer);
         if (options.defaultLayersControl) {
-            self.addLayersControl(options.otherLayers);
+            self.addLayersControl(options.otherLayers, options.overlays, {overlayLayersSelectedByDefault: options.overlayLayersSelectedByDefault});
         }
 
 
