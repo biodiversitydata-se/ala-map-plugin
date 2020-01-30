@@ -26,7 +26,7 @@ before_script:
   - npm install
 
 script:
-- node_modules/karma/bin/karma start karma.conf.js --single-run
+- node_modules/karma/bin/karma start karma.conf.js --single-run --browsers ChromeHeadless
 - ./grailsw test-app
 after_success:
   - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && travis_retry ./gradlew publish'
