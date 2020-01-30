@@ -8,18 +8,36 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "jquery": "2.2.4",
-    "karma": "^4.0.1",
-    "karma-chrome-launcher": "^3.1.0",
-    "karma-coverage": "^1.1.2",
-    "karma-jasmine": "^2.0.1",
-    "karma-phantomjs-launcher": "^1.0.4",
     "@metahub/karma-jasmine-jquery": "^2.0.1",
-    "phantomjs-prebuilt": "^2.1.16"
+    "chromedriver": "^79.0.0",
+    "font-awesome": "4.7.0",
+    "handlebars": "^4.7.2",
+    "jasmine-core": "^3.5.0",
+    "jasmine-jquery": "^2.0.0",
+    "jquery": "^3.4.1",
+    "jquery-inview": "1.1.2",
+    "karma": "^4.4.1",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-coverage": "^2.0.1",
+    "karma-firefox-launcher": "^1.2.0",
+    "karma-jasmine": "^1.1.2",
+    "karma-jquery": "^0.2.4",
+    "karma-remote-reporter": "^0.2.0",
+    "leaflet": "0.7.7",
+    "leaflet-control-geocoder": "1.5.5",
+    "leaflet-draw": "0.4.14",
+    "leaflet-easybutton": "1.2.0",
+    "leaflet-loading": "0.1.24",
+    "leaflet-sleep": "0.5.1",
+    "leaflet.coordinates": "0.1.5",
+    "leaflet.markercluster": "0.5.0",
+    "underscore": "1.8.3",
+    "urijs": "1.18.10"
   },
   "scripts": {
-    "test": "karma start karma.conf.js"
+    "test": "karma start karma.conf.js",
+    "debug": "karma start --debug --browsers=ChromeHeadless,Chrome --single-run=false"
   },
   "author": "",
-  "license": ""
+  "license": "MPL-1.1"
 }

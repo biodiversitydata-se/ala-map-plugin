@@ -7,6 +7,7 @@ branches:
   only:
   - master
   - grails3
+  - feature/*
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
@@ -15,9 +16,9 @@ cache:
   - $HOME/.m2
   - $HOME/.gradle/caches/
   - $HOME/.gradle/wrapper/
-#script:
-#- node_modules/karma/bin/karma start karma.conf.js --single-run --browsers PhantomJS
-#- ./grailsw test-app
+script:
+- node_modules/karma/bin/karma start karma.conf.js --single-run
+- ./grailsw test-app
 after_success:
   - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && travis_retry ./gradlew publish'
 env:
