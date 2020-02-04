@@ -93,6 +93,8 @@ ALA.MapConstants = {
  *  <li><code>sleepNote</code> True to display text over the map when it is sleeping. Only relevant if sleep = true. Default: false</li>
  *  <li><code>sleepOpacity</code> Opacity of the sleep text. Only relevant if sleep = true and sleepNote = true. Default: 0.7</li>
  *  <li><code>wakeMessage</code> Text to display over the map when it is sleeping. Only relevant if sleep = true and sleepNote = true. Default: 'Click or hover to wake'.</li>
+ *  <li><code>trackWindowHeight<code> Map will adjust its height according to the height of browser window when set to true. Default: false. </li>
+ *  <li><code>minMapHeight<code> The height of map will not go below this value. It is only active when trackWindowHeight is true. Default: 250. </li>
  * </ul>
  *
  * @class
@@ -115,6 +117,7 @@ ALA.Map = function (id, options) {
     var DEFAULT_OPACITY = 0.5;
     var DEFAULT_LINE_WEIGHT = 4;
     var DEFAULT_FILL_COLOUR = "#000";
+    var DEFAULT_MAP_HEIGHT_BUFFER = 40;
 
     // There is a bug with Leaflet prior to v1.0 which causes drawing issues with animations enabled.
     // E.g. Calling fitBounds multiple times sometimes causes the drawing of the map to fail, usually leaving some or
@@ -268,7 +271,9 @@ ALA.Map = function (id, options) {
         sleepTime: 750,
         wakeTime: 750,
         sleepNote: false,
-        hoverToWake: true
+        hoverToWake: true,
+        trackWindowHeight: false,
+        minMapHeight: 250
     };
 
     /**
@@ -1275,6 +1280,11 @@ ALA.Map = function (id, options) {
             initDrawingControls(options);
         }
 
+        if(options.trackWindowHeight) {
+            addWindowResizeListener();
+            adjustMapContainerHeight();
+        }
+
         if (options.showReset) {
             self.addButton("<span class='ala-map-reset fa fa-refresh reset-map' title='Reset map'></span>", self.resetMap, "bottomright");
         }
@@ -1492,6 +1502,18 @@ ALA.Map = function (id, options) {
         registerSpinnerEvents();
 
         updateCircleFeaturesToIncludeTypeAndRadius();
+    }
+
+    function addWindowResizeListener() {
+        window.addEventListener('resize', adjustMapContainerHeight);
+    }
+
+    function adjustMapContainerHeight() {
+        var height = window.innerHeight - DEFAULT_MAP_HEIGHT_BUFFER;
+        if (height >= options.minMapHeight) {
+            $('#'+id).height(height);
+            mapImpl && mapImpl.invalidateSize();
+        }
     }
 
     function registerSpinnerEvents() {
