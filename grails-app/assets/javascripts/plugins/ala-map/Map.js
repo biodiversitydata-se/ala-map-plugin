@@ -57,7 +57,7 @@ ALA.MapConstants = {
  *  </li>
  *  <li><code>center</code> Centre position of the map. Default: -28, 134</li>
  *  <li><code>zoom</code> the initial zoom level. Default: 4</li>
- *  <li><code>maxZoom</code> the maximum allowed zoom level. Default: 20</li>
+ *  <li><code>maxZoom</code> the maximum allowed zoom level. Default: 21</li>
  *  <li><code>maxAutoZoom</code> the maximum zoom level to automatically zoom to (when zoomToObject = true). Default: 15</li>
  *  <li><code>defaultLayersControl</code> true to use the default layers control, false to use your own. Default: true</li>
  *  <li><code>scrollWheelZoom</code> whether to enable zooming in/out by scrolling the mouse. Default: false</li>
@@ -113,7 +113,7 @@ ALA.Map = function (id, options) {
     var DEFAULT_ZOOM = 4;
     var SINGLE_POINT_ZOOM = 16;
     var MAX_AUTO_ZOOM = 15;
-    var DEFAULT_MAX_ZOOM = 20;
+    var DEFAULT_MAX_ZOOM = 21;
     var DEFAULT_OPACITY = 0.5;
     var DEFAULT_LINE_WEIGHT = 4;
     var DEFAULT_FILL_COLOUR = "#000";
@@ -141,7 +141,7 @@ ALA.Map = function (id, options) {
             options: {
                 subdomains: "abcd",
                 attribution: 'Map data &copy; <a target="_blank" rel="noopener noreferrer" href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, imagery &copy; <a target="_blank" rel="noopener noreferrer" href="http://cartodb.com/attributions">CartoDB</a>',
-                maxZoom: 21,
+                maxZoom: DEFAULT_MAX_ZOOM,
                 maxNativeZoom: 21
             }
         },
@@ -153,7 +153,7 @@ ALA.Map = function (id, options) {
             defaultInList: true,
             options: {
                 attribution: '<a target="_blank" rel="noopener noreferrer" href="https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9">Tiles from Esri</a> &mdash; Sources: Esri, DigitalGlobe, Earthstar Geographics, CNES/Airbus DS, GeoEye, USDA FSA, USGS, Aerogrid, IGN, IGP, and the GIS User Community',
-                maxZoom: 17,
+                maxZoom: DEFAULT_MAX_ZOOM,
                 maxNativeZoom: 17
             }
         },
@@ -166,7 +166,7 @@ ALA.Map = function (id, options) {
             options: {
                 subdomains: "abc",
                 attribution: '&copy; <a target="_blank" rel="noopener noreferrer" href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
-                maxZoom: 18,
+                maxZoom: DEFAULT_MAX_ZOOM,
                 maxNativeZoom: 18
             }
         },
@@ -177,7 +177,9 @@ ALA.Map = function (id, options) {
             defaultSelected: false,
             defaultInList: false,
             options: {
-                attribution: '<a target="_blank" rel="noopener noreferrer" href="https://www.arcgis.com/home/item.html?id=30e5fe3149c34df1ba922e6f5bbf808f">Tiles from Esri</a> &mdash; Sources: Esri, HERE, Garmin, Intermap, INCREMENT P, GEBCO, USGS, FAO, NPS, NRCAN, GeoBase, IGN, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), &copy; OpenStreetMap contributors, GIS User Community'
+                attribution: '<a target="_blank" rel="noopener noreferrer" href="https://www.arcgis.com/home/item.html?id=30e5fe3149c34df1ba922e6f5bbf808f">Tiles from Esri</a> &mdash; Sources: Esri, HERE, Garmin, Intermap, INCREMENT P, GEBCO, USGS, FAO, NPS, NRCAN, GeoBase, IGN, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), &copy; OpenStreetMap contributors, GIS User Community',
+                maxZoom: DEFAULT_MAX_ZOOM,
+                maxNativeZoom: 17
             }
         }
     };
@@ -198,6 +200,7 @@ ALA.Map = function (id, options) {
         circle: {
             shapeOptions: DEFAULT_SHAPE_OPTIONS
         },
+        circlemarker: false,
         edit: true
     };
 
