@@ -32,6 +32,8 @@ ALA.MapConstants = {
  * <p/>
  * <b>Options</b>
  * <ul>
+ *  <li><code>autoZIndex</code> If true, the control will assign zIndexes in increasing order to all of its layers so that the order is preserved when switching them on/off. Default: true</li>
+ *  <li><code>preserveZIndex</code> If true, a added layer will not be brought to front. It will be at the zIndex assigned. Default: false</li>
  *  <li><code>baseLayer</code> The base layer shown by default.
  *  Can be one of:
  *  - a Leaflet.Layer object, or
@@ -60,6 +62,7 @@ ALA.MapConstants = {
  *  <li><code>maxZoom</code> the maximum allowed zoom level. Default: 21</li>
  *  <li><code>maxAutoZoom</code> the maximum zoom level to automatically zoom to (when zoomToObject = true). Default: 15</li>
  *  <li><code>defaultLayersControl</code> true to use the default layers control, false to use your own. Default: true</li>
+ *  <li><code>addLayersControlHeading</code> true to add heading to base layer and overlay sections of the selector, false to use your own. Default: false</li>
  *  <li><code>scrollWheelZoom</code> whether to enable zooming in/out by scrolling the mouse. Default: false</li>
  *  <li><code>fullscreenControl</code> whether to include a full-screen option. Default: true</li>
  *  <li><code>fullscreenControlOptions:</code>
@@ -244,6 +247,7 @@ ALA.Map = function (id, options) {
         maxZoom: DEFAULT_MAX_ZOOM,
         maxAutoZoom: MAX_AUTO_ZOOM,
         defaultLayersControl: true,
+        addLayersControlHeading: false,
         scrollWheelZoom: false,
         fullscreenControl: true,
         fullscreenControlOptions: {
@@ -276,7 +280,9 @@ ALA.Map = function (id, options) {
         sleepNote: false,
         hoverToWake: true,
         trackWindowHeight: false,
-        minMapHeight: 250
+        minMapHeight: 250,
+        autoZIndex: true,
+        preserveZIndex: false
     };
 
     /**
@@ -845,6 +851,14 @@ ALA.Map = function (id, options) {
     };
 
     /**
+     * Remove an overlay layer from the layers control.
+     * @param {L.Class} layer The layer to remove.
+     */
+    self.removeOverlayLayer = function(layer) {
+        overlayLayerRemove(layer);
+    };
+
+    /**
      * Get the overlay layers.
      *
      * @memberOf ALA.Map
@@ -1110,7 +1124,7 @@ ALA.Map = function (id, options) {
      */
     self.countFeatures = function () {
         var count = 0;
-        drawnItems.eachLayer(function () {
+        drawnItems && drawnItems.eachLayer(function () {
             count++;
         });
 
@@ -1234,6 +1248,9 @@ ALA.Map = function (id, options) {
             console.log("[ALA-Map] Created layer control with " + baseLayerCount + " base layers and " + overlayLayerCount + " overlay layers.");
         }
 
+        if (options.addLayersControlHeading)
+            addBaseLayerAndOverlayHeading('#' + id);
+
         return layerControl;
     };
 
@@ -1257,7 +1274,7 @@ ALA.Map = function (id, options) {
 
         mapImpl.addLayer(options.baseLayer);
         if (options.defaultLayersControl) {
-            self.addLayersControl(options.otherLayers, options.overlays, {overlayLayersSelectedByDefault: options.overlayLayersSelectedByDefault});
+            self.addLayersControl(options.otherLayers, options.overlays, {overlayLayersSelectedByDefault: options.overlayLayersSelectedByDefault, autoZIndex: options.autoZIndex});
         }
 
 
@@ -1843,6 +1860,8 @@ ALA.Map = function (id, options) {
                 overlayLayersAvailable.splice(index, 1);
             }
         }
+
+        mapImpl.removeLayer(layer);
     }
 
     /**
@@ -1850,7 +1869,9 @@ ALA.Map = function (id, options) {
      * @param {L.Class} layer
      */
     function overlayLayerSelect(layer){
-        layer.bringToFront();
+        if (!options.preserveZIndex) {
+            layer.bringToFront();
+        }
         overlayLayersSelected.push(layer);
     }
 
@@ -1864,6 +1885,31 @@ ALA.Map = function (id, options) {
             overlayLayersSelected.splice(index, 1);
         }
     }
+
+    function addBaseLayerHeading (containerSelector) {
+        var classHeading = 'leaflet-control-layers-base-heading',
+            classBaseLayer = 'leaflet-control-layers-base',
+            isHeadingPresent = $(containerSelector + ' .' + classHeading).length == 1,
+            isBaseLayerPresent = $(containerSelector + ' .' + classBaseLayer).children().length >= 1;
+
+        if (!isHeadingPresent && isBaseLayerPresent)
+            $('<label class="' + classHeading + '"><strong>Base layer</strong></label>').insertBefore(containerSelector + ' .' + classBaseLayer);
+    };
+
+    function addOverlayHeading(containerSelector) {
+        var classHeading = 'leaflet-control-layers-overlays-heading',
+            classOverlay = 'leaflet-control-layers-overlays',
+            isHeadingPresent = $(containerSelector + ' .' + classHeading).length == 1,
+            isOverlayPresent = $(containerSelector + ' .' + classOverlay).children().length >= 1;
+
+        if (!isHeadingPresent && isOverlayPresent)
+            $('<label class="' + classHeading + '"><strong>Overlay</strong></label>').insertBefore(containerSelector + ' .' + classOverlay);
+    };
+
+    function addBaseLayerAndOverlayHeading (containerSelector) {
+        addBaseLayerHeading(containerSelector);
+        addOverlayHeading(containerSelector);
+    };
 
     initialiseMap();
 };

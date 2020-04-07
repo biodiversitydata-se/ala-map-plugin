@@ -77,6 +77,18 @@ myOccurrenceMap.map.subscribe(function() {...})
 
 ## Features
 
+### Version 3.1
+* Added autoZIndex preserves zIndex of added layers.
+* Added preserveZIndex prevents the default behaviour of bringing the selected layer to the front.
+* Added addLayersControlHeading to include heading on Leaflet layer selector.
+* Added trackWindowHeight to adjust map height with browser window height.
+* Added minMapHeight to set a minimum height of map when trackWindowHeight is true.
+* Default maxZoom update to 21. 
+* Added otherLayers which specifies the base layers that will be available (including the default baseLayer).
+* Draw option circlemarker is by default false.
+* Fullscreen button added by default.
+* New control LegendImage to show Geoserver's legend as image.
+
 ### Version 2.1.1
 * Added a new option called editOptions. This is passed to edit control in Leaflet Draw.
 * Polygon self intersection is disabled by default.

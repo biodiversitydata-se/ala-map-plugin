@@ -27,7 +27,7 @@
 }
 
 .hide {
-    display: none;
+    display: none !important;
 }
 
 .inline-block {
@@ -196,4 +196,8 @@
     line-height: 22px;
     padding: 2px 6px 3px;
     font-weight: bold;
+}
+
+.leaflet-container img.image-logo {
+    max-width: 100% !important;
 }
