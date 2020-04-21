@@ -228,7 +228,7 @@ ALA.Map = function (id, options) {
     var DEFAULT_WMS_PROPERTIES = {
         tiled: true,
         format: 'image/png',
-        opacity: 0.2,
+        opacity: 0.5,
         transparent: true,
         layers: "ALA:Objects",
         version: "1.1.0",
@@ -466,6 +466,8 @@ ALA.Map = function (id, options) {
             geoJSON = JSON.parse(geoJSON);
         }
 
+        var layerCreatedByGeoJSON;
+
         L.geoJson(geoJSON, {
             pointToLayer: pointToLayerCircleSupport,
             onEachFeature: function (feature, layer) {
@@ -495,6 +497,7 @@ ALA.Map = function (id, options) {
                 }
 
                 applyLayerOptions(layer, layerOptions);
+                layerCreatedByGeoJSON = layer;
             },
             style: DEFAULT_SHAPE_OPTIONS
         });
@@ -505,6 +508,8 @@ ALA.Map = function (id, options) {
         }
 
         self.notifyAll();
+
+        return layerCreatedByGeoJSON;
     };
 
     /**
@@ -1642,7 +1647,7 @@ ALA.Map = function (id, options) {
     function addGeocodeControl(drawType) {
         var prompt = "Search for an address or location";
         if (drawType == ALA.MapConstants.DRAW_TYPE.POLYGON_TYPE) {
-            prompt = "Search for a region or area";
+            prompt = "Search for a region, area or address";
         }
 
         var geocodeControl = L.Control.geocoder({
@@ -1680,7 +1685,11 @@ ALA.Map = function (id, options) {
                         geojson.properties.radius = options.geocodeRegionOptions.pointRadiusMeters;
                     }
                 }
-                self.setGeoJSON(geojson);
+                var layer = self.setGeoJSON(geojson);
+
+                if (options.zoomToObject) {
+                    layer && layer.getBounds && mapImpl.fitBounds(layer.getBounds(), {maxZoom: options.maxAutoZoom, animate: ANIMATE});
+                }
             } else {
                 self.addMarker(result.geocode.center.lat, result.geocode.center.lng, null);
             }
