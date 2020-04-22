@@ -27,7 +27,13 @@
 }
 
 .hide {
-    display: none !important;
+    /*
+       Removed since it interferes with Feature Map rendering on modal dialog.
+       It causes functional test to fail.
+       display: none !important;
+    */
+
+    display: none ;
 }
 
 .inline-block {
