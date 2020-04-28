@@ -779,11 +779,19 @@ ALA.Map = function (id, options) {
     self.markMyLocation = function () {
         self.startLoading();
 
-        mapImpl.locate({setView: true});
+        mapImpl.locate({setView: true, enableHighAccuracy: true});
         mapImpl.on("locationfound", function (locationEvent) {
             self.addMarker(locationEvent.latlng.lat, locationEvent.latlng.lng, null);
             mapImpl.off("locationfound", arguments.callee);
             mapImpl.fire("searchEventFired");
+            self.finishLoading();
+        });
+
+        mapImpl.on("locationerror", function (event) {
+            mapImpl.off("locationerror", arguments.callee);
+            console.log("[ALA-Map] location lookup failed - " + event.message);
+            console.log("[ALA-Map] location lookup error code - " + event.code);
+            alert("Location lookup failed for the following reason - " + event.message);
             self.finishLoading();
         });
     };
