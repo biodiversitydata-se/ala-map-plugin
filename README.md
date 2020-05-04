@@ -87,7 +87,7 @@ myOccurrenceMap.map.subscribe(function() {...})
 * Default maxZoom update to 21.
 * Added `otherLayers` which specifies the base layers that will be available (including the default baseLayer).
 * Added `overlays` parameter to init map with passed overlays.
-* `Circlemarker` drawing option is by default false.
+* `circlemarker` drawing option is by default false.
 * Fullscreen button added by default.
 * New control LegendImage to show Geoserver's legend as image.
 * WMS layer default opacity increased to 0.5.
