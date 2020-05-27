@@ -2141,5 +2141,9 @@ ALA.MapUtils = {
         }
 
         return areaSqKm;
+    },
+    calculateCentroid: function(geoJson) {
+        var centroid = turf.centroid(geoJson);
+        return centroid;
     }
 };
