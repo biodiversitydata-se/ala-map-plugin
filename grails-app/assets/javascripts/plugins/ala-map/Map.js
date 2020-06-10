@@ -109,8 +109,8 @@ ALA.Map = function (id, options) {
     var self = this;
 
     self.DEFAULT_CENTRE = {
-        lat: -28,
-        lng: 134
+        lat: 57.040730, 
+        lng: 14.183350
     };
 
     var DEFAULT_ZOOM = 4;
@@ -2115,6 +2115,40 @@ ALA.MapUtils = {
     },
 
     /**
+     * Convenience utility for creating a new segment/ polyline with optional configuration parameters and popup.
+     *
+     * @param coords [] Array of pairs of coordinates for a LineString
+     * @param popup {String} Text or HTML to display in a popup when the marker is clicked. Optional.
+     * @return {Object} Leaflet L.PolyLine object
+     */
+    createSegment: function (coords, popup) {
+        var polyline = L.polyline(coords);
+
+        if (popup) {
+            polyline.bindPopup('popup');
+        }
+
+        return polyline;
+    },
+
+    /**
+     * Convenience utility for creating a new polygon with optional configuration parameters and popup.
+     *
+     * @param coordinates [] Array of pairs of coordinates for a LineString
+     * @param popup {String} Text or HTML to display in a popup when the marker is clicked. Optional.
+     * @return {Object} Leaflet L.Polygon object
+     */
+    createPolygon: function (coordinates, popup) {
+        var polygon = L.polygon(coordinates);
+
+        if (popup) {
+            polygon.bindPopup(popup);
+        }
+
+        return polygon;
+    },
+
+    /**
      * Calculate the area of a given GeoJSON object in square kilometers. The GeoJSON object can be a FeatureCollection or a Feature.
      *
      * For circle geometries, the Properties object must contain an attribute called Radius, with the radius in meters.
@@ -2142,6 +2176,14 @@ ALA.MapUtils = {
 
         return areaSqKm;
     },
+    // TODO - remove? not needed currently
+    /**
+     * Calculate the centroid of a given GeoJSON object. Takes one or more features and calculates the centroid using the mean of all vertices
+     *
+     * @param geoJson {Object} GeoJSON object to calculate the area for
+     * @returns {L.Point} The centroid of the input feature(s) 
+     */
+
     calculateCentroid: function(geoJson) {
         var centroid = turf.centroid(geoJson);
         return centroid;
