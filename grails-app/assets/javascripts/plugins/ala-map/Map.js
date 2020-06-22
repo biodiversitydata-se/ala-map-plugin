@@ -184,6 +184,17 @@ ALA.Map = function (id, options) {
                 maxZoom: DEFAULT_MAX_ZOOM,
                 maxNativeZoom: 17
             }
+        },
+        SwedishTopographic: {
+            url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+            title: 'Swedish',
+            defaultSelected: false,
+            defaultInList: false,
+            options: {
+                attribution: '',
+                maxZoom: DEFAULT_MAX_ZOOM,
+                maxNativeZoom: 17
+            }
         }
     };
 
@@ -489,6 +500,60 @@ ALA.Map = function (id, options) {
                 }
                 if (options.markerOrShapeNotBoth) {
                     clearMarkers();
+                }
+
+                drawnItems.addLayer(layer);
+                if (layer.bringToFront) {
+                    layer.bringToFront();
+                }
+
+                applyLayerOptions(layer, layerOptions);
+                layerCreatedByGeoJSON = layer;
+            },
+            style: DEFAULT_SHAPE_OPTIONS
+        });
+
+
+        if (options.zoomToObject) {
+            self.fitBounds();
+        }
+
+        self.notifyAll();
+
+        return layerCreatedByGeoJSON;
+    };
+    
+     /**
+     * Populate the map with the provided GeoJSON data.
+     *
+     * If a Point feature's properties object contains "point_type: 'Circle' and "radius: {m}", then the point will be
+     * rendered as a circle.
+     *
+     * If the properties object of a feature includes a 'pid', then a new WMS layer will be added to the map instead of
+     * a polygon layer.
+     *
+     * See {@link LAYER_OPTIONS} for details of supported options.
+     *
+     * Will notify all subscribers.
+     *
+     * @memberOf ALA.Map
+     * @function setGeoJSON
+     * @param geoJSON {GeoJSON} Standard GeoJSON metadata for map features. This can be a JSON string, or a GeoJSON object.
+     * @param layerOptions {Object} Configuration options for the layer. See {@link LAYER_OPTIONS} for details of supported options. Optional.
+     */
+    self.setTransectFromGeoJSON = function (geoJSON, layerOptions) {
+        if (typeof geoJSON === 'string') {
+            geoJSON = JSON.parse(geoJSON);
+        }
+
+        var layerCreatedByGeoJSON;
+
+        L.geoJson(geoJSON, {
+            onEachFeature: function (feature, layer) {
+                wmsOptions = {};
+                //Create a popup content
+                if(feature.properties && feature.properties.popupContent){
+                    layer.bindPopup(feature.properties.popupContent);
                 }
 
                 drawnItems.addLayer(layer);
@@ -2125,7 +2190,7 @@ ALA.MapUtils = {
         var polyline = L.polyline(coords);
 
         if (popup) {
-            polyline.bindPopup('popup');
+            polyline.bindPopup(popup);
         }
 
         return polyline;
