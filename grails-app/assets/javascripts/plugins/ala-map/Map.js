@@ -555,6 +555,8 @@ ALA.Map = function (id, options) {
                 if(feature.properties && feature.properties.popupContent){
                     layer.bindPopup(feature.properties.popupContent);
                 }
+                layer.on('mouseover', function() { this.setStyle({'color': '#eb6f10'}) });
+                layer.on('mouseout', function() { this.setStyle({'color': 'blue'}) });
 
                 drawnItems.addLayer(layer);
                 if (layer.bringToFront) {
@@ -564,6 +566,7 @@ ALA.Map = function (id, options) {
                 applyLayerOptions(layer, layerOptions);
                 layerCreatedByGeoJSON = layer;
             },
+            
             style: DEFAULT_SHAPE_OPTIONS
         });
 
