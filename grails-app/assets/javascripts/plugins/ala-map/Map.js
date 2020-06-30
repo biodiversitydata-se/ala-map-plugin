@@ -184,17 +184,6 @@ ALA.Map = function (id, options) {
                 maxZoom: DEFAULT_MAX_ZOOM,
                 maxNativeZoom: 17
             }
-        },
-        SwedishTopographic: {
-            url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
-            title: 'Swedish',
-            defaultSelected: false,
-            defaultInList: false,
-            options: {
-                attribution: '',
-                maxZoom: DEFAULT_MAX_ZOOM,
-                maxNativeZoom: 17
-            }
         }
     };
 
@@ -524,20 +513,13 @@ ALA.Map = function (id, options) {
     };
     
      /**
-     * Populate the map with the provided GeoJSON data.
-     *
-     * If a Point feature's properties object contains "point_type: 'Circle' and "radius: {m}", then the point will be
-     * rendered as a circle.
-     *
-     * If the properties object of a feature includes a 'pid', then a new WMS layer will be added to the map instead of
-     * a polygon layer.
-     *
-     * See {@link LAYER_OPTIONS} for details of supported options.
-     *
+     * Populate the map with the provided GeoJSON data from systematic monitoring sites.
+     * The lines will be highlighted so that they can be told apart. 
+     * 
      * Will notify all subscribers.
      *
      * @memberOf ALA.Map
-     * @function setGeoJSON
+     * @function setTransectFromGeoJSON
      * @param geoJSON {GeoJSON} Standard GeoJSON metadata for map features. This can be a JSON string, or a GeoJSON object.
      * @param layerOptions {Object} Configuration options for the layer. See {@link LAYER_OPTIONS} for details of supported options. Optional.
      */
@@ -2219,7 +2201,7 @@ ALA.MapUtils = {
     /**
      * Calculate the area of a given GeoJSON object in square kilometers. The GeoJSON object can be a FeatureCollection or a Feature.
      *
-     * For circle geometries, the Properties object must contain an attribute called Radius, with the radius in meters.
+     * For circle geometries, the Properties object must contain an attribute called Radiuit'ss, with the radius in meters.
      *
      * @param geoJson {Object} GeoJSON object to calculate the area for
      * @returns {number} The calculated area in square kilometers
@@ -2244,7 +2226,8 @@ ALA.MapUtils = {
 
         return areaSqKm;
     },
-    // TODO - remove? not needed currently
+
+    // TODO - remove? centroid is not used currently - calculations for this are done on the backend
     /**
      * Calculate the centroid of a given GeoJSON object. Takes one or more features and calculates the centroid using the mean of all vertices
      *
