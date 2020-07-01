@@ -537,9 +537,10 @@ ALA.Map = function (id, options) {
                 if(feature.properties && feature.properties.popupContent){
                     layer.bindPopup(feature.properties.popupContent);
                 }
-                layer.on('mouseover', function() { this.setStyle({'color': '#eb6f10'}) });
-                layer.on('mouseout', function() { this.setStyle({'color': 'blue'}) });
-
+                if (feature.geometry.type != 'Point'){
+                    layer.on('mouseover', function() { this.setStyle({'color': '#eb6f10'}) });
+                    layer.on('mouseout', function() { this.setStyle({'color': 'blue'}) });
+                }
                 drawnItems.addLayer(layer);
                 if (layer.bringToFront) {
                     layer.bringToFront();
@@ -858,6 +859,7 @@ ALA.Map = function (id, options) {
      */
     self.addLayer = function (layer, layerOptions) {
         if (options.singleDraw) {
+            console.log("clearing drawnItems")
             drawnItems.clearLayers();
         }
         if (options.markerOrShapeNotBoth) {
@@ -1761,7 +1763,6 @@ ALA.Map = function (id, options) {
     // to notify all subscribers that the map has changed.
     function addLayer(layer, notify) {
         self.startLoading();
-
         layer.addTo(drawnItems);
 
         if (options.zoomToObject && layer.getBounds) {
