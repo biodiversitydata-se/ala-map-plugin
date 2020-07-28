@@ -512,6 +512,71 @@ ALA.Map = function (id, options) {
         return layerCreatedByGeoJSON;
     };
     
+    self.setCentroidGeoJSON = function (geoJSON, layerOptions, siteId, siteName, isBooked) {
+        if (typeof geoJSON === 'string') {
+            geoJSON = JSON.parse(geoJSON);
+        }
+
+        var layerCreatedByGeoJSON;
+        function getColor(isBooked) {
+            switch (isBooked) {
+              case true:
+                return  'green';
+              case false:
+                return 'red';
+              default:
+                return 'white';
+            }
+          }
+        L.geoJson(geoJSON, {
+            pointToLayer: function (feature, latlng) {
+                return L.circleMarker(latlng, {
+                    color: 'black',
+                    fillOpacity: 0.8,
+                    fillColor: getColor(feature.properties.isBooked)
+                })
+            },
+            onEachFeature: function (feature, layer) {              
+                wmsOptions = {};
+                //Create a popup content
+                if(feature.properties && feature.properties.popupContent){
+                    layer.bindPopup(feature.properties.popupContent);
+                }        
+                if (options.singleDraw) {
+                    drawnItems.clearLayers();
+                }
+                if (options.markerOrShapeNotBoth) {
+                    clearMarkers();
+                } "visibility", "visible" 
+
+                drawnItems.addLayer(layer);
+                if (layer.bringToFront) {
+                    layer.bringToFront();
+                }
+                // when point clicked for admins display #booking div to edit isBooked field 
+                // and email address of the volunteer  
+                layer.on("click", function(){
+                    $("#booking").css( "visibility", "visible" );
+                    $("#siteName").val(siteName);
+                    $("#siteId").val(siteId);
+                    $("#isBooked").val(isBooked);
+
+                });
+                applyLayerOptions(layer, layerOptions);
+                layerCreatedByGeoJSON = layer;
+            }
+        });
+
+
+        if (options.zoomToObject) {
+            self.fitBounds();
+        }
+
+        self.notifyAll();
+
+        return layerCreatedByGeoJSON;
+    };
+
      /**
      * Populate the map with the provided GeoJSON data from systematic monitoring sites.
      * The lines will be highlighted so that they can be told apart. 
