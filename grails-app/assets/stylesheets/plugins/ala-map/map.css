@@ -171,7 +171,7 @@
 
 .legend-container {
     max-width: 250px;
-    max-height: 400px;
+    max-height: 200px;
     min-width: 125px;
     min-height: 20px;
     overflow: auto;

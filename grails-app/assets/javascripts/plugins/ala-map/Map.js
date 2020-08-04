@@ -69,6 +69,12 @@ ALA.MapConstants = {
  *      <ul>
  *          <li><code>position</code> position of the button on the map. Default: topleft</li>
  *      </ul>
+ *  </li>
+ *  <li><code>loadingControlOptions:</code>
+ *      <ul>
+ *          <li><code>position</code> position of the loading control on the map. Default: topright</li>
+ *      </ul>
+ *  </li>
  *  <li><code>drawControl</code> whether to include drawing controls or not. Default: true</li>
  *  <li><code>drawOptions</code> if drawing control is to be included, then specify options to pass to drawing control here.</li>
  *  <li><code>editOptions</code> if edit option in drawing control is enabled, then specify options to pass to edit control here.</li>
@@ -252,6 +258,9 @@ ALA.Map = function (id, options) {
         fullscreenControl: true,
         fullscreenControlOptions: {
             position: 'topleft'
+        },
+        loadingControlOptions: {
+            position: 'topright'
         },
         drawControl: true,
         singleDraw: true,
@@ -1639,7 +1648,7 @@ ALA.Map = function (id, options) {
     function addLoadingControl() {
         var loadingControl = L.Control.loading({
             separate: true,
-            position: "topright"
+            position: options.loadingControlOptions.position
         });
         mapImpl.addControl(loadingControl);
     }
@@ -1856,6 +1865,9 @@ ALA.Map = function (id, options) {
             if (isSelected) {
                 mapImpl.addLayer(layer);
                 overlayLayerSelect(layer);
+                // Unfortunately, by default overlay layer does not fire 'loading' event.
+                // Loading control depends on this event to show loading GIF.
+                layer.fire && layer.fire('loading');
             }
             console.log("[ALA-Map] Added " + (isSelected ? 'selected' : 'de-selected') + " overlay layer '" + name + "' to map.");
         } else {
