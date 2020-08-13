@@ -512,18 +512,18 @@ ALA.Map = function (id, options) {
         return layerCreatedByGeoJSON;
     };
     
-    self.setCentroidGeoJSON = function (geoJSON, layerOptions, siteId, siteName, isBooked) {
+    self.setCentroidGeoJSON = function (geoJSON, siteProperties) {
         if (typeof geoJSON === 'string') {
             geoJSON = JSON.parse(geoJSON);
         }
 
         var layerCreatedByGeoJSON;
+
+        // fill color of circle point depends on whether site is booked
         function getColor(isBooked) {
             switch (isBooked) {
               case true:
                 return  'green';
-              case false:
-                return 'red';
               default:
                 return 'white';
             }
@@ -547,22 +547,17 @@ ALA.Map = function (id, options) {
                 }
                 if (options.markerOrShapeNotBoth) {
                     clearMarkers();
-                } "visibility", "visible" 
+                } 
 
                 drawnItems.addLayer(layer);
                 if (layer.bringToFront) {
                     layer.bringToFront();
                 }
-                // when point clicked for admins display #booking div to edit isBooked field 
-                // and email address of the volunteer  
+ 
                 layer.on("click", function(){
-                    $("#booking").css( "visibility", "visible" );
-                    $("#siteName").val(siteName);
-                    $("#siteId").val(siteId);
-                    $("#isBooked").val(isBooked);
-
+                    siteProperties.displaySiteDetails();
                 });
-                applyLayerOptions(layer, layerOptions);
+                applyLayerOptions(layer, siteProperties.layerOptions);
                 layerCreatedByGeoJSON = layer;
             }
         });
