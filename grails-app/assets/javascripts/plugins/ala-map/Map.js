@@ -291,7 +291,8 @@ ALA.Map = function (id, options) {
         trackWindowHeight: false,
         minMapHeight: 250,
         autoZIndex: true,
-        preserveZIndex: false
+        preserveZIndex: false,
+        overlayControlPosition: "topright"
     };
 
     /**
@@ -1296,7 +1297,7 @@ ALA.Map = function (id, options) {
 
         mapImpl.addLayer(options.baseLayer);
         if (options.defaultLayersControl) {
-            self.addLayersControl(options.otherLayers, options.overlays, {overlayLayersSelectedByDefault: options.overlayLayersSelectedByDefault, autoZIndex: options.autoZIndex});
+            self.addLayersControl(options.otherLayers, options.overlays, {overlayLayersSelectedByDefault: options.overlayLayersSelectedByDefault, autoZIndex: options.autoZIndex, position: options.overlayControlPosition});
         }
 
 

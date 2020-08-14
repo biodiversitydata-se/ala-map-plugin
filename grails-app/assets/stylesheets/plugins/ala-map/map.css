@@ -207,3 +207,41 @@
 .leaflet-container img.image-logo {
     max-width: 100% !important;
 }
+
+/* horizontal-multi-input control*/
+.leaflet-control-layers.leaflet-control .horizontal-control {
+    color: black;
+}
+
+.leaflet-control-layers.leaflet-control .horizontal-control .horizontal-control-item {
+    display: inline-block;
+    float: none;
+}
+
+.leaflet-control-layers.leaflet-control .horizontal-control td {
+    padding: 2px 5px 2px 5px;
+    height: 30px;
+}
+
+.leaflet-control-layers.leaflet-control .horizontal-control label {
+    padding: 0;
+    margin: 0;
+    display: inline-block;
+    font-weight: 700;
+}
+
+.leaflet-control-layers.leaflet-control .horizontal-control select {
+    width: 125px;
+    height: 20px;
+    padding: 0;
+    margin: 0;
+    color: black;
+}
+
+/*.leaflet-control-layers.leaflet-control .slider {*/
+/*    margin-bottom: 4px;*/
+/*}*/
+
+.leaflet-control-layers.leaflet-control .horizontal-control .layerControls {
+    margin-top: 0;
+}
