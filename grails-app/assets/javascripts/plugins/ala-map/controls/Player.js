@@ -23,7 +23,21 @@
  * <ul>
  *     <li><code>id</code> Unique id for the control</li>
  * </ul>
- *
+ * <b>Google analytics tracking</b>
+ * <p>
+ * Event category - map-player
+ * Event action - one of the following
+ * <ul>
+ *     <li><code>play</code> </li>
+ *     <li><code>pause</code></li>
+ *     <li><code>stop</code></li>
+ *     <li><code>forward</code></li>
+ *     <li><code>backward</code></li>
+ *     <li><code>replay-on</code></li>
+ *     <li><code>replay-off</code></li>
+ * </ul>
+ * Event label - periodic or cumulative - depending on current selection
+ * </p>
  * @class
  */
 L.Control.Player = L.Control.extend({
@@ -52,7 +66,9 @@ L.Control.Player = L.Control.extend({
         timeout: 1
     },
     playerTypes: ['year', 'month'],
-    playerStates: {play: 'play', pause: 'pause', stop: 'stop'},
+    playerStates: {play: 'play', pause: 'pause', stop: 'stop', forward: 'forward', backward: 'backward', replay: 'replay'},
+    intervalTypes: ['periodic', 'cumulative'],
+    currentIntervalType: 'periodic',
     currentState: 'stop',
     playBtn: undefined,
     stopBtn: undefined,
@@ -119,6 +135,7 @@ L.Control.Player = L.Control.extend({
         L.DomEvent.addListener(self.playBtn, 'click', function(event) {
             if (!self.isPlaying()) {
                 self.doPlay();
+                ga && ga('send', 'event', 'map-player', self.playerStates.play, self.currentIntervalType);
             }
         });
 
@@ -127,6 +144,7 @@ L.Control.Player = L.Control.extend({
         L.DomEvent.addListener(self.stopBtn, 'click', self.doStop, self);
         L.DomEvent.addListener(self.forwardBtn, 'click', self.forwardFrame, self);
         L.DomEvent.addListener(self.backwardBtn, 'click', self.backwardFrame, self);
+        L.DomEvent.addListener(self.replayBtn, 'click', self.doReplay, self);
 
         self.on('play', self.updateStatusText, self);
         self.on('forward', self.updateStatusText, self);
@@ -196,6 +214,7 @@ L.Control.Player = L.Control.extend({
             self.setCurrentState(self.playerStates.pause);
             self.syncButtonsWithModel();
             self.fire('pause', {intervalType: self.options.playerType});
+            ga && ga('send', 'event', 'map-player', self.playerStates.pause, self.currentIntervalType);
         }
     },
     doStop: function() {
@@ -205,7 +224,18 @@ L.Control.Player = L.Control.extend({
             self.setCurrentState(self.playerStates.stop);
             self.syncButtonsWithModel();
             self.fire('stop', {intervalType: self.options.playerType});
+            ga && ga('send', 'event', 'map-player', self.playerStates.stop, self.currentIntervalType);
         }
+    },
+    doReplay: function() {
+        var self = this;
+        setTimeout(function () {
+            if (self.isContinuousPlay()) {
+                ga && ga('send', 'event', 'map-player', self.playerStates.replay +'-on' , self.currentIntervalType);
+            } else {
+                ga && ga('send', 'event', 'map-player', self.playerStates.replay +'-off' , self.currentIntervalType);
+            }
+        }, 0);
     },
     clearTimeout: function () {
         var self = this;
@@ -268,6 +298,7 @@ L.Control.Player = L.Control.extend({
         if (self.isPaused()) {
             self.forwardIndex();
             self.fire('forward', self.getCurrentDuration());
+            ga && ga('send', 'event', 'map-player', self.playerStates.forward, self.currentIntervalType);
         }
     },
     backwardFrame: function () {
@@ -276,6 +307,7 @@ L.Control.Player = L.Control.extend({
             self.backwardIndex();
 
             self.fire('backward', self.getCurrentDuration());
+            ga && ga('send', 'event', 'map-player', self.playerStates.backward, self.currentIntervalType);
         }
     },
     updateStatusText: function () {
@@ -337,6 +369,8 @@ L.Control.Player = L.Control.extend({
         return $(self.stopBtn).hasClass('active');
     },
     isPauseAllowed: function () {
+        // pause is only allowed when play is active.
+        // pause state is not valid if previous state is stop.
         var self = this;
         if (self.isStopped()) {
             setTimeout(function () {

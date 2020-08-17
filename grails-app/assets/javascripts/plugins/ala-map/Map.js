@@ -1268,6 +1268,9 @@ ALA.Map = function (id, options) {
                     newControlOverlaySelected);
             }
 
+            // track user selected layer and overlays
+            trackMapUsage();
+
             console.log("[ALA-Map] Created layer control with " + baseLayerCount + " base layers and " + overlayLayerCount + " overlay layers.");
         }
 
@@ -1652,6 +1655,35 @@ ALA.Map = function (id, options) {
             position: options.loadingControlOptions.position
         });
         mapImpl.addControl(loadingControl);
+    }
+
+    /**
+     * Make sure layer has uniqueName option to send tracking data to GA.
+     */
+    function trackMapUsage() {
+        mapImpl.on('overlayadd', function (layerEvent) {
+            var layer = layerEvent.layer,
+                label = layer.options.uniqueName;
+            if (label) {
+                ga && ga('send', 'event', 'map-layer', 'overlay-add', label);
+            }
+        });
+
+        mapImpl.on('overlayremove', function (layerEvent) {
+            var layer = layerEvent.layer,
+                label = layer.options.uniqueName;
+            if (label) {
+                ga && ga('send', 'event', 'map-layer', 'overlay-remove', label);
+            }
+        });
+
+        mapImpl.on('baselayerchange', function (layerEvent) {
+            var layer = layerEvent.layer,
+                label = layer.options.uniqueName;
+            if (label) {
+                ga && ga('send', 'event', 'map-layer', 'baselayer-change', label);
+            }
+        });
     }
 
     // The container div is expected to have an attribute 'data-leaflet-img' which contains the path to the Leaflet images.
