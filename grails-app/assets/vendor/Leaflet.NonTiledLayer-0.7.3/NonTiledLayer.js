@@ -131,7 +131,8 @@ L.NonTiledLayer = L.Class.extend({
 			galleryimg: 'no',
 			onselectstart: L.Util.falseFn,
 			onmousemove: L.Util.falseFn,
-			onload: L.bind(this._onImageLoad, this)
+			onload: L.bind(this._onImageLoad, this),
+			onerror: L.bind(this._tileOnError, this)
 		});
 
 		return _image;
@@ -295,7 +296,14 @@ L.NonTiledLayer = L.Class.extend({
 
 		this.fire('load');
 	},
+	_tileOnError: function () {
+		var layer = this;
 
+		layer.fire('tileerror', {
+			tile: this,
+			url: this.src
+		});
+	},
 	_updateOpacity: function (image) {
 		L.DomUtil.setOpacity(image, this.options.opacity);
 	}

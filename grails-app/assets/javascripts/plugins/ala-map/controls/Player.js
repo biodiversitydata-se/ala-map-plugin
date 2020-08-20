@@ -63,11 +63,12 @@ L.Control.Player = L.Control.extend({
         endYear: undefined,
         interval: 1,
         playerType: "year",
-        timeout: 1
+        timeout: 1,
+        intervalType: "periodic"
     },
     playerTypes: ['year', 'month'],
     playerStates: {play: 'play', pause: 'pause', stop: 'stop', forward: 'forward', backward: 'backward', replay: 'replay'},
-    intervalTypes: ['periodic', 'cumulative'],
+    intervalTypes: {periodic: 'periodic', cumulative: 'cumulative'},
     currentIntervalType: 'periodic',
     currentState: 'stop',
     playBtn: undefined,
@@ -90,36 +91,46 @@ L.Control.Player = L.Control.extend({
     onAdd: function (map) {
         var self = this;
         self.map = map;
-        var container = L.DomUtil.create("div", "leaflet-control-layers leaflet-control");
+        var container = L.DomUtil.create("div", "leaflet-control-layers leaflet-control"),
+            isPeriodic = self.options.intervalType == self.intervalTypes.periodic;
         self.container = container
-        var playerHTML = "<table>" +
-            "<tbody id='"+self.options.id+"'>" +
-            "<tr>" +
-            "<td>" +
-            "<div class=\"btn-group\" data-toggle=\"buttons-radio\">" +
-            "  <button type=\"button\" class=\"btn btn-mini play-btn\"><i class='"+self.options.playClass+"' title='"+self.options.playTitle+"'></i></button>" +
-            "  <button type=\"button\" class=\"btn btn-mini pause-btn\"><i class='"+self.options.pauseClass+"' title='"+self.options.pauseTitle+"'></i></button>" +
-            "  <button type=\"button\" class=\"btn btn-mini stop-btn active\"><i class='"+self.options.stopClass+"' title='"+self.options.stopTitle+"'></i></button>" +
-            "</div>" +
-            "</td>"+
-            "<td>"+
-            "<button type=\"button\" class=\"btn btn-mini replay-btn\" data-toggle=\"button\"><i class='"+self.options.replayClass+"' title='"+self.options.replayTitle+"'></button>" +
-            "</td>"+
-            "<td>" +
-            "<div class=\"btn-group backward-forward-btns\">" +
-            "  <button type=\"button\" class=\"btn btn-mini backward-btn\"><i class='"+self.options.backwardClass+"' title='"+self.options.backwardTitle+"'></i></button>" +
-            "  <button type=\"button\" class=\"btn btn-mini forward-btn\"><i class='"+self.options.forwardClass+"' title='"+self.options.forwardTitle+"'></i></button>" +
-            "</div>" +
-            "</td>"+
-            "</td>" +
-            "</tr>" +
-            "<tr>" +
-            "<td colspan='3'>" +
-            "<div class='status-text'>" +
-            "</div>" +
-            "</td>" +
-            "</tr>" +
-            "</tbody>" +
+        var playerHTML =
+            "<table>" +
+                "<tbody id='"+self.options.id+"'>" +
+                    "<tr>" +
+                        "<td>" +
+                            "<div class=\"btn-group\" data-toggle=\"buttons-radio\">" +
+                            "  <button type=\"button\" class=\"btn btn-mini play-btn\"><i class='"+self.options.playClass+"' title='"+self.options.playTitle+"'></i></button>" +
+                            "  <button type=\"button\" class=\"btn btn-mini pause-btn\"><i class='"+self.options.pauseClass+"' title='"+self.options.pauseTitle+"'></i></button>" +
+                            "  <button type=\"button\" class=\"btn btn-mini stop-btn active\"><i class='"+self.options.stopClass+"' title='"+self.options.stopTitle+"'></i></button>" +
+                            "</div>" +
+                        "</td>"+
+                        "<td>"+
+                            "<button type=\"button\" class=\"btn btn-mini replay-btn\" data-toggle=\"button\"><i class='"+self.options.replayClass+"' title='"+self.options.replayTitle+"'></button>" +
+                        "</td>"+
+                        "<td>" +
+                            "<div class=\"btn-group backward-forward-btns\">" +
+                            "  <button type=\"button\" class=\"btn btn-mini backward-btn\"><i class='"+self.options.backwardClass+"' title='"+self.options.backwardTitle+"'></i></button>" +
+                            "  <button type=\"button\" class=\"btn btn-mini forward-btn\"><i class='"+self.options.forwardClass+"' title='"+self.options.forwardTitle+"'></i></button>" +
+                            "</div>" +
+                        "</td>"+
+                    "</tr>" +
+                    "<tr>" +
+                        "<td colspan='3' class='interval-setting'>" +
+                            "Interval: " +
+                                "<div class='btn-group' data-toggle='buttons-radio'>" +
+                                    "<button id='interval-type-periodic' type='button' class='btn btn-mini " + (isPeriodic ? "active" : "") + "'>Periodic</button>" +
+                                    "<button id='interval-type-cumulative' type='button' class='btn btn-mini " + (isPeriodic ? "" : "active") + "'>Cumulative</button>" +
+                                "</div>" +
+                            "</td>" +
+                    "</tr>" +
+                    "<tr>" +
+                        "<td colspan='3'>" +
+                            "<div class='status-text'>" +
+                            "</div>" +
+                        "</td>" +
+                    "</tr>" +
+                "</tbody>" +
             "</table>";
 
         self.id = self.options.id;
@@ -131,6 +142,8 @@ L.Control.Player = L.Control.extend({
         self.replayBtn = $(container).find("#" + self.options.id + " .replay-btn")[0];
         self.forwardBtn = $(container).find("#" + self.options.id + " .forward-btn")[0];
         self.backwardBtn = $(container).find("#" + self.options.id + " .backward-btn")[0];
+        self.periodicBtn = $(container).find("#" + self.options.id + " #interval-type-periodic")[0];
+        self.cumulativeBtn = $(container).find("#" + self.options.id + " #interval-type-cumulative")[0];
 
         L.DomEvent.addListener(self.playBtn, 'click', function(event) {
             if (!self.isPlaying()) {
@@ -145,6 +158,8 @@ L.Control.Player = L.Control.extend({
         L.DomEvent.addListener(self.forwardBtn, 'click', self.forwardFrame, self);
         L.DomEvent.addListener(self.backwardBtn, 'click', self.backwardFrame, self);
         L.DomEvent.addListener(self.replayBtn, 'click', self.doReplay, self);
+        L.DomEvent.addListener(self.periodicBtn, 'click', self.doPeriodic, self);
+        L.DomEvent.addListener(self.cumulativeBtn, 'click', self.doCumulative, self);
 
         self.on('play', self.updateStatusText, self);
         self.on('forward', self.updateStatusText, self);
@@ -160,28 +175,75 @@ L.Control.Player = L.Control.extend({
     },
     setIntervals: function () {
         var self = this;
-        switch (self.options.playerType) {
-            case "year":
-                if (self.options.startYear && self.options.endYear) {
-                    self.intervals = [];
-                    var start = self.options.startYear,
-                        end = self.options.startYear + self.options.interval,
-                        nextIncrement,
-                        numberOfRepeats = Math.round((self.options.endYear - self.options.startYear + 1) / self.options.interval);
-                    for (var i = 0; i < numberOfRepeats; i++) {
-                        self.intervals.push([start, end - 1]);
-                        start = end;
-                        nextIncrement = end + self.options.interval;
-                        if (nextIncrement > self.options.endYear) {
-                            end = self.options.endYear + 1;
-                        }
-                        else {
-                            end = nextIncrement;
-                        }
-                    }
+        switch (self.currentIntervalType) {
+            case self.intervalTypes.periodic:
+                switch (self.options.playerType) {
+                    case "year":
+                        self.setYearlyPeriodicIntervals();
+                        break;
+                }
+                break;
+            case self.intervalTypes.cumulative:
+                switch (self.options.playerType) {
+                    case "year":
+                        self.setYearlyCumulativeIntervals();
+                        break;
                 }
                 break;
         }
+    },
+    setYearlyPeriodicIntervals: function () {
+        var self = this;
+        if (self.options.startYear && self.options.endYear) {
+            self.intervals = [];
+            var start = self.options.startYear,
+                end = self.options.startYear + self.options.interval,
+                nextIncrement,
+                numberOfRepeats = Math.round((self.options.endYear - self.options.startYear + 1) / self.options.interval);
+            for (var i = 0; i < numberOfRepeats; i++) {
+                self.intervals.push([start, end - 1]);
+                start = end;
+                nextIncrement = end + self.options.interval;
+                if (nextIncrement > self.options.endYear) {
+                    end = self.options.endYear + 1;
+                }
+                else {
+                    end = nextIncrement;
+                }
+            }
+        }
+    },
+    setYearlyCumulativeIntervals: function () {
+        var self = this;
+        if (self.options.startYear && self.options.endYear) {
+            self.intervals = [];
+            var start = self.options.startYear,
+                end = self.options.startYear + self.options.interval,
+                nextIncrement,
+                numberOfRepeats = Math.round((self.options.endYear - self.options.startYear + 1) / self.options.interval);
+            for (var i = 0; i < numberOfRepeats; i++) {
+                self.intervals.push([start, end - 1]);
+                nextIncrement = end + self.options.interval;
+                if (nextIncrement > self.options.endYear) {
+                    end = self.options.endYear + 1;
+                }
+                else {
+                    end = nextIncrement;
+                }
+            }
+        }
+    },
+    doPeriodic: function() {
+        var self = this;
+        self.currentIntervalType = self.intervalTypes.periodic;
+        self.doStop();
+        self.setIntervals();
+    },
+    doCumulative: function() {
+        var self = this;
+        self.currentIntervalType = self.intervalTypes.cumulative;
+        self.doStop();
+        self.setIntervals();
     },
     doPlay: function (resetIntervals) {
         var self = this;
@@ -202,6 +264,7 @@ L.Control.Player = L.Control.extend({
     startTimerForNextFrame: function() {
         var self = this;
         if (self.isPlaying()) {
+            self.clearTimeout();
             self.timeoutID = setTimeout(function () {
                 self.doPlay();
             }, self.options.timeout * 1000);
