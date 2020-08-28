@@ -512,7 +512,7 @@ ALA.Map = function (id, options) {
         return layerCreatedByGeoJSON;
     };
     
-    self.setCentroidGeoJSON = function (geoJSON, siteProperties) {
+    self.setGeoJSONAsCircleMarker = function (geoJSON, siteProperties) {
         if (typeof geoJSON === 'string') {
             geoJSON = JSON.parse(geoJSON);
         }
