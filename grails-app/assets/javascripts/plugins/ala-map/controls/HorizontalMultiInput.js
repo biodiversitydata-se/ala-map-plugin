@@ -126,7 +126,8 @@ L.Control.HorizontalMultiInput = L.Control.extend({
                     $item.on('change', function () {
                         var value = $item.val();
                         self.fire('change', {value: value, item: item});
-                        ga && ga('send', 'event', 'map-horizontal', item.id, value);
+                        if(typeof ga !== 'undefined')
+                            ga('send', 'event', 'map-horizontal', item.id, value);
                     });
                     break;
                 case 'slider':
@@ -140,7 +141,8 @@ L.Control.HorizontalMultiInput = L.Control.extend({
                         }
                         $item.find("label").html(item.label + ' ' + value + '&nbsp;');
                         self.fire('change', {value: value, item: item});
-                        ga && ga('send', 'event', 'map-horizontal', item.label || item.id, value);
+                        if(typeof ga !== 'undefined')
+                            ga('send', 'event', 'map-horizontal', item.label || item.id, value);
                     });
                     break;
             }

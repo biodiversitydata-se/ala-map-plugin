@@ -362,7 +362,8 @@ ALA.Map = function (id, options) {
         drawnItems = null;
         markers = [];
         subscribers = [];
-        ga && ga('send', 'event', 'ala-map', 'map-destroy');
+        if(typeof ga !== 'undefined')
+            ga('send', 'event', 'ala-map', 'map-destroy');
     };
 
     /**
@@ -1666,7 +1667,8 @@ ALA.Map = function (id, options) {
             var layer = layerEvent.layer,
                 label = layer.options.uniqueName;
             if (label) {
-                ga && ga('send', 'event', 'map-layer', 'overlay-add', label);
+                if(typeof ga !== 'undefined')
+                    ga('send', 'event', 'map-layer', 'overlay-add', label);
             }
         });
 
@@ -1674,7 +1676,8 @@ ALA.Map = function (id, options) {
             var layer = layerEvent.layer,
                 label = layer.options.uniqueName;
             if (label) {
-                ga && ga('send', 'event', 'map-layer', 'overlay-remove', label);
+                if(typeof ga !== 'undefined')
+                    ga('send', 'event', 'map-layer', 'overlay-remove', label);
             }
         });
 
@@ -1682,7 +1685,8 @@ ALA.Map = function (id, options) {
             var layer = layerEvent.layer,
                 label = layer.options.uniqueName;
             if (label) {
-                ga && ga('send', 'event', 'map-layer', 'baselayer-change', label);
+                if(typeof ga !== 'undefined')
+                    ga('send', 'event', 'map-layer', 'baselayer-change', label);
             }
         });
     }
@@ -1975,7 +1979,8 @@ ALA.Map = function (id, options) {
     };
 
     initialiseMap();
-    ga && ga('send', 'event', 'ala-map', 'map-create');
+    if(typeof ga !== 'undefined')
+        ga('send', 'event', 'ala-map', 'map-create');
 };
 
 /**

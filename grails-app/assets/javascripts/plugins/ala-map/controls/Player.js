@@ -148,7 +148,8 @@ L.Control.Player = L.Control.extend({
         L.DomEvent.addListener(self.playBtn, 'click', function(event) {
             if (!self.isPlaying()) {
                 self.doPlay();
-                ga && ga('send', 'event', 'map-player', self.playerStates.play, self.currentIntervalType);
+                if(typeof ga !== 'undefined')
+                    ga('send', 'event', 'map-player', self.playerStates.play, self.currentIntervalType);
             }
         });
 
@@ -277,7 +278,8 @@ L.Control.Player = L.Control.extend({
             self.setCurrentState(self.playerStates.pause);
             self.syncButtonsWithModel();
             self.fire('pause', {intervalType: self.options.playerType});
-            ga && ga('send', 'event', 'map-player', self.playerStates.pause, self.currentIntervalType);
+            if(typeof ga !== 'undefined')
+                ga('send', 'event', 'map-player', self.playerStates.pause, self.currentIntervalType);
         }
     },
     doStop: function() {
@@ -287,16 +289,19 @@ L.Control.Player = L.Control.extend({
             self.setCurrentState(self.playerStates.stop);
             self.syncButtonsWithModel();
             self.fire('stop', {intervalType: self.options.playerType});
-            ga && ga('send', 'event', 'map-player', self.playerStates.stop, self.currentIntervalType);
+            if(typeof ga !== 'undefined')
+                ga('send', 'event', 'map-player', self.playerStates.stop, self.currentIntervalType);
         }
     },
     doReplay: function() {
         var self = this;
         setTimeout(function () {
             if (self.isContinuousPlay()) {
-                ga && ga('send', 'event', 'map-player', self.playerStates.replay +'-on' , self.currentIntervalType);
+                if(typeof ga !== 'undefined')
+                    ga('send', 'event', 'map-player', self.playerStates.replay +'-on' , self.currentIntervalType);
             } else {
-                ga && ga('send', 'event', 'map-player', self.playerStates.replay +'-off' , self.currentIntervalType);
+                if(typeof ga !== 'undefined')
+                    ga('send', 'event', 'map-player', self.playerStates.replay +'-off' , self.currentIntervalType);
             }
         }, 0);
     },
@@ -361,7 +366,8 @@ L.Control.Player = L.Control.extend({
         if (self.isPaused()) {
             self.forwardIndex();
             self.fire('forward', self.getCurrentDuration());
-            ga && ga('send', 'event', 'map-player', self.playerStates.forward, self.currentIntervalType);
+            if(typeof ga !== 'undefined')
+                ga('send', 'event', 'map-player', self.playerStates.forward, self.currentIntervalType);
         }
     },
     backwardFrame: function () {
@@ -370,7 +376,8 @@ L.Control.Player = L.Control.extend({
             self.backwardIndex();
 
             self.fire('backward', self.getCurrentDuration());
-            ga && ga('send', 'event', 'map-player', self.playerStates.backward, self.currentIntervalType);
+            if(typeof ga !== 'undefined')
+                ga('send', 'event', 'map-player', self.playerStates.backward, self.currentIntervalType);
         }
     },
     updateStatusText: function () {

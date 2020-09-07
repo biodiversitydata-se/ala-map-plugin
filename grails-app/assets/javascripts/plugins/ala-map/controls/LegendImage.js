@@ -89,7 +89,8 @@ L.Control.LegendImage = L.Control.extend({
             $(self.legend).show();
             $(self.expandBtn).hide();
             event.preventDefault();
-            ga && ga('send', 'event', 'map-legend', 'legend-open');
+            if(typeof ga !== 'undefined')
+                ga('send', 'event', 'map-legend', 'legend-open');
         });
 
         L.DomEvent.addListener(self.closeBtn, 'click', function(event) {
@@ -97,7 +98,8 @@ L.Control.LegendImage = L.Control.extend({
             $(self.legend).hide();
             $(self.expandBtn).show();
             event.preventDefault();
-            ga && ga('send', 'event', 'map-legend', 'legend-close');
+            if(typeof ga !== 'undefined')
+                ga('send', 'event', 'map-legend', 'legend-close');
         });
 
         L.DomEvent.disableClickPropagation(container);
