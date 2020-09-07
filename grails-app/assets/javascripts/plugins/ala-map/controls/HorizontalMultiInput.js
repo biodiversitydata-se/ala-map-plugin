@@ -82,7 +82,7 @@ L.Control.HorizontalMultiInput = L.Control.extend({
     selectHTML: function (item) {
         var self = this,
             html =
-                "<label for=\""+ item.id +"\">" + item.label + "&nbsp;</label>" +
+                "<label for=\""+ item.id +"\" id=\"" + item.id + "Label\">" + item.label + "&nbsp;</label>" +
                 "<div class='horizontal-control-item'>" +
                     "<select name=\"" + item.name + "\" id=\"" + item.id + "\">" +
                         self.generateSelectOptions(item.values) +
@@ -151,7 +151,7 @@ L.Control.HorizontalMultiInput = L.Control.extend({
         var self = this;
         var html =
             "<div id='" + item.id + "' style='" + (item.style || "") + "'>" +
-                "<label>" +
+                "<label id=\"" + item.id + "Label\">" +
                     item.label + ' ' + item.options.value + "&nbsp;" +
                 "</label>" +
                 "<div class='horizontal-control-item' style='width:" + item.options.length + ";'>" +
@@ -173,6 +173,23 @@ L.Control.HorizontalMultiInput = L.Control.extend({
             return true;
         } else {
             return false;
+        }
+    },
+    changeLabel: function (labelText, id) {
+        $('#' + id + 'Label').html(labelText + "&nbsp;");
+    },
+    disableItem: function (disable, item) {
+        switch (item.type) {
+            case 'select':
+                $("#"+item.id).prop("disabled", disable);
+                break;
+            case 'slider':
+                if (disable) {
+                    $("#"+item.id).find("div").slider('disable');
+                } else {
+                    $("#"+item.id).find("div").slider('enable');
+                }
+                break;
         }
     }
 });

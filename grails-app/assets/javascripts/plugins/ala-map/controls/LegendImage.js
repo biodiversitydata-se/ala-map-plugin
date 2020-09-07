@@ -113,7 +113,7 @@ L.Control.LegendImage = L.Control.extend({
 
         if (url) {
             var spinner = L.DomUtil.create("span", "fa fa-spin fa-spinner", self.imageContainer);
-            var img = L.DomUtil.create("img", "image-logo legend-image ", self.imageContainer);
+            var img = L.DomUtil.create("img", "legend-image ", self.imageContainer);
             $(img).hide();
             img.onload = function () {
                 $(spinner).toggle();

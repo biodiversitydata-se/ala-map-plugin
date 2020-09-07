@@ -362,6 +362,7 @@ ALA.Map = function (id, options) {
         drawnItems = null;
         markers = [];
         subscribers = [];
+        ga && ga('send', 'event', 'ala-map', 'map-destroy');
     };
 
     /**
@@ -1974,6 +1975,7 @@ ALA.Map = function (id, options) {
     };
 
     initialiseMap();
+    ga && ga('send', 'event', 'ala-map', 'map-create');
 };
 
 /**
