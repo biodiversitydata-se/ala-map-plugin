@@ -47,6 +47,9 @@ L.Control.HorizontalMultiInput = L.Control.extend({
         self.id = self.options.id;
         $(controlHTML).prependTo(container);
         self.registerListeners();
+        setTimeout(function(){
+            self.initPopover();
+        }, 0);
 
         L.DomEvent.disableClickPropagation(container);
         L.DomEvent.disableScrollPropagation(container);
@@ -87,6 +90,7 @@ L.Control.HorizontalMultiInput = L.Control.extend({
                     "<select name=\"" + item.name + "\" id=\"" + item.id + "\">" +
                         self.generateSelectOptions(item.values) +
                     "</select>" +
+                    (item.helpText ? "<a id='" + item.id + "-help-text' class='padding-5' href='#'><i class=\"icon-question-sign\">&nbsp;</i></a>" :  "") +
                 "</div>";
 
         return html;
@@ -107,6 +111,28 @@ L.Control.HorizontalMultiInput = L.Control.extend({
 
         return html;
     },
+    initPopover: function (content, placement) {
+        var self = this;
+
+        self.options.items.forEach(function (item) {
+            self.setPopover(item);
+        });
+    },
+    setPopover: function (item) {
+        if (item.helpText) {
+            var placement = item.placement || 'bottom';
+            $('#' + item.id + '-help-text').popover({
+                placement: placement,
+                animation: true,
+                html: true,
+                trigger: "hover",
+                delay: {
+                    show: 100
+                },
+                content: item.helpText
+            });
+        }
+    },
     setSelectOptions: function(id, values){
         var self = this,
             $container = $(self.container),
@@ -114,6 +140,16 @@ L.Control.HorizontalMultiInput = L.Control.extend({
             optionsHTML = self.generateSelectOptions(values);
 
         $select.html(optionsHTML);
+    },
+    setSize: function(type, id, value) {
+        switch (type) {
+            case 'slider':
+                $("#"+id).find("div").slider({value: value});
+                break;
+            default:
+                console.warn("Unsupported type used in setSize method - " + type);
+                break;
+        }
     },
     registerListeners: function () {
         var self = this,

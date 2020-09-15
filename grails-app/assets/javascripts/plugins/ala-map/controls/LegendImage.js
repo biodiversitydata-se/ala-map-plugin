@@ -44,8 +44,8 @@ L.Control.LegendImage = L.Control.extend({
         closeClass: "icon-remove",
         legendListClass: "",
         url: "",
-        width: null
-
+        width: null,
+        height: 200
     },
 
     initialize: function (options) {
@@ -72,7 +72,7 @@ L.Control.LegendImage = L.Control.extend({
         L.DomUtil.create("i", self.options.closeClass , self.closeBtn);
 
         self.imageContainer = L.DomUtil.create("div", "image-container " , self.legend);
-        self.imageContainer.style = 'width: 100%; box-sizing: border-box;';
+        self.imageContainer.style = 'width: 100%; max-height: '+ self.options.height +'px; box-sizing: border-box;';
 
         self.updateLegend();
 
