@@ -465,11 +465,11 @@ ALA.Map = function (id, options) {
         if (typeof geoJSON === 'string') {
             geoJSON = JSON.parse(geoJSON);
         }
-
+        console.log("geoJSON", geoJSON);
         var layerCreatedByGeoJSON;
 
         L.geoJson(geoJSON, {
-            pointToLayer: pointToLayerCircleSupport,
+            // pointToLayer: pointToLayerCircleSupport,
             onEachFeature: function (feature, layer) {
                 wmsOptions = {};
                 //Create a popup content
@@ -484,12 +484,12 @@ ALA.Map = function (id, options) {
                     layer = createWmsLayer(feature.properties.pid, wmsOptions);
                 }
 
-                if (options.singleDraw) {
-                    drawnItems.clearLayers();
-                }
-                if (options.markerOrShapeNotBoth) {
-                    clearMarkers();
-                }
+                // if (options.singleDraw) {
+                //     drawnItems.clearLayers();
+                // }
+                // if (options.markerOrShapeNotBoth) {
+                //     clearMarkers();
+                // }
 
                 drawnItems.addLayer(layer);
                 if (layer.bringToFront) {
@@ -508,7 +508,6 @@ ALA.Map = function (id, options) {
         }
 
         self.notifyAll();
-
         return layerCreatedByGeoJSON;
     };
     
