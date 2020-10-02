@@ -71,6 +71,8 @@ L.Control.LegendImage = L.Control.extend({
         self.closeBtn.title = self.options.closeTitle;
         L.DomUtil.create("i", self.options.closeClass , self.closeBtn);
 
+        self.legendTitle = L.DomUtil.create("h6", "", self.legend);
+        self.setTitle(self.options.legendTitle);
         self.imageContainer = L.DomUtil.create("div", "image-container " , self.legend);
         self.imageContainer.style = 'width: 100%; max-height: '+ self.options.height +'px; box-sizing: border-box;';
 
@@ -79,6 +81,7 @@ L.Control.LegendImage = L.Control.extend({
         if (self.options.collapse) {
             $(self.closeBtn).hide();
             $(self.legend).hide();
+            $(self.legendTitle).hide();
         }
         else {
             $(self.expandBtn).hide();
@@ -87,6 +90,7 @@ L.Control.LegendImage = L.Control.extend({
         L.DomEvent.addListener(self.expandBtn, 'click', function(event) {
             $(self.closeBtn).show();
             $(self.legend).show();
+            $(self.legendTitle).show();
             $(self.expandBtn).hide();
             event.preventDefault();
             if(typeof ga !== 'undefined')
@@ -96,6 +100,7 @@ L.Control.LegendImage = L.Control.extend({
         L.DomEvent.addListener(self.closeBtn, 'click', function(event) {
             $(self.closeBtn).hide();
             $(self.legend).hide();
+            $(self.legendTitle).hide();
             $(self.expandBtn).show();
             event.preventDefault();
             if(typeof ga !== 'undefined')
@@ -108,12 +113,13 @@ L.Control.LegendImage = L.Control.extend({
         return container;
     },
 
-    updateLegend: function (url) {
+    updateLegend: function (url, title) {
         var self = this;
         var url = url || self.options.url;
         self.clearLegend();
 
         if (url) {
+            self.setTitle(title);
             var spinner = L.DomUtil.create("span", "fa fa-spin fa-spinner", self.imageContainer);
             var img = L.DomUtil.create("img", "legend-image ", self.imageContainer);
             $(img).hide();
@@ -131,5 +137,16 @@ L.Control.LegendImage = L.Control.extend({
         while (self.imageContainer.firstChild) {
             self.imageContainer.removeChild(self.imageContainer.firstChild);
         }
+    },
+
+    setTitle: function (title) {
+        var self = this;
+        if(title) {
+            self.legendTitle.innerText = title;
+            $(self.legendTitle).show();
+        } else {
+            $(self.legendTitle).hide();
+        }
+
     }
 });
