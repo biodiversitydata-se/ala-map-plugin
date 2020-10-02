@@ -466,10 +466,11 @@ ALA.Map = function (id, options) {
             geoJSON = JSON.parse(geoJSON);
         }
 
+        console.log("options", options)
         var layerCreatedByGeoJSON;
 
         L.geoJson(geoJSON, {
-            pointToLayer: pointToLayerCircleSupport,
+            // pointToLayer: pointToLayerCircleSupport,
             onEachFeature: function (feature, layer) {
                 wmsOptions = {};
                 //Create a popup content
@@ -508,7 +509,51 @@ ALA.Map = function (id, options) {
         }
 
         self.notifyAll();
+        return layerCreatedByGeoJSON;
+    };
 
+        //
+    self.setMultipartGeoJSON = function (geoJSON, layerOptions) {
+        if (typeof geoJSON === 'string') {
+            geoJSON = JSON.parse(geoJSON);
+        }
+        console.log("options", options)
+        var layerCreatedByGeoJSON;
+
+        drawnItems.clearLayers();
+
+        L.geoJson(geoJSON, {
+            onEachFeature: function (feature, layer) {
+                wmsOptions = {};
+                //Create a popup content
+                if(feature.properties && feature.properties.popupContent)
+                    layer.bindPopup(feature.properties.popupContent);
+
+                if (feature.properties && feature.properties.pid) {
+                    if (feature.geometry.type == ALA.MapConstants.DRAW_TYPE.POINT_TYPE){
+                        wmsOptions.layers = "ALA:Points"
+                        wmsOptions.opacity = 1.0
+                      }
+                    layer = createWmsLayer(feature.properties.pid, wmsOptions);
+                }
+
+                drawnItems.addLayer(layer);
+                if (layer.bringToFront) {
+                    layer.bringToFront();
+                }
+
+                applyLayerOptions(layer, layerOptions);
+                layerCreatedByGeoJSON = layer;
+            },
+            style: DEFAULT_SHAPE_OPTIONS
+        });
+
+
+        if (options.zoomToObject) {
+            self.fitBounds();
+        }
+
+        self.notifyAll();
         return layerCreatedByGeoJSON;
     };
     
