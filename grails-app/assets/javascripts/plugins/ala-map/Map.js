@@ -466,7 +466,6 @@ ALA.Map = function (id, options) {
             geoJSON = JSON.parse(geoJSON);
         }
 
-        console.log("options", options)
         var layerCreatedByGeoJSON;
 
         L.geoJson(geoJSON, {
