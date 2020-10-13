@@ -511,51 +511,6 @@ ALA.Map = function (id, options) {
         return layerCreatedByGeoJSON;
     };
 
-        //
-    self.setMultipartGeoJSON = function (geoJSON, layerOptions) {
-        if (typeof geoJSON === 'string') {
-            geoJSON = JSON.parse(geoJSON);
-        }
-        console.log("options", options)
-        var layerCreatedByGeoJSON;
-
-        drawnItems.clearLayers();
-
-        L.geoJson(geoJSON, {
-            onEachFeature: function (feature, layer) {
-                wmsOptions = {};
-                //Create a popup content
-                if(feature.properties && feature.properties.popupContent)
-                    layer.bindPopup(feature.properties.popupContent);
-
-                if (feature.properties && feature.properties.pid) {
-                    if (feature.geometry.type == ALA.MapConstants.DRAW_TYPE.POINT_TYPE){
-                        wmsOptions.layers = "ALA:Points"
-                        wmsOptions.opacity = 1.0
-                      }
-                    layer = createWmsLayer(feature.properties.pid, wmsOptions);
-                }
-
-                drawnItems.addLayer(layer);
-                if (layer.bringToFront) {
-                    layer.bringToFront();
-                }
-
-                applyLayerOptions(layer, layerOptions);
-                layerCreatedByGeoJSON = layer;
-            },
-            style: DEFAULT_SHAPE_OPTIONS
-        });
-
-
-        if (options.zoomToObject) {
-            self.fitBounds();
-        }
-
-        self.notifyAll();
-        return layerCreatedByGeoJSON;
-    };
-    
     self.setGeoJSONAsCircleMarker = function (geoJSON, siteProperties) {
         if (typeof geoJSON === 'string') {
             geoJSON = JSON.parse(geoJSON);
@@ -627,12 +582,15 @@ ALA.Map = function (id, options) {
      * @param geoJSON {GeoJSON} Standard GeoJSON metadata for map features. This can be a JSON string, or a GeoJSON object.
      * @param layerOptions {Object} Configuration options for the layer. See {@link LAYER_OPTIONS} for details of supported options. Optional.
      */
-    self.setTransectFromGeoJSON = function (geoJSON, layerOptions) {
+    self.setTransectFromGeoJSON = function (geoJSON, layerOptions, clearLayers) {
         if (typeof geoJSON === 'string') {
             geoJSON = JSON.parse(geoJSON);
         }
-
         var layerCreatedByGeoJSON;
+
+        if (clearLayers){
+            drawnItems.clearLayers();
+        }
 
         L.geoJson(geoJSON, {
             onEachFeature: function (feature, layer) {
@@ -643,7 +601,7 @@ ALA.Map = function (id, options) {
                 }
                 if (feature.geometry.type != 'Point'){
                     layer.on('mouseover', function() { this.setStyle({'color': '#eb6f10'}) });
-                    layer.on('mouseout', function() { this.setStyle({'color': 'blue'}) });
+                    layer.on('mouseout', function() { this.setStyle({'color': 'black'}) });
                 }
                 drawnItems.addLayer(layer);
                 if (layer.bringToFront) {
@@ -663,7 +621,6 @@ ALA.Map = function (id, options) {
         }
 
         self.notifyAll();
-
         return layerCreatedByGeoJSON;
     };
 
