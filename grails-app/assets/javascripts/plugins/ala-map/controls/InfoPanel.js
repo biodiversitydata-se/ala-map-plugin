@@ -104,7 +104,7 @@ L.Control.InfoPanel = L.Control.extend({
     setContent: function (content, title) {
         var self = this;
         if (content) {
-            self.contentPanel.innerText = content;
+            self.contentPanel.innerHTML = content;
             $(self.contentPanel).show();
         } else {
             $(self.contentPanel).hide();
