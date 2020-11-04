@@ -573,7 +573,7 @@ ALA.Map = function (id, options) {
 
      /**
      * Populate the map with the provided GeoJSON data from systematic monitoring sites.
-     * The lines will be highlighted so that they can be told apart. 
+     * The lines will be highlighted in white so that they can be told apart. 
      * 
      * Will notify all subscribers.
      *
@@ -600,8 +600,9 @@ ALA.Map = function (id, options) {
                     layer.bindPopup(feature.properties.popupContent);
                 }
                 if (feature.geometry.type != 'Point'){
-                    layer.on('mouseover', function() { this.setStyle({'color': '#eb6f10'}) });
-                    layer.on('mouseout', function() { this.setStyle({'color': 'black'}) });
+                    layer.setStyle({'color': '#e82222', 'opacity': 0.8});
+                    layer.on('mouseover', function() { this.setStyle({'color': '#f7f307'}) });
+                    layer.on('mouseout', function() { this.setStyle({'color': '#e82222', 'opacity': 0.8}) });
                 }
                 drawnItems.addLayer(layer);
                 if (layer.bringToFront) {
@@ -2022,7 +2023,7 @@ ALA.Map = function (id, options) {
             isBaseLayerPresent = $(containerSelector + ' .' + classBaseLayer).children().length >= 1;
 
         if (!isHeadingPresent && isBaseLayerPresent)
-            $('<label class="' + classHeading + '"><strong>Base layer</strong></label>').insertBefore(containerSelector + ' .' + classBaseLayer);
+            $('<label class="' + classHeading + '"><strong>Bas-skikt</strong></label>').insertBefore(containerSelector + ' .' + classBaseLayer);
     };
 
     function addOverlayHeading(containerSelector) {
@@ -2032,7 +2033,7 @@ ALA.Map = function (id, options) {
             isOverlayPresent = $(containerSelector + ' .' + classOverlay).children().length >= 1;
 
         if (!isHeadingPresent && isOverlayPresent)
-            $('<label class="' + classHeading + '"><strong>Overlay</strong></label>').insertBefore(containerSelector + ' .' + classOverlay);
+            $('<label class="' + classHeading + '"><strong>Tillägg</strong></label>').insertBefore(containerSelector + ' .' + classOverlay);
     };
 
     function addBaseLayerAndOverlayHeading (containerSelector) {
