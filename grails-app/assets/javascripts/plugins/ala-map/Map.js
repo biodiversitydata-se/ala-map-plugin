@@ -549,10 +549,7 @@ ALA.Map = function (id, options) {
             },
             onEachFeature: function (feature, layer) {              
                 wmsOptions = {};
-                //Create a popup content
-                if(feature.properties && feature.properties.popupContent){
-                    layer.bindPopup(feature.properties.popupContent);
-                }        
+      
                 if (options.singleDraw) {
                     drawnItems.clearLayers();
                 }
