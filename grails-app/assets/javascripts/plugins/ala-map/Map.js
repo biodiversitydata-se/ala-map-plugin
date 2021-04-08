@@ -115,14 +115,14 @@ ALA.Map = function (id, options) {
     var self = this;
 
     self.DEFAULT_CENTRE = {
-        lat: 57.040730, 
-        lng: 14.183350
+        lat: 63.945093, 
+        lng: 16.611328
     };
 
-    var DEFAULT_ZOOM = 4;
-    var SINGLE_POINT_ZOOM = 16;
+    var DEFAULT_ZOOM = 5;
+    var SINGLE_POINT_ZOOM = 15;
     var MAX_AUTO_ZOOM = 15;
-    var DEFAULT_MAX_ZOOM = 21;
+    var DEFAULT_MAX_ZOOM = 20;
     var DEFAULT_OPACITY = 0.5;
     var DEFAULT_LINE_WEIGHT = 4;
     var DEFAULT_FILL_COLOUR = "#000";
