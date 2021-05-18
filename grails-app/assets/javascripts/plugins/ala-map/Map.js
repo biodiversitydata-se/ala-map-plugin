@@ -124,6 +124,7 @@ ALA.Map = function (id, options) {
     var MAX_AUTO_ZOOM = 15;
     var DEFAULT_MAX_ZOOM = 20;
     var DEFAULT_OPACITY = 0.5;
+    var DEFAULT_OPACITY_POLYGON = 0;
     var DEFAULT_LINE_WEIGHT = 4;
     var DEFAULT_FILL_COLOUR = "#000";
     var DEFAULT_MAP_HEIGHT_BUFFER = 40;
@@ -201,10 +202,12 @@ ALA.Map = function (id, options) {
         polyline: false,
         polygon: {
             allowIntersection: false,
-            shapeOptions: DEFAULT_SHAPE_OPTIONS
+            shapeOptions: DEFAULT_SHAPE_OPTIONS,
+            fillOpacity: DEFAULT_OPACITY_POLYGON
         },
         rectangle: {
-            shapeOptions: DEFAULT_SHAPE_OPTIONS
+            shapeOptions: DEFAULT_SHAPE_OPTIONS,
+            fillOpacity: DEFAULT_OPACITY_POLYGON
         },
         circle: {
             shapeOptions: DEFAULT_SHAPE_OPTIONS
@@ -608,10 +611,12 @@ ALA.Map = function (id, options) {
                 if(feature.properties && feature.properties.popupContent){
                     layer.bindPopup(feature.properties.popupContent);
                 }
-                if (feature.geometry.type != 'Point'){
+                if (feature.geometry.type == 'LineString'){
                     layer.setStyle({'color': '#e82222', 'opacity': 0.8});
                     layer.on('mouseover', function() { this.setStyle({'color': '#f7f307'}) });
                     layer.on('mouseout', function() { this.setStyle({'color': '#e82222', 'opacity': 0.8}) });
+                } else if (feature.geometry.type == 'Polygon'){
+                    layer.setStyle({fillOpacity: 0})
                 }
                 drawnItems.addLayer(layer);
                 if (layer.bringToFront) {
