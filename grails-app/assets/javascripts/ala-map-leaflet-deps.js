@@ -11,4 +11,4 @@ Dependencies excluding jquery and underscore, includes:
 //= require webjars/leaflet.markercluster/0.5.0/dist/leaflet.markercluster.js
 //= require webjars/leaflet-loading/0.1.24/src/Control.Loading.js
 //= require webjars/leaflet-sleep/0.5.1/Leaflet.Sleep.js
-//= require turf-2.0.2/turf.min.js
+
