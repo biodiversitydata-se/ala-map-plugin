@@ -547,7 +547,8 @@ ALA.Map = function (id, options) {
                 return L.circleMarker(latlng, {
                     color: 'black',
                     fillOpacity: 0.8,
-                    fillColor: getColor(feature.properties.isBooked)
+                    fillColor: getColor(feature.properties.isBooked),
+                    radius: 5
                 })
             },
             onEachFeature: function (feature, layer) {              
