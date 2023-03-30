@@ -7,7 +7,6 @@ git branch merge_alamaster_230330
 git checkout merge_alamaster_230330
 push the branch :
 git push -u origin merge_alamaster_230330
-(WTF the merge request ?)
 get the info from the repo to have all the branches :
 git pull
 import the current ecodata branch we're working on :
@@ -15,7 +14,7 @@ git checkout lusm-main
 
 
 then decide which branch the erge will take place :
-git checkout merge_alamaster_230323
+git checkout merge_alamaster_230330
 
 and then merge 
-git merge lusm-grails4-master-test
+git merge lusm-main

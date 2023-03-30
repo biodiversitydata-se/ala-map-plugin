@@ -69,6 +69,12 @@ ALA.MapConstants = {
  *      <ul>
  *          <li><code>position</code> position of the button on the map. Default: topleft</li>
  *      </ul>
+ *  </li>
+ *  <li><code>loadingControlOptions:</code>
+ *      <ul>
+ *          <li><code>position</code> position of the loading control on the map. Default: topright</li>
+ *      </ul>
+ *  </li>
  *  <li><code>drawControl</code> whether to include drawing controls or not. Default: true</li>
  *  <li><code>drawOptions</code> if drawing control is to be included, then specify options to pass to drawing control here.</li>
  *  <li><code>editOptions</code> if edit option in drawing control is enabled, then specify options to pass to edit control here.</li>
@@ -109,15 +115,16 @@ ALA.Map = function (id, options) {
     var self = this;
 
     self.DEFAULT_CENTRE = {
-        lat: -28,
-        lng: 134
+        lat: 63.945093, 
+        lng: 16.611328
     };
 
-    var DEFAULT_ZOOM = 4;
-    var SINGLE_POINT_ZOOM = 16;
+    var DEFAULT_ZOOM = 5;
+    var SINGLE_POINT_ZOOM = 15;
     var MAX_AUTO_ZOOM = 15;
-    var DEFAULT_MAX_ZOOM = 21;
+    var DEFAULT_MAX_ZOOM = 20;
     var DEFAULT_OPACITY = 0.5;
+    var DEFAULT_OPACITY_POLYGON = 0;
     var DEFAULT_LINE_WEIGHT = 4;
     var DEFAULT_FILL_COLOUR = "#000";
     var DEFAULT_MAP_HEIGHT_BUFFER = 40;
@@ -195,10 +202,12 @@ ALA.Map = function (id, options) {
         polyline: false,
         polygon: {
             allowIntersection: false,
-            shapeOptions: DEFAULT_SHAPE_OPTIONS
+            shapeOptions: DEFAULT_SHAPE_OPTIONS,
+            fillOpacity: DEFAULT_OPACITY_POLYGON
         },
         rectangle: {
-            shapeOptions: DEFAULT_SHAPE_OPTIONS
+            shapeOptions: DEFAULT_SHAPE_OPTIONS,
+            fillOpacity: DEFAULT_OPACITY_POLYGON
         },
         circle: {
             shapeOptions: DEFAULT_SHAPE_OPTIONS
@@ -253,6 +262,9 @@ ALA.Map = function (id, options) {
         fullscreenControlOptions: {
             position: 'topleft'
         },
+        loadingControlOptions: {
+            position: 'topright'
+        },
         drawControl: true,
         singleDraw: true,
         singleMarker: true,
@@ -282,7 +294,8 @@ ALA.Map = function (id, options) {
         trackWindowHeight: false,
         minMapHeight: 250,
         autoZIndex: true,
-        preserveZIndex: false
+        preserveZIndex: false,
+        overlayControlPosition: "topright"
     };
 
     /**
@@ -352,6 +365,8 @@ ALA.Map = function (id, options) {
         drawnItems = null;
         markers = [];
         subscribers = [];
+        if(typeof ga !== 'undefined')
+            ga('send', 'event', 'ala-map', 'map-destroy');
     };
 
     /**
@@ -469,7 +484,7 @@ ALA.Map = function (id, options) {
         var layerCreatedByGeoJSON;
 
         L.geoJson(geoJSON, {
-            pointToLayer: pointToLayerCircleSupport,
+            // pointToLayer: pointToLayerCircleSupport,
             onEachFeature: function (feature, layer) {
                 wmsOptions = {};
                 //Create a popup content
@@ -508,7 +523,120 @@ ALA.Map = function (id, options) {
         }
 
         self.notifyAll();
+        return layerCreatedByGeoJSON;
+    };
 
+    self.setGeoJSONAsCircleMarker = function (geoJSON, siteProperties) {
+        if (typeof geoJSON === 'string') {
+            geoJSON = JSON.parse(geoJSON);
+        }
+
+        var layerCreatedByGeoJSON;
+
+        // fill color of circle point depends on whether site is booked
+        function getColor(isBooked) {
+            switch (isBooked) {
+              case true:
+                return  'green';
+              default:
+                return 'white';
+            }
+          }
+        L.geoJson(geoJSON, {
+            pointToLayer: function (feature, latlng) {
+                return L.circleMarker(latlng, {
+                    color: 'black',
+                    fillOpacity: 0.8,
+                    fillColor: getColor(feature.properties.isBooked),
+                    radius: 5
+                })
+            },
+            onEachFeature: function (feature, layer) {              
+                wmsOptions = {};
+      
+                if (options.singleDraw) {
+                    drawnItems.clearLayers();
+                }
+                if (options.markerOrShapeNotBoth) {
+                    clearMarkers();
+                } 
+
+                drawnItems.addLayer(layer);
+                if (layer.bringToFront) {
+                    layer.bringToFront();
+                }
+ 
+                layer.on("click", function(){
+                    siteProperties.displaySiteDetails();
+                });
+                applyLayerOptions(layer, siteProperties.layerOptions);
+                layerCreatedByGeoJSON = layer;
+            }
+        });
+
+
+        if (options.zoomToObject) {
+            self.fitBounds();
+        }
+
+        self.notifyAll();
+
+        return layerCreatedByGeoJSON;
+    };
+
+     /**
+     * Populate the map with the provided GeoJSON data from systematic monitoring sites.
+     * The lines will be highlighted in white so that they can be told apart. 
+     * 
+     * Will notify all subscribers.
+     *
+     * @memberOf ALA.Map
+     * @function setTransectFromGeoJSON
+     * @param geoJSON {GeoJSON} Standard GeoJSON metadata for map features. This can be a JSON string, or a GeoJSON object.
+     * @param layerOptions {Object} Configuration options for the layer. See {@link LAYER_OPTIONS} for details of supported options. Optional.
+     */
+    self.setTransectFromGeoJSON = function (geoJSON, layerOptions, clearLayers) {
+        if (typeof geoJSON === 'string') {
+            geoJSON = JSON.parse(geoJSON);
+        }
+        var layerCreatedByGeoJSON;
+
+        if (clearLayers){
+            drawnItems.clearLayers();
+        }
+
+        L.geoJson(geoJSON, {
+            onEachFeature: function (feature, layer) {
+                wmsOptions = {};
+                //Create a popup content
+                if(feature.properties && feature.properties.popupContent){
+                    layer.bindPopup(feature.properties.popupContent);
+                }
+                if (feature.geometry.type == 'LineString'){
+                    layer.setStyle({'color': '#e82222', 'opacity': 0.8});
+                    layer.on('mouseover', function() { this.setStyle({'color': '#f7f307'}) });
+                    layer.on('mouseout', function() { this.setStyle({'color': '#e82222', 'opacity': 0.8}) });
+                } else if (feature.geometry.type == 'Polygon'){
+                    layer.setStyle({fillOpacity: 0})
+                }
+                drawnItems.addLayer(layer);
+                if (layer.bringToFront) {
+                    layer.bringToFront();
+                }
+
+                applyLayerOptions(layer, layerOptions);
+                layerCreatedByGeoJSON = layer;
+            },
+            
+            style: DEFAULT_SHAPE_OPTIONS
+        });
+
+
+        if (options.zoomToObject) {
+            self.fitBounds();
+        }
+
+        self.notifyAll();
         return layerCreatedByGeoJSON;
     };
 
@@ -808,6 +936,7 @@ ALA.Map = function (id, options) {
      */
     self.addLayer = function (layer, layerOptions) {
         if (options.singleDraw) {
+            console.log("clearing drawnItems")
             drawnItems.clearLayers();
         }
         if (options.markerOrShapeNotBoth) {
@@ -1258,6 +1387,9 @@ ALA.Map = function (id, options) {
                     newControlOverlaySelected);
             }
 
+            // track user selected layer and overlays
+            trackMapUsage();
+
             console.log("[ALA-Map] Created layer control with " + baseLayerCount + " base layers and " + overlayLayerCount + " overlay layers.");
         }
 
@@ -1287,7 +1419,7 @@ ALA.Map = function (id, options) {
 
         mapImpl.addLayer(options.baseLayer);
         if (options.defaultLayersControl) {
-            self.addLayersControl(options.otherLayers, options.overlays, {overlayLayersSelectedByDefault: options.overlayLayersSelectedByDefault, autoZIndex: options.autoZIndex});
+            self.addLayersControl(options.otherLayers, options.overlays, {overlayLayersSelectedByDefault: options.overlayLayersSelectedByDefault, autoZIndex: options.autoZIndex, position: options.overlayControlPosition});
         }
 
 
@@ -1639,9 +1771,41 @@ ALA.Map = function (id, options) {
     function addLoadingControl() {
         var loadingControl = L.Control.loading({
             separate: true,
-            position: "topright"
+            position: options.loadingControlOptions.position
         });
         mapImpl.addControl(loadingControl);
+    }
+
+    /**
+     * Make sure layer has uniqueName option to send tracking data to GA.
+     */
+    function trackMapUsage() {
+        mapImpl.on('overlayadd', function (layerEvent) {
+            var layer = layerEvent.layer,
+                label = layer.options.uniqueName;
+            if (label) {
+                if(typeof ga !== 'undefined')
+                    ga('send', 'event', 'map-layer', 'overlay-add', label);
+            }
+        });
+
+        mapImpl.on('overlayremove', function (layerEvent) {
+            var layer = layerEvent.layer,
+                label = layer.options.uniqueName;
+            if (label) {
+                if(typeof ga !== 'undefined')
+                    ga('send', 'event', 'map-layer', 'overlay-remove', label);
+            }
+        });
+
+        mapImpl.on('baselayerchange', function (layerEvent) {
+            var layer = layerEvent.layer,
+                label = layer.options.uniqueName;
+            if (label) {
+                if(typeof ga !== 'undefined')
+                    ga('send', 'event', 'map-layer', 'baselayer-change', label);
+            }
+        });
     }
 
     // The container div is expected to have an attribute 'data-leaflet-img' which contains the path to the Leaflet images.
@@ -1711,7 +1875,6 @@ ALA.Map = function (id, options) {
     // to notify all subscribers that the map has changed.
     function addLayer(layer, notify) {
         self.startLoading();
-
         layer.addTo(drawnItems);
 
         if (options.zoomToObject && layer.getBounds) {
@@ -1856,6 +2019,9 @@ ALA.Map = function (id, options) {
             if (isSelected) {
                 mapImpl.addLayer(layer);
                 overlayLayerSelect(layer);
+                // Unfortunately, by default overlay layer does not fire 'loading' event.
+                // Loading control depends on this event to show loading GIF.
+                layer.fire && layer.fire('loading');
             }
             console.log("[ALA-Map] Added " + (isSelected ? 'selected' : 'de-selected') + " overlay layer '" + name + "' to map.");
         } else {
@@ -1910,7 +2076,7 @@ ALA.Map = function (id, options) {
             isBaseLayerPresent = $(containerSelector + ' .' + classBaseLayer).children().length >= 1;
 
         if (!isHeadingPresent && isBaseLayerPresent)
-            $('<label class="' + classHeading + '"><strong>Base layer</strong></label>').insertBefore(containerSelector + ' .' + classBaseLayer);
+            $('<label class="' + classHeading + '"><strong>Bas-skikt</strong></label>').insertBefore(containerSelector + ' .' + classBaseLayer);
     };
 
     function addOverlayHeading(containerSelector) {
@@ -1920,7 +2086,7 @@ ALA.Map = function (id, options) {
             isOverlayPresent = $(containerSelector + ' .' + classOverlay).children().length >= 1;
 
         if (!isHeadingPresent && isOverlayPresent)
-            $('<label class="' + classHeading + '"><strong>Overlay</strong></label>').insertBefore(containerSelector + ' .' + classOverlay);
+            $('<label class="' + classHeading + '"><strong>Tillägg</strong></label>').insertBefore(containerSelector + ' .' + classOverlay);
     };
 
     function addBaseLayerAndOverlayHeading (containerSelector) {
@@ -1929,6 +2095,8 @@ ALA.Map = function (id, options) {
     };
 
     initialiseMap();
+    if(typeof ga !== 'undefined')
+        ga('send', 'event', 'ala-map', 'map-create');
 };
 
 /**
@@ -2115,9 +2283,43 @@ ALA.MapUtils = {
     },
 
     /**
+     * Convenience utility for creating a new segment/ polyline with optional configuration parameters and popup.
+     *
+     * @param coords [] Array of pairs of coordinates for a LineString
+     * @param popup {String} Text or HTML to display in a popup when the marker is clicked. Optional.
+     * @return {Object} Leaflet L.PolyLine object
+     */
+    createSegment: function (coords, popup) {
+        var polyline = L.polyline(coords);
+
+        if (popup) {
+            polyline.bindPopup(popup);
+        }
+
+        return polyline;
+    },
+
+    /**
+     * Convenience utility for creating a new polygon with optional configuration parameters and popup.
+     *
+     * @param coordinates [] Array of pairs of coordinates for a LineString
+     * @param popup {String} Text or HTML to display in a popup when the marker is clicked. Optional.
+     * @return {Object} Leaflet L.Polygon object
+     */
+    createPolygon: function (coordinates, popup) {
+        var polygon = L.polygon(coordinates);
+
+        if (popup) {
+            polygon.bindPopup(popup);
+        }
+
+        return polygon;
+    },
+
+    /**
      * Calculate the area of a given GeoJSON object in square kilometers. The GeoJSON object can be a FeatureCollection or a Feature.
      *
-     * For circle geometries, the Properties object must contain an attribute called Radius, with the radius in meters.
+     * For circle geometries, the Properties object must contain an attribute called Radiuit'ss, with the radius in meters.
      *
      * @param geoJson {Object} GeoJSON object to calculate the area for
      * @returns {number} The calculated area in square kilometers
@@ -2141,5 +2343,18 @@ ALA.MapUtils = {
         }
 
         return areaSqKm;
+    },
+
+    // TODO - remove? centroid is not used currently - calculations for this are done on the backend
+    /**
+     * Calculate the centroid of a given GeoJSON object. Takes one or more features and calculates the centroid using the mean of all vertices
+     *
+     * @param geoJson {Object} GeoJSON object to calculate the area for
+     * @returns {L.Point} The centroid of the input feature(s) 
+     */
+
+    calculateCentroid: function(geoJson) {
+        var centroid = turf.centroid(geoJson);
+        return centroid;
     }
 };

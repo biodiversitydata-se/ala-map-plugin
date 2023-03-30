@@ -57,6 +57,7 @@ L.Control.Radio = L.Control.extend({
                 .on(radioDom, 'mousedown dblclick', L.DomEvent.stopPropagation)
                 .on(radioDom, 'click', function (e) {
                     that.onClick(that.getValue(e))
+                    e.stopPropagation && e.stopPropagation();
                 }, that)
                 .on(radioDom, 'click', that._refocusOnMap, that);
 

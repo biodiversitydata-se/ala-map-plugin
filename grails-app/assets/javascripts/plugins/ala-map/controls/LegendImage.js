@@ -37,13 +37,15 @@ L.Control.LegendImage = L.Control.extend({
         id: "replaceMe",
         position: "bottomright",
         title: 'Show legend',
+        closeTitle: 'Close',
         collapse: false,
         label: null,
         iconClass: "icon-list",
+        closeClass: "icon-remove",
         legendListClass: "",
         url: "",
-        width: null
-
+        width: null,
+        height: 200
     },
 
     initialize: function (options) {
@@ -57,23 +59,53 @@ L.Control.LegendImage = L.Control.extend({
         self.id = self.options.id;
         var container = L.DomUtil.create("div", "leaflet-bar leaflet-control");
 
-        self.icon = L.DomUtil.create("button", " leaflet-bar-part " + (self.options.collapse ? "" : "hide"), container);
-        self.icon.title = self.options.title;
-        L.DomUtil.create("i", self.options.iconClass , self.icon);
+        self.expandBtn = L.DomUtil.create("button", " leaflet-bar-part ", container);
+        self.expandBtn.title = self.options.title;
+        L.DomUtil.create("i", self.options.iconClass , self.expandBtn);
 
-        self.legend = L.DomUtil.create("div", "legend-container " + self.options.legendListClass + (self.options.collapse ? " hide" : ""), container);
-        self.legend.style = 'width: 100%';
+        self.legend = L.DomUtil.create("div", "legend-container " + self.options.legendListClass, container);
+        self.legend.style = 'width: 100%; box-sizing: border-box;';
         self.legend.id = self.options.id;
+
+        self.closeBtn = L.DomUtil.create("button", " leaflet-bar-part pull-right", self.legend);
+        self.closeBtn.title = self.options.closeTitle;
+        L.DomUtil.create("i", self.options.closeClass , self.closeBtn);
+
+        self.legendTitle = L.DomUtil.create("h6", "", self.legend);
+        self.setTitle(self.options.legendTitle);
+        self.imageContainer = L.DomUtil.create("div", "image-container " , self.legend);
+        self.imageContainer.style = 'width: 100%; max-height: '+ self.options.height +'px; box-sizing: border-box;';
 
         self.updateLegend();
 
         if (self.options.collapse) {
-            L.DomEvent.addListener(self.icon, 'click', function(event) {
-                $(self.legend).toggleClass("hide");
-                $(self.icon).toggleClass("hide");
-                event.preventDefault();
-            });
+            $(self.closeBtn).hide();
+            $(self.legend).hide();
+            $(self.legendTitle).hide();
         }
+        else {
+            $(self.expandBtn).hide();
+        }
+
+        L.DomEvent.addListener(self.expandBtn, 'click', function(event) {
+            $(self.closeBtn).show();
+            $(self.legend).show();
+            $(self.legendTitle).show();
+            $(self.expandBtn).hide();
+            event.preventDefault();
+            if(typeof ga !== 'undefined')
+                ga('send', 'event', 'map-legend', 'legend-open');
+        });
+
+        L.DomEvent.addListener(self.closeBtn, 'click', function(event) {
+            $(self.closeBtn).hide();
+            $(self.legend).hide();
+            $(self.legendTitle).hide();
+            $(self.expandBtn).show();
+            event.preventDefault();
+            if(typeof ga !== 'undefined')
+                ga('send', 'event', 'map-legend', 'legend-close');
+        });
 
         L.DomEvent.disableClickPropagation(container);
         L.DomEvent.disableScrollPropagation(container);
@@ -81,17 +113,19 @@ L.Control.LegendImage = L.Control.extend({
         return container;
     },
 
-    updateLegend: function (url) {
+    updateLegend: function (url, title) {
         var self = this;
         var url = url || self.options.url;
         self.clearLegend();
 
         if (url) {
-            var spinner = L.DomUtil.create("span", "fa fa-spin fa-spinner", self.legend);
-            var img = L.DomUtil.create("img", "image-logo hide " + (self.options.position.indexOf("right") > -1 ? "pull-right" : ""), self.legend);
+            self.setTitle(title);
+            var spinner = L.DomUtil.create("span", "fa fa-spin fa-spinner", self.imageContainer);
+            var img = L.DomUtil.create("img", "legend-image ", self.imageContainer);
+            $(img).hide();
             img.onload = function () {
-                $(spinner).toggleClass('hide');
-                $(img).toggleClass('hide');
+                $(spinner).toggle();
+                $(img).toggle();
             };
             img.src = url;
         }
@@ -100,8 +134,19 @@ L.Control.LegendImage = L.Control.extend({
     clearLegend: function() {
         var self = this;
 
-        while (self.legend.firstChild) {
-            self.legend.removeChild(self.legend.firstChild);
+        while (self.imageContainer.firstChild) {
+            self.imageContainer.removeChild(self.imageContainer.firstChild);
         }
+    },
+
+    setTitle: function (title) {
+        var self = this;
+        if(title) {
+            self.legendTitle.innerText = title;
+            $(self.legendTitle).show();
+        } else {
+            $(self.legendTitle).hide();
+        }
+
     }
 });
