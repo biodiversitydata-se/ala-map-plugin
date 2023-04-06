@@ -7,6 +7,7 @@ git branch merge_alamaster_230330
 git checkout merge_alamaster_230330
 push the branch :
 git push -u origin merge_alamaster_230330
+(WTF pullrequest ?)
 get the info from the repo to have all the branches :
 git pull
 import the current ecodata branch we're working on :
