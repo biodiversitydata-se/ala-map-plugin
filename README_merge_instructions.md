@@ -19,3 +19,12 @@ git checkout merge_alamaster_230330
 
 and then merge 
 git merge lusm-main
+
+
+
+to use it as a dependency, things should be changed to be used by grails 5
+compile => implementation
+provided => compileOnly
+testRuntime => testRuntimeOnly
+testCompile => testImplementation
+runtime => runtimeOnly
