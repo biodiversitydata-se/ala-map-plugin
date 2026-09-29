@@ -195,3 +195,9 @@ OS:           Linux 6.8.0-124-generic amd64
 
 
 ALL GOOD !!
+
+
+
+ON PROD :
+./gradlew clean assemble --stacktrace
+./gradlew test --stacktrace

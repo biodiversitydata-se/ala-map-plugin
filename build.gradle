@@ -101,7 +101,9 @@ grailsPublish {
 */
 
 assets {
-    packagePlugin = (project == rootProject)
+    //packagePlugin = (project == rootProject)
+    packagePlugin = true
+    
     minifyJs = true
 
     excludes = [
